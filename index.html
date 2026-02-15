@@ -1330,12 +1330,12 @@
         const gdriveRegex = /\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/;
         const match = url.match(gdriveRegex);
         
+        let isGDrive = false;
         if (match) {
+            isGDrive = true;
             const fileId = match[1] || match[2];
             url = `https://drive.google.com/uc?export=download&id=${fileId}`;
         }
-
-        if (useProxy) url = 'https://corsproxy.io/?' + encodeURIComponent(url);
 
         closeUrlModal();
         info.innerText = "Fetching file from cloud...";
@@ -1343,12 +1343,52 @@
         document.getElementById('progress-bar').style.width = '50%'; 
 
         try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Network response was not ok');
+            let response;
+            
+            if (useProxy || isGDrive) {
+                try {
+                    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                    response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error('Primary proxy failed');
+                } catch (e) {
+                    console.warn("Primary proxy failed, trying fallback...");
+                    const fallbackUrl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url);
+                    response = await fetch(fallbackUrl);
+                }
+            } else {
+                response = await fetch(url);
+            }
+
+            if (!response || !response.ok) throw new Error('Network response was not ok');
             
             const blob = await response.blob();
+            
+            if (isGDrive && blob.type.includes('text/html') && blob.size < 100000) {
+                 throw new Error("Google Drive Virus Scan Warning detected. File too large for direct import.");
+            }
+
             let fileName = "imported_file_" + Date.now();
-            if (match) fileName = "gdrive_file_" + (match[1] || match[2]);
+            
+            const disposition = response.headers.get('content-disposition');
+            if (disposition && disposition.indexOf('attachment') !== -1) {
+                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                const matches = filenameRegex.exec(disposition);
+                if (matches != null && matches[1]) { 
+                    fileName = matches[1].replace(/['"]/g, '');
+                }
+            } else if (match) {
+                 const mime = blob.type;
+                 let ext = "";
+                 if(mime === "image/jpeg") ext = ".jpg";
+                 else if(mime === "image/png") ext = ".png";
+                 else if(mime === "application/pdf") ext = ".pdf";
+                 
+                 fileName = "gdrive_file_" + (match[1] || match[2]) + ext;
+            } else if (url.lastIndexOf('/') > 0) {
+                const parts = url.split('?')[0].split('/');
+                const potentialName = parts[parts.length - 1];
+                if (potentialName && potentialName.length < 50) fileName = potentialName;
+            }
 
             const file = new File([blob], fileName, { type: blob.type, lastModified: Date.now() });
             
@@ -1360,8 +1400,13 @@
             setTimeout(() => { document.getElementById('progress-container').style.display = 'none'; }, 1000);
 
         } catch (error) {
+            console.error(error);
             info.innerText = "Error fetching file.";
-            alert("Fetch failed. Try checking 'Use CORS Proxy'.");
+            let msg = "Fetch failed.";
+            if (isGDrive && !useProxy) msg += "\n\nTip: Google Drive links almost ALWAYS require 'Use CORS Proxy' to be checked.";
+            else if (isGDrive) msg += "\n\nNote: Large Google Drive files (>100MB) cannot be imported due to virus scan warnings.";
+            
+            alert(msg);
             document.getElementById('progress-container').style.display = 'none';
         }
     }
