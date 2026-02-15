@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P Air Channel</title>
+    <title>P2P Air Channel - Glass Edition</title>
     <!-- PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <!-- QRCode.js -->
@@ -21,6 +21,7 @@
             --primary: #3b82f6;
             --primary-hover: #2563eb;
             --success: #10b981;
+            --danger: #ef4444;
             --input-bg: rgba(15, 23, 42, 0.6);
             --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
             --history-item-bg: rgba(255, 255, 255, 0.05);
@@ -36,6 +37,7 @@
             --primary: #0ea5e9;
             --primary-hover: #0284c7;
             --success: #059669;
+            --danger: #ef4444;
             --input-bg: rgba(241, 245, 249, 0.7);
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             --history-item-bg: rgba(0, 0, 0, 0.03);
@@ -358,6 +360,78 @@
         .badge-sent { background: rgba(59, 130, 246, 0.2); color: var(--primary); }
         .badge-received { background: rgba(16, 185, 129, 0.2); color: var(--success); }
 
+        /* Preview Area Styles */
+        .preview-area {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 15px;
+            border: 1px solid var(--glass-border);
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .preview-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .preview-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .preview-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .preview-meta {
+            font-size: 11px;
+            color: var(--text-dim);
+            display: flex;
+            gap: 10px;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-confirm {
+            flex: 2;
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-confirm:hover { filter: brightness(1.1); }
+        .btn-cancel:hover { background: rgba(255, 255, 255, 0.2); }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Scrollbar */
@@ -429,12 +503,25 @@
                 <span>Auto-pack received files into ZIP</span>
             </label>
 
-            <div class="file-upload-wrapper">
+            <!-- File Input Area -->
+            <div class="file-upload-wrapper" id="upload-wrapper">
                 <div class="file-upload-btn" id="drop-zone">
                     <svg class="icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                     <span>Tap or Drop files here to send</span>
                 </div>
                 <input type="file" id="file-input" multiple disabled title="Select files to send">
+            </div>
+
+            <!-- New: Confirmation Preview Area -->
+            <div id="preview-area" class="preview-area">
+                <div style="margin-bottom:10px; font-weight:600; color:var(--text-main);">Confirm Transfer</div>
+                <div id="preview-list" class="preview-list">
+                    <!-- Preview items injected here -->
+                </div>
+                <div class="preview-actions">
+                    <button class="btn-cancel" onclick="cancelTransfer()">Cancel</button>
+                    <button class="btn-confirm" onclick="confirmSend()">Confirm Send</button>
+                </div>
             </div>
             
             <div class="progress-container" id="progress-container">
@@ -472,7 +559,6 @@
     // --- Clock Logic ---
     function updateClock() {
         const now = new Date();
-        // Use user's locale but force specific format options for cleanliness
         const timeString = now.toLocaleTimeString(undefined, { 
             hour: '2-digit', 
             minute: '2-digit', 
@@ -564,6 +650,7 @@
     let activeConn = null;
     let zip = null;
     const CHUNK_SIZE = 65536; 
+    let filesQueue = []; // Queue for confirmation
 
     peer.on('open', id => {
         document.getElementById('my-id').innerText = id;
@@ -648,6 +735,61 @@
         });
     }
 
+    // --- File Selection & Preview Logic ---
+    document.getElementById('file-input').onchange = (e) => {
+        if (e.target.files.length > 0) {
+            filesQueue = Array.from(e.target.files);
+            renderPreview(filesQueue);
+        }
+    };
+
+    function renderPreview(files) {
+        const previewList = document.getElementById('preview-list');
+        previewList.innerHTML = ''; // Clear previous
+
+        files.forEach(file => {
+            const dateStr = new Date(file.lastModified).toLocaleString();
+            const sizeStr = formatBytes(file.size);
+            
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            item.innerHTML = `
+                <div class="preview-item-row">
+                    <span style="font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${file.name}</span>
+                </div>
+                <div class="preview-meta">
+                    <span>${sizeStr}</span>
+                    <span>•</span>
+                    <span>${dateStr}</span>
+                </div>
+            `;
+            previewList.appendChild(item);
+        });
+
+        // Show preview area, hide default upload wrapper visually (or keep it but below)
+        document.getElementById('upload-wrapper').style.display = 'none';
+        document.getElementById('preview-area').style.display = 'block';
+        document.getElementById('transfer-info').innerText = "Waiting for confirmation...";
+    }
+
+    function cancelTransfer() {
+        filesQueue = [];
+        document.getElementById('file-input').value = ''; // Reset input
+        document.getElementById('preview-area').style.display = 'none';
+        document.getElementById('upload-wrapper').style.display = 'inline-block';
+        document.getElementById('transfer-info').innerText = "Transfer cancelled.";
+    }
+
+    function confirmSend() {
+        if (filesQueue.length > 0) {
+            sendFiles(filesQueue);
+            // Reset UI
+            document.getElementById('preview-area').style.display = 'none';
+            document.getElementById('upload-wrapper').style.display = 'inline-block';
+            document.getElementById('file-input').value = ''; 
+        }
+    }
+
     async function sendFiles(files) {
         if (!activeConn) return;
         document.getElementById('progress-container').style.display = 'block';
@@ -677,11 +819,8 @@
             addToHistory('sent', file.name, file.size);
         }
         activeConn.send({ type: 'batch-end' });
+        filesQueue = []; // Clear queue after sending
     }
-
-    document.getElementById('file-input').onchange = (e) => {
-        if (e.target.files.length > 0) sendFiles(e.target.files);
-    };
 
     function updateProgress(pct, msg) {
         document.getElementById('progress-bar').style.width = pct + "%";
