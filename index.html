@@ -15,7 +15,6 @@
     
     <style>
         :root {
-            /* Dark Theme (Default) */
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
             --glass-bg: rgba(30, 41, 59, 0.65);
             --glass-border: rgba(255, 255, 255, 0.1);
@@ -34,7 +33,6 @@
         }
 
         [data-theme="light"] {
-            /* Light Theme (MacOS Inspired) */
             --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
             --glass-bg: rgba(255, 255, 255, 0.75);
             --glass-border: rgba(255, 255, 255, 0.6);
@@ -66,6 +64,7 @@
             color: var(--text-main);
             min-height: 100vh;
             margin: 0;
+            overflow-x: hidden;
         }
 
         @keyframes gradientBG {
@@ -74,30 +73,22 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Layout Structure */
         .main-layout {
             display: flex;
             flex-direction: row;
             gap: 24px;
             width: 100%;
             max-width: 1400px;
-            align-items: flex-start;
+            align-items: stretch;
             flex: 1;
             margin-top: 20px;
         }
 
         @media (max-width: 1024px) {
-            .main-layout {
-                flex-direction: column;
-                align-items: center;
-            }
-            .glass-panel {
-                max-width: 500px !important;
-                width: 100% !important;
-            }
+            .main-layout { flex-direction: column; align-items: center; }
+            .glass-panel { max-width: 500px !important; width: 100% !important; min-height: auto !important; }
         }
 
-        /* Glassmorphism Card Style */
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -109,16 +100,13 @@
             flex: 1; 
             min-width: 300px;
             position: relative;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
+            gap: 12px;
         }
         
-        .panel-center {
-            flex: 1.2; 
-        }
+        .panel-center { flex: 1.3; }
 
-        /* Header & Toggle */
         .header {
             width: 100%;
             max-width: 1400px;
@@ -128,747 +116,302 @@
             padding: 0 10px;
         }
 
-        .header-left, .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        .header-left, .header-right { display: flex; align-items: center; gap: 15px; }
 
-        .app-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .app-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         
         #system-time {
-            font-size: 0.9rem;
-            font-family: "SF Mono", "Menlo", monospace;
-            color: var(--text-dim);
-            background: rgba(0,0,0,0.1);
-            padding: 6px 12px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
+            font-size: 0.9rem; font-family: monospace; color: var(--text-dim);
+            background: rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--glass-border);
         }
 
         .icon-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            position: relative;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main);
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; backdrop-filter: blur(10px); position: relative;
         }
-        
         .icon-btn:hover { background: rgba(255,255,255,0.1); }
 
         .notification-dot {
-            position: absolute;
-            top: 0; right: 0;
-            width: 12px; height: 12px;
-            background: var(--primary);
-            border-radius: 50%;
-            border: 2px solid var(--input-bg);
-            display: none;
+            position: absolute; top: 0; right: 0; width: 12px; height: 12px;
+            background: var(--primary); border-radius: 50%; border: 2px solid var(--input-bg); display: none;
         }
 
-        /* Footer */
         .footer {
-            width: 100%;
-            max-width: 1400px;
-            margin-top: auto;
-            padding: 20px 10px 0 10px;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            opacity: 0.7;
-            text-align: left;
-            line-height: 1.5;
+            width: 100%; max-width: 1400px; margin-top: 40px; padding: 20px 10px;
+            font-size: 0.75rem; color: var(--text-dim); opacity: 0.7; text-align: left; line-height: 1.5;
+            border-top: 1px solid var(--glass-border);
         }
 
-        /* Icons */
         .icon { width: 20px; height: 20px; }
         .icon-lg { width: 24px; height: 24px; }
+        .icon-sm { width: 16px; height: 16px; }
 
-        /* QR & ID Section */
         h2 { 
-            margin: 0; 
-            font-weight: 700; 
-            letter-spacing: 1px;
-            word-break: break-all;
-            font-size: 1.1rem;
-            line-height: 1.4;
-            font-family: monospace;
-            color: var(--primary);
+            margin: 0; font-weight: 700; letter-spacing: 1px; word-break: break-all;
+            font-size: 1.1rem; line-height: 1.4; font-family: monospace; color: var(--primary);
         }
         
         h3 { 
-            margin: 0; 
-            color: var(--text-dim); 
-            font-size: 0.9rem; 
-            font-weight: 600; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            line-height: 1; 
+            margin: 0; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; 
+            text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; 
         }
 
-        .id-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 10px 0;
-            width: 100%;
-        }
+        .id-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 5px 0; width: 100%; }
 
         .copy-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--text-dim);
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0; 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-dim);
+            width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: all 0.2s; flex-shrink: 0; 
         }
-
-        .copy-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-1px);
-        }
+        .copy-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
         
         #qrcode {
-            margin: 20px auto;
-            padding: 12px;
-            background: white;
-            border-radius: 16px;
-            display: inline-block;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin: 15px auto; padding: 12px; background: white; border-radius: 16px;
+            display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         #qrcode img { display: block; }
 
-        /* Inputs & Buttons */
         input[type="text"], input[type="number"], select {
-            width: 100%;
-            padding: 14px;
-            margin: 8px 0;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: var(--input-bg);
-            color: var(--text-main);
-            font-size: 14px;
-            outline: none;
-            font-family: inherit;
+            width: 100%; padding: 14px; margin: 5px 0; border-radius: 12px; border: 1px solid var(--glass-border);
+            background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none;
         }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
 
         button.action-btn {
-            width: 100%;
-            padding: 16px;
-            margin-top: 10px;
-            border-radius: 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-            transition: transform 0.2s, filter 0.2s;
+            width: 100%; padding: 16px; margin-top: 5px; border-radius: 16px;
+            background: var(--primary); color: white; border: none; cursor: pointer;
+            font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center;
+            gap: 8px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s, filter 0.2s;
         }
-        
         button.action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
+        button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; opacity: 0.7; transform: none; }
 
-        /* Modified Connect Button Styles for Disconnect state */
-        .btn-disconnect {
-            background: var(--danger) !important;
-            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+        .btn-disconnect { background: var(--danger) !important; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important; }
+
+        .file-upload-wrapper { position: relative; margin-top: 10px; border-radius: 16px; overflow: hidden; width: 100%; }
+        .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+        
+        .file-upload-btn {
+            background: var(--input-bg); border: 1px dashed var(--text-dim); color: var(--text-dim);
+            padding: 30px 20px; border-radius: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;
+            transition: all 0.2s;
         }
-        .btn-disconnect:hover {
-            filter: brightness(1.1);
-        }
+        .file-upload-wrapper:hover .file-upload-btn { border-color: var(--primary); background: rgba(255,255,255,0.05); }
 
         .text-btn {
-            background: none;
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
-            padding: 5px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .text-btn:hover { text-decoration: underline; }
-
-        /* File Input Customization */
-        .file-upload-wrapper {
-            position: relative;
-            margin-top: 15px;
-            overflow: hidden;
-            display: inline-block;
+            background: none; border: none; color: var(--primary); cursor: pointer;
+            font-size: 13px; padding: 10px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;
             width: 100%;
         }
-        
-        .file-upload-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
+        .text-btn:hover { text-decoration: underline; color: var(--text-main); }
 
-        .file-upload-btn {
-            background: var(--input-bg);
-            border: 1px dashed var(--text-dim);
-            color: var(--text-dim);
-            padding: 30px;
-            border-radius: 16px;
-            text-align: center;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
+        .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 10px 0 5px 0; overflow: hidden; display: none; }
+        #progress-bar { width: 0%; height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.1s linear; }
 
-        .file-upload-wrapper:hover .file-upload-btn {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(59, 130, 246, 0.05);
-        }
+        .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; }
+        .metrics-item { display: flex; align-items: center; gap: 4px; }
 
-        /* Status Tags */
-        #status-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            margin-top: 15px;
-        }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; }
-        .status-online .status-dot { background: #10b981; }
-
-        /* Progress Bar */
-        .progress-container {
-            width: 100%;
-            background: rgba(0,0,0,0.2);
-            height: 8px;
-            border-radius: 4px;
-            margin: 15px 0;
-            overflow: hidden;
-            display: none;
-        }
-        #progress-bar {
-            width: 0%;
-            height: 100%;
-            background: var(--primary);
-            border-radius: 4px;
-            transition: width 0.1s linear;
-        }
-
-        /* Toggle Switch Checkbox */
-        .switch-label {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 10px;
-            font-size: 14px;
-            color: var(--text-dim);
-            margin: 15px 0;
-            cursor: pointer;
-            user-select: none;
-            padding-left: 5px;
-        }
-
-        /* History Section */
-        .history-list {
-            margin-top: 15px;
-            overflow-y: auto;
-            text-align: left;
-            flex-grow: 1;
-            min-height: 200px;
-        }
-
+        .history-list { margin-top: 10px; overflow-y: auto; text-align: left; flex-grow: 1; min-height: 250px; }
         .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            background: var(--history-item-bg);
-            border-radius: 10px;
-            font-size: 13px;
-            animation: fadeIn 0.3s ease-out;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px;
+            background: var(--history-item-bg); border-radius: 12px; font-size: 13px; animation: fadeIn 0.3s ease-out;
         }
+        .history-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; }
+        .history-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+        .history-actions { display: flex; align-items: center; gap: 10px; }
+        .action-icon { color: var(--text-dim); cursor: pointer; transition: all 0.2s; display: flex; }
+        .action-icon:hover { color: var(--primary); transform: scale(1.1); }
 
-        .history-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
-        .history-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; font-weight: 500; }
-        .history-time { font-size: 11px; color: var(--text-dim); min-width: 50px; text-align: right; }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .badge-sent { background: rgba(59, 130, 246, 0.2); color: var(--primary); }
-        .badge-received { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        
-        .hash-verified { color: var(--success); margin-left: 5px; cursor: help; }
-        .hash-failed { color: var(--danger); margin-left: 5px; cursor: help; }
-
-        /* Preview Area Styles */
-        .preview-area {
-            margin-top: 20px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 16px;
-            padding: 15px;
-            border: 1px solid var(--glass-border);
-            display: none;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .preview-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-        }
-
+        .preview-area { margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 15px; border: 1px solid var(--glass-border); display: none; animation: fadeIn 0.3s; }
+        .preview-list { max-height: 160px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
         .preview-item {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 13px;
-            border-left: 3px solid var(--primary);
-            gap: 10px;
+            display: flex; flex-direction: row; align-items: center; padding: 10px; background: rgba(255,255,255,0.05);
+            border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary); gap: 10px;
         }
+        .preview-content { flex: 1; overflow: hidden; line-height: 1.4; }
+        .preview-remove-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; }
+        .preview-remove-btn:hover { color: var(--danger); }
+        .preview-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-        .preview-content {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .preview-remove-btn {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-        .preview-remove-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: var(--danger);
-        }
-
-        .preview-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .preview-meta {
-            font-size: 11px;
-            color: var(--text-dim);
-            display: flex;
-            gap: 10px;
-        }
-
-        .preview-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-confirm {
-            flex: 2;
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-cancel {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
-            border: 1px solid var(--glass-border);
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .btn-add {
-            flex: 1;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .btn-confirm:hover, .btn-add:hover { filter: brightness(1.1); }
-        .btn-cancel:hover { background: rgba(255, 255, 255, 0.2); }
-
-        /* Modal Styles */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.2s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center;
         }
-        
-        .modal-content {
-            background: var(--modal-bg);
-            border: 1px solid var(--glass-border);
-            padding: 24px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            text-align: center;
-        }
+        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        .modal-large { max-width: 960px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
 
-        .modal-large {
-            max-width: 900px;
-            height: 85vh;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .warning-text {
-            color: var(--warning);
-            font-size: 11px;
-            margin-top: 5px;
-            text-align: left;
-            padding-left: 5px;
-            line-height: 1.4;
-        }
-
-        /* Batcher Styles */
-        .batcher-layout { display: flex; height: 100%; overflow: hidden; text-align: left; }
-        .batcher-sidebar { width: 300px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; flex-shrink: 0; }
-        .batcher-main { flex: 1; padding: 20px; overflow-y: auto; background: var(--input-bg); position: relative; }
-        
-        @media (max-width: 768px) {
-            .batcher-layout { flex-direction: column; }
-            .batcher-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--glass-border); }
-        }
-
-        .setting-group { margin-bottom: 20px; }
-        .setting-title { font-size: 12px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        
+        .batcher-layout { display: flex; height: 100%; overflow: hidden; }
+        .batcher-sidebar { width: 280px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .batcher-main { flex: 1; padding: 25px; overflow-y: auto; background: var(--input-bg); }
         .batcher-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px; position: relative; transition: all 0.2s; }
-        .batcher-card:hover { transform: translateY(-2px); border-color: var(--primary); }
-        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: rgba(0,0,0,0.1); margin-bottom: 8px; }
-        .batcher-info { font-size: 11px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .batcher-remove { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; }
-        .batcher-card:hover .batcher-remove { opacity: 1; }
+        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px; position: relative; transition: border 0.2s; }
+        .batcher-card:hover { border-color: var(--primary); }
+        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #000; }
+        .batcher-remove { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
-        .range-slider { width: 100%; height: 4px; background: var(--glass-border); border-radius: 2px; -webkit-appearance: none; outline: none; margin: 10px 0; }
-        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid white; }
-
-        /* Make dropzone clickable for mobile */
-        #batcher-dropzone { cursor: pointer; }
+        .switch-label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim); cursor: pointer; margin: 5px 0; }
+        .range-slider { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; -webkit-appearance: none; outline: none; margin: 10px 0; }
+        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid #fff; }
 
         .toast {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--primary); color: white;
-            padding: 12px 24px; border-radius: 50px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            display: none; align-items: center; gap: 10px;
-            z-index: 2000; font-weight: 600; cursor: pointer;
-            animation: slideUp 0.3s ease-out;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px;
+            z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         }
-        @keyframes slideUp { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 3px; }
+        @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
     <div class="header">
         <div class="header-left">
-            <div class="app-title">
-                <i data-lucide="zap" class="icon-lg" style="color: var(--primary);"></i>
-                P2P Air Channel
-            </div>
+            <div class="app-title"><i data-lucide="zap" class="icon-lg" style="color: var(--primary);"></i> P2P Air Channel</div>
         </div>
-        
         <div class="header-right">
             <span id="system-time">--:--</span>
-            
-            <!-- Image Batcher Toggle -->
-            <button class="icon-btn" id="batcher-toggle" title="Image Batcher">
-                <i data-lucide="images" class="icon"></i>
-                <div class="notification-dot" id="batcher-dot"></div>
-            </button>
-
-            <button class="icon-btn" id="theme-btn" title="Toggle Theme">
-                <i data-lucide="sun" class="icon" id="icon-sun" style="display:none"></i>
-                <i data-lucide="moon" class="icon" id="icon-moon"></i>
-            </button>
+            <button class="icon-btn" id="batcher-toggle" title="Image Batcher"><i data-lucide="images" class="icon"></i><div class="notification-dot" id="batcher-dot"></div></button>
+            <button class="icon-btn" id="theme-btn" title="Toggle Mode"><i data-lucide="sun" class="icon" id="icon-sun" style="display:none"></i><i data-lucide="moon" class="icon" id="icon-moon"></i></button>
         </div>
     </div>
 
-    <!-- Main Layout -->
     <div class="main-layout">
-        
-        <!-- LEFT: Identity Card -->
+        <!-- LEFT PANEL -->
         <div class="glass-panel" style="text-align: center;">
-            <h3 style="margin-bottom: 8px;">My Identity</h3>
-            
+            <div style="margin-bottom: 5px;"><h3>My Identity</h3></div>
             <div class="id-wrapper">
-                <h2 id="my-id">Generating UUID...</h2>
-                <button id="copy-id-btn" class="copy-btn" title="Copy to Clipboard">
-                    <i data-lucide="copy" class="icon"></i>
-                </button>
+                <h2 id="my-id">...</h2>
+                <button id="copy-id-btn" class="copy-btn" title="Copy ID"><i data-lucide="copy" class="icon"></i></button>
             </div>
-
             <div id="qrcode"></div>
-            <div>
-                <div id="status-tag">
-                    <div class="status-dot"></div>
-                    <span id="status-text">Initializing...</span>
-                </div>
-            </div>
-            <div style="margin-top: 20px; font-size: 13px; color: var(--text-dim); text-align: left; padding: 0 10px;">
-                <p>Scan this QR code with another device to connect instantly.</p>
+            <div id="status-tag" style="align-self: center;"><div class="status-dot"></div><span id="status-text">Initializing...</span></div>
+            <div style="margin-top: 15px; font-size: 12px; color: var(--text-dim); text-align: center; line-height: 1.5;">
+                Scan QR or share UUID to establish link.
             </div>
         </div>
 
-        <!-- CENTER: Connection & Transfer Card -->
+        <!-- CENTER PANEL -->
         <div class="glass-panel panel-center">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; margin-left: 2px;">
-                <i data-lucide="link" class="icon"></i>
-                <h3>Connection</h3>
-            </div>
-            
+            <div style="display: flex; align-items: center; gap: 8px;"><i data-lucide="link" class="icon-sm"></i><h3>Connection</h3></div>
             <input type="text" id="peer-id-input" placeholder="Enter remote UUID">
-            <button id="connect-btn" class="action-btn">
-                Connect Device
-            </button>
+            <button id="connect-btn" class="action-btn">Connect Device</button>
             
-            <div style="margin-top: 30px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; margin-left: 2px;">
-                <i data-lucide="file-up" class="icon"></i>
-                <h3>File Transfer</h3>
-            </div>
+            <div style="margin-top: 20px; display: flex; align-items: center; gap: 8px;"><i data-lucide="file-up" class="icon-sm"></i><h3>File Transfer</h3></div>
+            <label class="switch-label"><input type="checkbox" id="zip-mode" style="accent-color: var(--primary); transform: scale(1.1);"> <span>Auto-pack received files into ZIP</span></label>
 
-            <label class="switch-label">
-                <input type="checkbox" id="zip-mode" style="accent-color: var(--primary); transform: scale(1.2);"> 
-                <span>Auto-pack received files into ZIP</span>
-            </label>
-
-            <!-- File Input Area -->
+            <!-- Corrected Container Logic -->
             <div class="file-upload-wrapper" id="upload-wrapper">
                 <div class="file-upload-btn" id="drop-zone">
-                    <i data-lucide="upload-cloud" class="icon-lg" style="width:48px; height:48px; margin-bottom:10px;"></i>
-                    <span>Tap or Drop files here to send</span>
+                    <i data-lucide="upload-cloud" class="icon-lg" style="width:40px; height:40px; color: var(--primary);"></i>
+                    <span style="font-weight: 500;">Tap or Drop files here</span>
                 </div>
-                <input type="file" id="file-input" multiple disabled title="Select files to send">
-                
-                <button class="text-btn" onclick="openUrlModal()" style="margin-top: 15px; width: 100%; justify-content: center;">
-                    <i data-lucide="cloud-download" class="icon" style="margin-right:5px;"></i>
-                    <span>Import from URL / Google Drive</span>
-                </button>
+                <input type="file" id="file-input" multiple disabled>
             </div>
+            <!-- Import button moved OUTSIDE wrapper to prevent overlap -->
+            <button class="text-btn" onclick="openUrlModal()"><i data-lucide="cloud-download" class="icon-sm"></i><span>Import from Google Drive / URL</span></button>
 
-            <!-- Confirmation Preview Area (Modified for Individual file management) -->
             <div id="preview-area" class="preview-area">
-                <div style="margin-bottom:10px; font-weight:600; color:var(--text-main); display:flex; justify-content:space-between; align-items:center;">
-                    <span>Confirm Transfer</span>
-                    <span id="queue-count" style="font-size:12px; color:var(--text-dim); font-weight:normal;">0 files</span>
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items: center;">
+                    <b style="font-size: 14px;">Queue Management</b>
+                    <span id="queue-count" style="font-size:11px; padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 10px;">0 files</span>
                 </div>
                 <div id="preview-list" class="preview-list"></div>
                 <div class="preview-actions">
-                    <button class="btn-cancel" onclick="cancelTransfer()">Cancel All</button>
-                    <!-- Hidden input for adding more files -->
+                    <button class="btn-cancel" style="padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: none; color: var(--text-main); cursor: pointer;" onclick="cancelTransfer()">Clear All</button>
                     <input type="file" id="add-more-input" multiple style="display:none" onchange="handleAddMoreFiles(this)">
-                    <button class="btn-add" onclick="document.getElementById('add-more-input').click()">
-                        <i data-lucide="plus" style="width:16px;height:16px;"></i> Add
-                    </button>
-                    <button class="btn-confirm" onclick="confirmSend()">Send Now</button>
+                    <button class="action-btn" style="margin-top:0; flex:1; background: var(--input-bg); border: 1px solid var(--glass-border);" onclick="document.getElementById('add-more-input').click()">+ Add Files</button>
+                    <button class="action-btn" style="margin-top:0; flex:1.5; background:var(--success);" onclick="confirmSend()">Send Now</button>
                 </div>
             </div>
             
-            <div class="progress-container" id="progress-container">
-                <div id="progress-bar"></div>
+            <div class="progress-container" id="progress-container"><div id="progress-bar"></div></div>
+            
+            <div class="metrics-grid" id="metrics-display" style="display:none">
+                <div class="metrics-item"><i data-lucide="gauge" class="icon-sm"></i><span id="speed-text">0 KB/s</span></div>
+                <div class="metrics-item"><i data-lucide="timer" class="icon-sm"></i><span id="eta-text">--s</span></div>
             </div>
-            <div id="transfer-info" style="font-size: 13px; color: var(--text-dim); text-align: center; margin-top: 10px; min-height: 20px;">
-                Waiting for connection...
-            </div>
+
+            <div id="transfer-info" style="font-size: 12px; color: var(--text-dim); text-align: center; min-height: 18px;">Waiting for connection...</div>
         </div>
 
-        <!-- RIGHT: History Card -->
+        <!-- RIGHT PANEL -->
         <div class="glass-panel">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-left: 2px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <i data-lucide="history" class="icon"></i>
-                    <h3>Activity History</h3>
-                </div>
-                <span style="font-size: 11px; color: var(--text-dim); cursor: pointer;" onclick="document.getElementById('history-list').innerHTML = ''">Clear</span>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;"><i data-lucide="history" class="icon-sm"></i><h3>Activity History</h3></div>
+                <span style="font-size: 11px; opacity: 0.6; cursor: pointer; text-decoration: underline;" onclick="clearHistory()">Clear</span>
             </div>
             <div id="history-list" class="history-list">
-                <div style="text-align: center; color: var(--text-dim); padding: 10px; font-size: 12px; font-style: italic;">No recent transfers</div>
+                <div style="text-align: center; color: var(--text-dim); padding: 40px 20px; font-size: 12px; font-style: italic;">No recent transfers</div>
             </div>
         </div>
-
     </div>
 
-    <!-- URL Import Modal -->
+    <!-- Modals -->
     <div id="url-modal" class="modal-overlay">
-        <div class="modal-content" style="text-align: left;">
-            <h3 style="margin-bottom: 15px; color: var(--text-main);">Import from Cloud URL</h3>
-            <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 15px;">
-                Enter a direct file link or Google Drive sharing link.
-            </p>
-            <input type="text" id="url-input" placeholder="https://drive.google.com/..." style="margin-bottom: 10px;">
-            
-            <label class="switch-label" style="font-size: 12px; margin-bottom: 5px;">
-                <input type="checkbox" id="cors-proxy-check"> 
-                <span>Use CORS Proxy (Enable if direct fetch fails)</span>
-            </label>
-            <p class="warning-text">
-                ⚠️ Warning: Using a proxy sends traffic through a third-party server. Do not use for sensitive data.
-            </p>
-
-            <div class="preview-actions" style="margin-top: 20px;">
-                <button class="btn-cancel" onclick="closeUrlModal()">Close</button>
-                <button class="btn-confirm" onclick="processUrlImport()">Fetch File</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Connection Request Modal -->
-    <div id="connection-modal" class="modal-overlay">
         <div class="modal-content">
-            <div style="margin-bottom: 15px; display:flex; justify-content:center;">
-                <i data-lucide="shield-alert" class="icon-lg" style="width: 48px; height: 48px; color: var(--primary);"></i>
-            </div>
-            <h3 style="margin-bottom: 10px; color: var(--text-main);">Incoming Connection Request</h3>
-            <p id="conn-req-text" style="font-size: 13px; color: var(--text-dim); margin-bottom: 20px;">
-                A remote device is attempting to connect.
-            </p>
-            <div class="preview-actions">
-                <button class="btn-cancel" id="btn-reject-conn">Reject</button>
-                <button class="btn-confirm" id="btn-accept-conn">Accept</button>
+            <h3 style="margin-bottom: 15px;">Cloud Import</h3>
+            <input type="text" id="url-input" placeholder="Google Drive sharing link or URL">
+            <label class="switch-label"><input type="checkbox" id="cors-proxy-check"> <span>Use CORS Proxy (for GDrive)</span></label>
+            <p style="font-size: 11px; color: var(--warning); margin-top: 8px;">* Files >100MB may fail GDrive scan.</p>
+            <div class="preview-actions" style="margin-top:20px;">
+                <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" onclick="closeUrlModal()">Cancel</button>
+                <button class="action-btn" style="margin-top:0; flex:2;" onclick="processUrlImport()">Fetch File</button>
             </div>
         </div>
     </div>
 
-    <!-- Image Batcher Modal -->
+    <div id="connection-modal" class="modal-overlay">
+        <div class="modal-content" style="text-align:center;">
+            <i data-lucide="shield-check" class="icon-lg" style="color:var(--primary); margin-bottom:15px; width:48px; height:48px;"></i>
+            <h3 style="margin-bottom: 10px;">Security Request</h3>
+            <p id="conn-req-text" style="font-size:13px; color:var(--text-dim); margin-bottom:25px; line-height:1.5;"></p>
+            <div class="preview-actions">
+                <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" id="btn-reject-conn">Reject</button>
+                <button class="action-btn" style="margin-top:0; background:var(--success); flex:2;" id="btn-accept-conn">Accept Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batcher Modal -->
     <div id="batcher-modal" class="modal-overlay">
         <div class="modal-content modal-large">
-            <div style="padding: 15px 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <i data-lucide="layers" style="color: var(--primary);"></i>
-                    <h3 style="margin: 0; color: var(--text-main);">Image Batcher</h3>
-                </div>
-                <i data-lucide="x" class="icon" style="cursor: pointer;" onclick="toggleBatcher(false)"></i>
+            <div style="padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1);">
+                <div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="layers" style="color: var(--primary);"></i><h3 style="margin: 0; font-size: 1rem;">Image Batcher Pro</h3></div>
+                <i data-lucide="x" style="cursor: pointer; opacity:0.7;" onclick="toggleBatcher(false)"></i>
             </div>
-            
             <div class="batcher-layout">
-                <!-- Sidebar Settings -->
                 <div class="batcher-sidebar">
-                    <div class="setting-group">
-                        <div class="setting-title"><i data-lucide="maximize" class="icon-sm"></i> Resize</div>
-                        <select id="batcher-resize-mode" onchange="updateBatcherSettingsUI()">
-                            <option value="scale">Scale Percentage</option>
-                            <option value="width">Fixed Width</option>
-                        </select>
-                        
-                        <div id="setting-scale-ui">
-                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
-                                <span>Scale</span><span id="scale-val" style="color: var(--primary);">80%</span>
-                            </div>
-                            <input type="range" class="range-slider" id="batcher-scale" min="10" max="100" value="80" step="5" oninput="document.getElementById('scale-val').innerText = this.value + '%'">
-                        </div>
-
-                        <div id="setting-width-ui" style="display: none;">
-                            <input type="number" id="batcher-width" placeholder="Width (px)" value="1920">
-                        </div>
+                    <div>
+                        <div style="font-size:11px; margin-bottom:5px; color:var(--text-dim);">RESIZE MODE</div>
+                        <select id="batcher-resize-mode" onchange="updateBatcherSettingsUI()"><option value="scale">Scale Percentage</option><option value="width">Fixed Width (px)</option></select>
                     </div>
-
-                    <div class="setting-group">
-                        <div class="setting-title"><i data-lucide="hard-drive" class="icon-sm"></i> Output</div>
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
-                            <span>Quality</span><span id="quality-val" style="color: var(--primary);">80%</span>
-                        </div>
-                        <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80" step="5" oninput="document.getElementById('quality-val').innerText = this.value + '%'">
-                        
-                        <!-- Updated Output Format Options with Descriptions -->
-                        <select id="batcher-format" style="margin-top: 10px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim);"><span>SCALE / WIDTH</span><span id="scale-val" style="color:var(--primary);">80%</span></div>
+                        <input type="range" class="range-slider" id="batcher-scale" min="10" max="100" value="80" step="5" oninput="document.getElementById('scale-val').innerText=this.value+'%'">
+                        <input type="number" id="batcher-width" style="display:none" value="1920">
+                    </div>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim);"><span>QUALITY</span><span id="quality-val" style="color:var(--primary);">80%</span></div>
+                        <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80" step="5" oninput="document.getElementById('quality-val').innerText=this.value+'%'">
+                    </div>
+                    <div>
+                        <div style="font-size:11px; margin-bottom:5px; color:var(--text-dim);">OUTPUT FORMAT</div>
+                        <select id="batcher-format">
                             <option value="image/jpeg">JPG (Best for Photos)</option>
-                            <option value="image/png">PNG (Lossless / Transparent)</option>
-                            <option value="image/webp">WebP (Smallest Size)</option>
+                            <option value="image/png">PNG (Lossless)</option>
+                            <option value="image/webp">WebP (Efficient)</option>
                         </select>
                     </div>
-
-                    <button class="action-btn" onclick="runBatcher()" id="batcher-run-btn">
-                        <i data-lucide="zap"></i> Process & Zip
-                    </button>
-                    <div id="batcher-log" style="font-size: 11px; color: var(--text-dim); margin-top: 10px; text-align: center; min-height: 15px;"></div>
+                    <button class="action-btn" style="margin-top:auto;" onclick="runBatcher()" id="batcher-run-btn"><i data-lucide="zap" class="icon-sm"></i> Run Processor</button>
+                    <div id="batcher-log" style="font-size: 11px; color: var(--text-dim); text-align:center;"></div>
                 </div>
-
-                <!-- Main Grid with Click Handler -->
                 <div class="batcher-main" id="batcher-dropzone" onclick="document.getElementById('batcher-input').click()">
-                    <!-- Hidden Input for Mobile/Click Support -->
-                    <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files); this.value=null;" onclick="event.stopPropagation()">
-                    
-                    <div id="batcher-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.5;">
-                        <i data-lucide="image-plus" style="width: 48px; height: 48px; margin-bottom: 10px;"></i>
-                        <p>Drag images here or click to upload<br>or receive via P2P</p>
+                    <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files); this.value=''">
+                    <div id="batcher-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.4;">
+                        <i data-lucide="plus-circle" style="width:56px; height:56px; margin-bottom:15px;"></i>
+                        <p style="font-size:1.1rem; font-weight:600;">Click or Drop Images Here</p>
+                        <p style="font-size:0.9rem; margin-top:5px;">Received images will also appear here</p>
                     </div>
                     <div class="batcher-grid" id="batcher-grid"></div>
                 </div>
@@ -876,425 +419,218 @@
         </div>
     </div>
 
-    <!-- Smart Toast -->
-    <div id="smart-toast" class="toast" onclick="toggleBatcher(true); this.style.display='none';">
-        <i data-lucide="sparkles"></i>
-        <span>Images Detected! Open Batcher?</span>
-    </div>
+    <div id="smart-toast" class="toast" onclick="toggleBatcher(true); this.style.display='none';"><i data-lucide="sparkles"></i><span>Images Received! Open Batcher?</span></div>
 
-    <!-- Footer Disclaimer -->
     <div class="footer">
         Disclaimer: This tool facilitates direct P2P transfer; files are not stored on any server. Reloading the page will result in the loss of transfer history.<br>
         &copy; 2026 Haley Kwok. All rights reserved.
     </div>
 
 <script>
-    // Initialize Icons
     lucide.createIcons();
-
-    // --- Clock Logic ---
-    function updateClock() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString(undefined, { 
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false 
-        });
-        const dateString = now.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-        document.getElementById('system-time').innerText = `${dateString} ${timeString}`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // --- Theme Logic ---
-    const themeBtn = document.getElementById('theme-btn');
-    const htmlEl = document.documentElement;
-    const sunIcon = document.getElementById('icon-sun');
-    const moonIcon = document.getElementById('icon-moon');
-
-    if (localStorage.getItem('theme') === 'light') {
-        htmlEl.setAttribute('data-theme', 'light');
-        toggleIcons(true);
-    }
-
-    themeBtn.addEventListener('click', () => {
-        const isLight = htmlEl.getAttribute('data-theme') === 'light';
-        if (isLight) {
-            htmlEl.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
-            toggleIcons(false);
-        } else {
-            htmlEl.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-            toggleIcons(true);
-        }
-    });
-
-    function toggleIcons(isLight) {
-        if (isLight) {
-            sunIcon.style.display = 'block';
-            moonIcon.style.display = 'none';
-        } else {
-            sunIcon.style.display = 'none';
-            moonIcon.style.display = 'block';
-        }
-    }
-
-    // --- Copy ID Logic ---
-    document.getElementById('copy-id-btn').onclick = () => {
-        const idText = document.getElementById('my-id').innerText;
-        navigator.clipboard.writeText(idText).then(() => {
-            const btn = document.getElementById('copy-id-btn');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = `<i data-lucide="check" class="icon"></i>`;
-            lucide.createIcons();
-            btn.style.background = 'var(--success)';
-            btn.style.color = 'white';
-            setTimeout(() => {
-                btn.innerHTML = originalHtml;
-                lucide.createIcons();
-                btn.style.background = '';
-                btn.style.color = '';
-            }, 2000);
-        });
-    };
-
-    // --- History Logic ---
-    function addToHistory(type, fileName, fileSize, verified = null) {
-        const list = document.getElementById('history-list');
-        if (list.children.length > 0 && list.children[0].innerText.includes('No recent transfers')) {
-            list.innerHTML = '';
-        }
-
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const sizeStr = formatBytes(fileSize);
-        const badgeClass = type === 'sent' ? 'badge-sent' : 'badge-received';
-        const typeLabel = type === 'sent' ? 'OUT' : 'IN';
-        
-        let verifyIcon = '';
-        if (verified === true) verifyIcon = '<span class="hash-verified" title="Integrity Verified">✅</span>';
-        if (verified === false) verifyIcon = '<span class="hash-failed" title="Hash Mismatch!">❌</span>';
-
-        const item = document.createElement('div');
-        item.className = 'history-item';
-        item.innerHTML = `
-            <div class="history-item-left">
-                <span class="badge ${badgeClass}">${typeLabel}</span>
-                <div style="display:flex; flex-direction:column;">
-                    <span class="history-name" title="${fileName}">${fileName}${verifyIcon}</span>
-                    <span style="font-size:10px; color:var(--text-dim);">${sizeStr}</span>
-                </div>
-            </div>
-            <span class="history-time">${time}</span>
-        `;
-        list.prepend(item);
-    }
-
-    function formatBytes(bytes, decimals = 1) {
-        if (!+bytes) return '0 B';
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-    }
-
-    // --- Core P2P Logic ---
-    const customId = crypto.randomUUID ? crypto.randomUUID() : Math.floor(100000000000 + Math.random() * 900000000000).toString(); 
+    const CHUNK_SIZE = 16384 * 4; 
+    const customId = crypto.randomUUID();
     const peer = new Peer(customId);
     let activeConn = null;
     let zip = null;
-    const CHUNK_SIZE = 65536; 
     let filesQueue = [];
-    
-    async function calculateHash(buffer) {
-        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
+    let historyData = []; 
+
+    let transferStartTime = 0;
 
     peer.on('open', id => {
         document.getElementById('my-id').innerText = id;
         document.getElementById('status-tag').classList.add('status-online');
         document.getElementById('status-text').innerText = "System Online";
-        
-        const shareUrl = window.location.href.split('?')[0] + "?join=" + id;
-        new QRCode(document.getElementById("qrcode"), {
-            text: shareUrl,
-            width: 140, height: 140,
-            colorDark : "#000000", colorLight : "#ffffff"
-        });
-
+        new QRCode(document.getElementById("qrcode"), { text: window.location.href.split('?')[0] + "?join=" + id, width: 140, height: 140 });
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');
     });
 
     peer.on('connection', conn => {
         const modal = document.getElementById('connection-modal');
-        const text = document.getElementById('conn-req-text');
-        const btnAccept = document.getElementById('btn-accept-conn');
-        const btnReject = document.getElementById('btn-reject-conn');
-
-        text.innerText = `Incoming connection from: ${conn.peer}`;
+        document.getElementById('conn-req-text').innerText = `Remote device (${conn.peer.substring(0,8)}...) wants to connect. Do you accept?`;
         modal.style.display = 'flex';
-
-        const newAccept = btnAccept.cloneNode(true);
-        const newReject = btnReject.cloneNode(true);
-        btnAccept.parentNode.replaceChild(newAccept, btnAccept);
-        btnReject.parentNode.replaceChild(newReject, btnReject);
-
-        newAccept.onclick = () => {
-            modal.style.display = 'none';
-            setupConnection(conn);
-            setTimeout(() => { if(conn.open) conn.send({ type: 'handshake-ack' }); }, 500);
-        };
-
-        newReject.onclick = () => {
-            modal.style.display = 'none';
-            conn.close();
-        };
+        document.getElementById('btn-accept-conn').onclick = () => { modal.style.display = 'none'; setupConnection(conn); setTimeout(() => { if(conn.open) conn.send({ type: 'handshake-ack' }); }, 500); };
+        document.getElementById('btn-reject-conn').onclick = () => { modal.style.display = 'none'; conn.close(); };
     });
 
-    // Modified Connect Button Action (Connect / Disconnect)
     document.getElementById('connect-btn').onclick = () => {
-        if (activeConn) {
-            disconnectPeer();
-        } else {
+        if (activeConn) { activeConn.close(); } 
+        else {
             const tid = document.getElementById('peer-id-input').value.trim();
-            if (tid) {
-                const conn = peer.connect(tid, { reliable: true });
-                setupConnection(conn);
-            }
+            if (tid) setupConnection(peer.connect(tid, { reliable: true }));
         }
     };
-
-    function disconnectPeer() {
-        if (activeConn) {
-            activeConn.close(); // This will trigger the 'close' event handler below
-        }
-    }
 
     function setupConnection(conn) {
         if (activeConn) return; 
         activeConn = conn;
-
         if (conn.open) updateConnectionUI(true);
-
         conn.on('open', () => updateConnectionUI(true));
-        
-        conn.on('data', async (data) => {
-             if (data.type === 'handshake-ack') updateConnectionUI(true);
-             else handleData(data);
-        });
-
-        conn.on('close', () => { 
-            updateConnectionUI(false);
-            document.getElementById('transfer-info').innerText = "Connection disconnected.";
-            activeConn = null;
-        });
+        conn.on('data', data => { if (data.type === 'handshake-ack') updateConnectionUI(true); else handleData(data); });
+        conn.on('close', () => { updateConnectionUI(false); activeConn = null; });
     }
 
-    // Updated UI logic for Connection/Disconnection
     function updateConnectionUI(isConnected) {
         const btn = document.getElementById('connect-btn');
         const input = document.getElementById('peer-id-input');
         const statusText = document.getElementById('status-text');
-        const transferInfo = document.getElementById('transfer-info');
         const fileInput = document.getElementById('file-input');
-
         if (isConnected) {
             statusText.innerText = "Connected";
             fileInput.disabled = false;
-            
-            btn.innerHTML = `<i data-lucide="x-circle" class="icon" style="margin-right:5px"></i> Disconnect`;
+            btn.innerHTML = `<i data-lucide="x-circle" class="icon-sm" style="margin-right:5px"></i> Disconnect Device`;
             btn.classList.add('btn-disconnect');
-            
-            // Disable ID input to prevent changing while connected
             input.disabled = true;
-            transferInfo.innerText = "Ready to transfer files";
+            document.getElementById('transfer-info').innerText = "Connection Secure. Ready to Transfer.";
         } else {
             statusText.innerText = "System Online";
             fileInput.disabled = true;
-            
             btn.innerHTML = "Connect Device";
             btn.classList.remove('btn-disconnect');
-            btn.style.background = ""; // Reset inline style
-            
             input.disabled = false;
-            input.value = ""; // Optional: clear input on disconnect
-            transferInfo.innerText = "Waiting for connection...";
+            document.getElementById('transfer-info').innerText = "Waiting for connection...";
         }
         lucide.createIcons();
     }
 
-    // Data Handling & Image Detection
     let receivedChunks = {};
     let expectedHashes = {};
-    let receivedImageCount = 0; 
-
+    
     async function handleData(data) {
         if (data.type === 'file-start') {
             if (document.getElementById('zip-mode').checked && !zip) zip = new JSZip();
             receivedChunks[data.name] = [];
             expectedHashes[data.name] = data.hash;
             document.getElementById('progress-container').style.display = 'block';
+            document.getElementById('metrics-display').style.display = 'flex';
+            transferStartTime = Date.now();
         } 
         else if (data.type === 'file-chunk') {
             receivedChunks[data.name].push(data.chunk);
-            updateProgress((data.current / data.total) * 100, `Downloading: ${data.name}`);
+            updateMetrics(data.current * CHUNK_SIZE, data.total * CHUNK_SIZE);
+            updateProgress((data.current / data.total) * 100, `Receiving: ${data.name}`);
         } 
         else if (data.type === 'file-end') {
             const blob = new Blob(receivedChunks[data.name]);
             const arrayBuffer = await blob.arrayBuffer();
             const calculatedHash = await calculateHash(arrayBuffer);
             const isVerified = (calculatedHash === expectedHashes[data.name]);
+            
+            historyData.push({ name: data.name, blob: blob, size: blob.size, verified: isVerified });
+            addToHistory('received', data.name, blob.size, isVerified, historyData.length - 1);
 
-            addToHistory('received', data.name, blob.size, isVerified);
-
-            // --- SMART BATCHER DETECTION ---
-            const isImage = data.name.match(/\.(jpg|jpeg|png|webp|gif)$/i);
-            if (isImage) {
-                receivedImageCount++;
-                const file = new File([blob], data.name, { type: 'image/' + data.name.split('.').pop() });
-                addFileToBatcher(file);
-                
-                if (receivedImageCount > 0) {
-                    const toast = document.getElementById('smart-toast');
-                    toast.style.display = 'flex';
-                    document.getElementById('batcher-dot').style.display = 'block';
-                }
+            if (data.name.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
+                addFileToBatcher(new File([blob], data.name, { type: blob.type }));
+                document.getElementById('smart-toast').style.display = 'flex';
+                document.getElementById('batcher-dot').style.display = 'block';
             }
-            // -------------------------------
 
-            if (document.getElementById('zip-mode').checked) {
-                zip.file(data.name, blob);
-                document.getElementById('transfer-info').innerText = `${data.name} queued`;
-            } else {
-                saveFile(blob, data.name);
-            }
+            if (document.getElementById('zip-mode').checked) zip.file(data.name, blob);
+            else saveFile(blob, data.name);
             
             delete receivedChunks[data.name];
-            delete expectedHashes[data.name];
         } 
         else if (data.type === 'batch-end') {
             if (zip) {
-                document.getElementById('transfer-info').innerText = "Compiling ZIP archive...";
                 const content = await zip.generateAsync({type:"blob"});
-                saveFile(content, "P2P_Secure_" + Date.now() + ".zip");
+                saveFile(content, "Transfer_Pack_" + Date.now() + ".zip");
                 zip = null;
             }
-            document.getElementById('transfer-info').innerText = "Transfer completed.";
+            document.getElementById('transfer-info').innerText = "Transfer Completed.";
             setTimeout(() => { 
                 document.getElementById('progress-container').style.display = 'none';
-                document.getElementById('progress-bar').style.width = '0%';
-            }, 3000);
-        }
-    }
-
-    // --- File Selection & Preview Logic ---
-    document.getElementById('file-input').onchange = (e) => {
-        if (e.target.files.length > 0) {
-            filesQueue = Array.from(e.target.files);
-            renderPreview();
-        }
-    };
-
-    // Modified to handle Adding more files
-    function handleAddMoreFiles(input) {
-        if (input.files.length > 0) {
-            const newFiles = Array.from(input.files);
-            filesQueue = [...filesQueue, ...newFiles];
-            renderPreview();
-            input.value = ""; // Reset hidden input
-        }
-    }
-
-    // Modified to allow removing individual items
-    function renderPreview() {
-        const previewList = document.getElementById('preview-list');
-        const queueCount = document.getElementById('queue-count');
-        
-        previewList.innerHTML = ''; 
-        queueCount.innerText = `${filesQueue.length} files`;
-
-        filesQueue.forEach((file, index) => {
-            const dateStr = new Date(file.lastModified).toLocaleString();
-            const sizeStr = formatBytes(file.size);
-            
-            const item = document.createElement('div');
-            item.className = 'preview-item';
-            item.innerHTML = `
-                <div class="preview-content">
-                    <div class="preview-item-row">
-                        <span style="font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${file.name}</span>
-                    </div>
-                    <div class="preview-meta">
-                        <span>${sizeStr}</span>
-                        <span>•</span>
-                        <span>${dateStr}</span>
-                    </div>
-                </div>
-                <button class="preview-remove-btn" onclick="removeFileFromQueue(${index})" title="Remove file">
-                    <i data-lucide="x" style="width:16px;height:16px;"></i>
-                </button>
-            `;
-            previewList.appendChild(item);
-        });
-        
-        lucide.createIcons();
-
-        document.getElementById('upload-wrapper').style.display = 'none';
-        document.getElementById('preview-area').style.display = 'block';
-        document.getElementById('transfer-info').innerText = "Waiting for confirmation...";
-    }
-
-    function removeFileFromQueue(index) {
-        filesQueue.splice(index, 1);
-        renderPreview();
-        if(filesQueue.length === 0) cancelTransfer();
-    }
-
-    function cancelTransfer() {
-        filesQueue = [];
-        document.getElementById('file-input').value = ''; 
-        document.getElementById('preview-area').style.display = 'none';
-        document.getElementById('upload-wrapper').style.display = 'inline-block';
-        document.getElementById('transfer-info').innerText = "Transfer cancelled.";
-    }
-
-    function confirmSend() {
-        if (filesQueue.length > 0) {
-            sendFiles(filesQueue);
-            document.getElementById('preview-area').style.display = 'none';
-            document.getElementById('upload-wrapper').style.display = 'inline-block';
-            document.getElementById('file-input').value = ''; 
+                document.getElementById('metrics-display').style.display = 'none';
+            }, 4000);
         }
     }
 
     async function sendFiles(files) {
         if (!activeConn) return;
         document.getElementById('progress-container').style.display = 'block';
+        document.getElementById('metrics-display').style.display = 'flex';
         
         for (let file of files) {
-            updateProgress(0, `Hashing: ${file.name}...`);
             const fileBuffer = await file.arrayBuffer();
             const fileHash = await calculateHash(fileBuffer);
-            
             activeConn.send({ type: 'file-start', name: file.name, size: file.size, hash: fileHash });
             
+            transferStartTime = Date.now();
             const totalChunks = Math.ceil(fileBuffer.byteLength / CHUNK_SIZE);
 
             for (let i = 0; i < totalChunks; i++) {
                 const chunk = fileBuffer.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-                activeConn.send({
-                    type: 'file-chunk', name: file.name, chunk: chunk, current: i + 1, total: totalChunks
-                });
+                activeConn.send({ type: 'file-chunk', name: file.name, chunk: chunk, current: i + 1, total: totalChunks });
+                updateMetrics((i + 1) * CHUNK_SIZE, file.size);
                 updateProgress(((i + 1) / totalChunks) * 100, `Sending: ${file.name}`);
-                await new Promise(r => setTimeout(r, 1)); 
+                if (i % 10 === 0) await new Promise(r => setTimeout(r, 1)); 
             }
             activeConn.send({ type: 'file-end', name: file.name });
-            addToHistory('sent', file.name, file.size, true); 
+            addToHistory('sent', file.name, file.size, true);
         }
         activeConn.send({ type: 'batch-end' });
         filesQueue = [];
+    }
+
+    function updateMetrics(bytesDone, totalBytes) {
+        const now = Date.now();
+        const duration = (now - transferStartTime) / 1000;
+        if (duration <= 0) return;
+
+        const speedBps = bytesDone / duration;
+        document.getElementById('speed-text').innerText = formatBytes(speedBps) + "/s";
+        
+        const remainingBytes = Math.max(0, totalBytes - bytesDone);
+        const etaSeconds = speedBps > 0 ? Math.ceil(remainingBytes / speedBps) : 0;
+        document.getElementById('eta-text').innerText = etaSeconds > 60 ? `${Math.floor(etaSeconds/60)}m ${etaSeconds%60}s left` : `${etaSeconds}s left`;
+    }
+
+    function addToHistory(type, fileName, fileSize, verified, dataIndex = -1) {
+        const list = document.getElementById('history-list');
+        if (list.innerHTML.includes('No recent transfers')) list.innerHTML = '';
+
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        
+        const actionHtml = dataIndex >= 0 ? 
+            `<div class="action-icon" title="Save file" onclick="reDownload(${dataIndex})"><i data-lucide="download-cloud" style="width:18px;"></i></div>` : '';
+
+        item.innerHTML = `
+            <div class="history-item-left">
+                <div style="display:flex; flex-direction:column; overflow:hidden;">
+                    <span class="history-name" title="${fileName}">${fileName}</span>
+                    <span style="font-size:10px; opacity:0.6;">${formatBytes(fileSize)} • ${time} • ${verified?'Verified ✅':'Error ❌'}</span>
+                </div>
+            </div>
+            <div class="history-actions">${actionHtml}</div>
+        `;
+        list.prepend(item);
+        lucide.createIcons();
+    }
+
+    function reDownload(idx) {
+        const item = historyData[idx];
+        if (item && item.blob) saveFile(item.blob, item.name);
+    }
+
+    function clearHistory() { 
+        document.getElementById('history-list').innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 40px 20px; font-size: 12px; font-style: italic;">No recent transfers</div>';
+        historyData = [];
+    }
+
+    async function calculateHash(buffer) {
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     function updateProgress(pct, msg) {
@@ -1306,266 +642,188 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url; a.download = name; a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
     }
 
-    // --- URL Import Logic ---
-    function openUrlModal() {
-        document.getElementById('url-modal').style.display = 'flex';
-        document.getElementById('url-input').focus();
+    // --- Clock Logic ---
+    function updateSystemTime() {
+        const now = new Date();
+        document.getElementById('system-time').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
     }
+    setInterval(updateSystemTime, 1000);
+    updateSystemTime();
 
-    function closeUrlModal() {
-        document.getElementById('url-modal').style.display = 'none';
-        document.getElementById('url-input').value = '';
-    }
-
-    async function processUrlImport() {
-        let url = document.getElementById('url-input').value.trim();
-        const useProxy = document.getElementById('cors-proxy-check').checked;
-        const info = document.getElementById('transfer-info');
-
-        if (!url) return;
-
-        const gdriveRegex = /\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/;
-        const match = url.match(gdriveRegex);
-        
-        let isGDrive = false;
-        if (match) {
-            isGDrive = true;
-            const fileId = match[1] || match[2];
-            url = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        }
-
-        closeUrlModal();
-        info.innerText = "Fetching file from cloud...";
-        document.getElementById('progress-container').style.display = 'block';
-        document.getElementById('progress-bar').style.width = '50%'; 
-
-        try {
-            let response;
-            
-            if (useProxy || isGDrive) {
-                try {
-                    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                    response = await fetch(proxyUrl);
-                    if (!response.ok) throw new Error('Primary proxy failed');
-                } catch (e) {
-                    console.warn("Primary proxy failed, trying fallback...");
-                    const fallbackUrl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url);
-                    response = await fetch(fallbackUrl);
-                }
-            } else {
-                response = await fetch(url);
-            }
-
-            if (!response || !response.ok) throw new Error('Network response was not ok');
-            
-            const blob = await response.blob();
-            
-            if (isGDrive && blob.type.includes('text/html') && blob.size < 100000) {
-                 throw new Error("Google Drive Virus Scan Warning detected. File too large for direct import.");
-            }
-
-            let fileName = "imported_file_" + Date.now();
-            
-            const disposition = response.headers.get('content-disposition');
-            if (disposition && disposition.indexOf('attachment') !== -1) {
-                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                const matches = filenameRegex.exec(disposition);
-                if (matches != null && matches[1]) { 
-                    fileName = matches[1].replace(/['"]/g, '');
-                }
-            } else if (match) {
-                 const mime = blob.type;
-                 let ext = "";
-                 if(mime === "image/jpeg") ext = ".jpg";
-                 else if(mime === "image/png") ext = ".png";
-                 else if(mime === "application/pdf") ext = ".pdf";
-                 
-                 fileName = "gdrive_file_" + (match[1] || match[2]) + ext;
-            } else if (url.lastIndexOf('/') > 0) {
-                const parts = url.split('?')[0].split('/');
-                const potentialName = parts[parts.length - 1];
-                if (potentialName && potentialName.length < 50) fileName = potentialName;
-            }
-
-            const file = new File([blob], fileName, { type: blob.type, lastModified: Date.now() });
-            
-            filesQueue = [file];
+    // --- Queue Management ---
+    document.getElementById('file-input').onchange = (e) => {
+        if (e.target.files.length > 0) {
+            filesQueue = [...filesQueue, ...Array.from(e.target.files)];
             renderPreview();
-            
-            info.innerText = "File fetched successfully. Please confirm send.";
-            document.getElementById('progress-bar').style.width = '100%';
-            setTimeout(() => { document.getElementById('progress-container').style.display = 'none'; }, 1000);
-
-        } catch (error) {
-            console.error(error);
-            info.innerText = "Error fetching file.";
-            let msg = "Fetch failed.";
-            if (isGDrive && !useProxy) msg += "\n\nTip: Google Drive links almost ALWAYS require 'Use CORS Proxy' to be checked.";
-            else if (isGDrive) msg += "\n\nNote: Large Google Drive files (>100MB) cannot be imported due to virus scan warnings.";
-            
-            alert(msg);
-            document.getElementById('progress-container').style.display = 'none';
+        }
+    };
+    function handleAddMoreFiles(input) {
+        if(input.files.length > 0) {
+            filesQueue = [...filesQueue, ...Array.from(input.files)];
+            renderPreview();
+            input.value = "";
         }
     }
+    function renderPreview() {
+        const list = document.getElementById('preview-list');
+        const queueCount = document.getElementById('queue-count');
+        queueCount.innerText = `${filesQueue.length} files`;
+        list.innerHTML = '';
+        filesQueue.forEach((f, i) => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            item.innerHTML = `<div class="preview-content"><b title="${f.name}">${f.name}</b><br><small>${formatBytes(f.size)}</small></div><i data-lucide="trash-2" class="preview-remove-btn" onclick="filesQueue.splice(${i},1);renderPreview()"></i>`;
+            list.appendChild(item);
+        });
+        document.getElementById('upload-wrapper').style.display = 'none';
+        document.querySelector('.text-btn').style.display = 'none';
+        document.getElementById('preview-area').style.display = 'block';
+        lucide.createIcons();
+    }
+    function cancelTransfer() { 
+        filesQueue = []; 
+        document.getElementById('preview-area').style.display = 'none'; 
+        document.getElementById('upload-wrapper').style.display = 'block'; 
+        document.querySelector('.text-btn').style.display = 'flex';
+    }
+    function confirmSend() { if(filesQueue.length) { sendFiles(filesQueue); cancelTransfer(); } }
 
-    // --- IMAGE BATCHER LOGIC ---
+    // --- Image Batcher ---
     let batcherFiles = [];
-    
-    document.getElementById('batcher-toggle').onclick = () => toggleBatcher(true);
-
-    function toggleBatcher(show) {
-        document.getElementById('batcher-modal').style.display = show ? 'flex' : 'none';
-        if(show) {
-            document.getElementById('batcher-dot').style.display = 'none'; 
-            renderBatcherGrid();
+    function toggleBatcher(s) { 
+        document.getElementById('batcher-modal').style.display = s?'flex':'none'; 
+        if(s) {
+            document.getElementById('batcher-dot').style.display = 'none';
+            renderBatcherGrid(); 
         }
+    }
+    document.getElementById('batcher-toggle').onclick = () => toggleBatcher(true);
+    
+    function addFileToBatcher(file) { 
+        const id = Math.random();
+        batcherFiles.push({ file, id, preview: URL.createObjectURL(file) }); 
+    }
+    
+    function handleBatcherFiles(fl) { 
+        Array.from(fl).filter(f=>f.type.startsWith('image/')).forEach(addFileToBatcher); 
+        renderBatcherGrid(); 
+    }
+    
+    function renderBatcherGrid() {
+        const g = document.getElementById('batcher-grid');
+        document.getElementById('batcher-empty').style.display = batcherFiles.length?'none':'flex';
+        g.innerHTML = '';
+        batcherFiles.forEach(item => {
+            const c = document.createElement('div');
+            c.className = 'batcher-card';
+            c.onclick = (e) => e.stopPropagation();
+            c.innerHTML = `<img src="${item.preview}" class="batcher-img"><div class="batcher-remove" onclick="batcherFiles=batcherFiles.filter(f=>f.id!=${item.id});renderBatcherGrid();event.stopPropagation()">×</div>`;
+            g.appendChild(c);
+        });
     }
 
     function updateBatcherSettingsUI() {
         const mode = document.getElementById('batcher-resize-mode').value;
-        document.getElementById('setting-scale-ui').style.display = mode === 'scale' ? 'block' : 'none';
-        document.getElementById('setting-width-ui').style.display = mode === 'width' ? 'block' : 'none';
-    }
-
-    // Drag & Drop for Batcher
-    const batcherDropzone = document.getElementById('batcher-dropzone');
-    batcherDropzone.addEventListener('dragover', (e) => e.preventDefault());
-    batcherDropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        e.stopPropagation(); // Stop propagation to avoid bubbling to click handler
-        if (e.dataTransfer.files) handleBatcherFiles(e.dataTransfer.files);
-    });
-
-    function handleBatcherFiles(fileList) {
-        const newFiles = Array.from(fileList).filter(file => file.type.startsWith('image/'));
-        newFiles.forEach(addFileToBatcher);
-    }
-
-    function addFileToBatcher(file) {
-        const id = Math.random().toString(36).substr(2, 9);
-        const item = {
-            file,
-            id,
-            preview: URL.createObjectURL(file),
-            originalSize: (file.size / 1024).toFixed(1)
-        };
-        batcherFiles.push(item);
-        renderBatcherGrid();
-    }
-
-    function removeBatcherFile(id) {
-        batcherFiles = batcherFiles.filter(f => f.id !== id);
-        renderBatcherGrid();
-    }
-
-    function renderBatcherGrid() {
-        const grid = document.getElementById('batcher-grid');
-        const emptyState = document.getElementById('batcher-empty');
-        
-        if (batcherFiles.length === 0) {
-            grid.innerHTML = '';
-            emptyState.style.display = 'flex';
-            return;
-        }
-        
-        emptyState.style.display = 'none';
-        grid.innerHTML = '';
-        
-        batcherFiles.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'batcher-card';
-            card.onclick = (e) => e.stopPropagation(); // Prevent triggering upload when clicking card
-            card.innerHTML = `
-                <img src="${item.preview}" class="batcher-img">
-                <div class="batcher-remove" onclick="removeBatcherFile('${item.id}'); event.stopPropagation()">×</div>
-                <div class="batcher-info" title="${item.file.name}">${item.file.name}</div>
-                <div class="batcher-info" style="font-size:10px;">${item.originalSize} KB</div>
-            `;
-            grid.appendChild(card);
-        });
+        document.getElementById('batcher-scale').style.display = mode==='scale'?'block':'none';
+        document.getElementById('batcher-width').style.display = mode==='width'?'block':'none';
     }
 
     async function runBatcher() {
-        if (batcherFiles.length === 0) return;
-        
+        if(!batcherFiles.length) return;
         const btn = document.getElementById('batcher-run-btn');
         const log = document.getElementById('batcher-log');
         btn.disabled = true;
-        btn.innerHTML = `<i data-lucide="loader-2" class="icon animate-spin"></i> Processing...`;
-        lucide.createIcons();
-
+        btn.innerText = "Processing...";
+        
+        const zip = new JSZip();
         const settings = {
-            resizeMode: document.getElementById('batcher-resize-mode').value,
-            scale: parseInt(document.getElementById('batcher-scale').value),
+            mode: document.getElementById('batcher-resize-mode').value,
+            scale: document.getElementById('batcher-scale').value / 100,
             width: parseInt(document.getElementById('batcher-width').value),
-            quality: parseInt(document.getElementById('batcher-quality').value) / 100,
+            quality: document.getElementById('batcher-quality').value / 100,
             format: document.getElementById('batcher-format').value
         };
 
-        const zip = new JSZip();
-        const processedFolder = zip.folder("processed_images");
-
         try {
-            for (const item of batcherFiles) {
-                log.innerText = `Processing: ${item.file.name}...`;
-                const processedBlob = await processSingleImage(item.file, settings);
-                
-                let ext = "jpg";
-                if (settings.format === "image/png") ext = "png";
-                if (settings.format === "image/webp") ext = "webp";
-                
-                const newFilename = item.file.name.substring(0, item.file.name.lastIndexOf('.')) + `_processed.${ext}`;
-                processedFolder.file(newFilename, processedBlob);
+            for (let item of batcherFiles) {
+                log.innerText = `Processing ${item.file.name.substring(0,10)}...`;
+                const blob = await processImg(item.file, settings);
+                const ext = settings.format.split('/')[1];
+                zip.file(item.file.name.split('.')[0] + "_processed." + ext, blob);
             }
-
-            log.innerText = "Zipping...";
-            const content = await zip.generateAsync({ type: "blob" });
-            saveFile(content, "Batch_Processed_" + Date.now() + ".zip");
-            log.innerText = "Done!";
-        } catch (error) {
-            console.error(error);
-            log.innerText = "Error!";
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = `<i data-lucide="zap" class="icon"></i> Process & Zip`;
-            lucide.createIcons();
-            setTimeout(() => { log.innerText = ""; }, 3000);
-        }
+            const content = await zip.generateAsync({type:"blob"});
+            saveFile(content, "Batch_Export_" + Date.now() + ".zip");
+            log.innerText = "Processing Complete!";
+        } catch(e) { log.innerText = "Error encountered."; }
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="zap" class="icon-sm"></i> Run Processor';
+        lucide.createIcons();
     }
 
-    function processSingleImage(file, settings) {
-        return new Promise((resolve, reject) => {
+    function processImg(file, s) {
+        return new Promise(res => {
             const img = new Image();
             img.src = URL.createObjectURL(file);
             img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-
-                if (settings.resizeMode === 'scale') {
-                    width = width * (settings.scale / 100);
-                    height = height * (settings.scale / 100);
-                } else if (settings.resizeMode === 'width') {
-                    const ratio = height / width;
-                    width = settings.width;
-                    height = width * ratio;
-                }
-
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                canvas.toBlob((blob) => {
-                    blob ? resolve(blob) : reject(new Error("Canvas error"));
-                }, settings.format, settings.quality);
-            };
-            img.onerror = reject;
+                const can = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if(s.mode === 'scale') { w *= s.scale; h *= s.scale; }
+                else { const r = h/w; w = s.width; h = w*r; }
+                can.width = w; can.height = h;
+                can.getContext('2d').drawImage(img, 0,0, w, h);
+                can.toBlob(res, s.format, s.quality);
+            }
         });
     }
+
+    // URL Import Logic
+    function openUrlModal() { document.getElementById('url-modal').style.display = 'flex'; }
+    function closeUrlModal() { document.getElementById('url-modal').style.display = 'none'; document.getElementById('url-input').value=''; }
+    
+    async function processUrlImport() {
+        let url = document.getElementById('url-input').value.trim();
+        const info = document.getElementById('transfer-info');
+        if (!url) return;
+        
+        const gdriveRegex = /\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/;
+        const match = url.match(gdriveRegex);
+        if (match) url = `https://drive.google.com/uc?export=download&id=${match[1] || match[2]}`;
+
+        closeUrlModal();
+        info.innerText = "Fetching Cloud File...";
+        try {
+            const useProxy = document.getElementById('cors-proxy-check').checked;
+            const finalUrl = useProxy ? 'https://corsproxy.io/?' + encodeURIComponent(url) : url;
+            const res = await fetch(finalUrl);
+            const blob = await res.blob();
+            const f = new File([blob], "cloud_import_" + Date.now(), {type: blob.type});
+            filesQueue = [f];
+            renderPreview();
+            info.innerText = "Cloud File Ready.";
+        } catch(e) { alert("Fetch failed. Please try with CORS Proxy enabled."); info.innerText = "Fetch failed."; }
+    }
+
+    // Theme Toggle
+    document.getElementById('theme-btn').onclick = () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        document.getElementById('icon-sun').style.display = next==='light'?'block':'none';
+        document.getElementById('icon-moon').style.display = next==='dark'?'block':'none';
+    };
+
+    // Copy ID
+    document.getElementById('copy-id-btn').onclick = () => {
+        navigator.clipboard.writeText(document.getElementById('my-id').innerText);
+        const btn = document.getElementById('copy-id-btn');
+        btn.innerHTML = '<i data-lucide="check" class="icon" style="color:var(--success)"></i>';
+        lucide.createIcons();
+        setTimeout(() => { btn.innerHTML = '<i data-lucide="copy" class="icon"></i>'; lucide.createIcons(); }, 2000);
+    };
 </script>
 </body>
 </html>
