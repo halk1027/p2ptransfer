@@ -22,10 +22,11 @@
             --primary-hover: #2563eb;
             --success: #10b981;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --input-bg: rgba(15, 23, 42, 0.6);
             --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
             --history-item-bg: rgba(255, 255, 255, 0.05);
-            --modal-bg: rgba(15, 23, 42, 0.85);
+            --modal-bg: rgba(15, 23, 42, 0.95);
         }
 
         [data-theme="light"] {
@@ -39,10 +40,11 @@
             --primary-hover: #0284c7;
             --success: #059669;
             --danger: #ef4444;
+            --warning: #d97706;
             --input-bg: rgba(241, 245, 249, 0.7);
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             --history-item-bg: rgba(0, 0, 0, 0.03);
-            --modal-bg: rgba(255, 255, 255, 0.85);
+            --modal-bg: rgba(255, 255, 255, 0.95);
         }
 
         /* Global Reset & Typography */
@@ -75,12 +77,11 @@
             gap: 24px;
             width: 100%;
             max-width: 1400px;
-            align-items: flex-start; /* Align to top */
-            flex: 1; /* Allow to expand */
+            align-items: flex-start;
+            flex: 1;
             margin-top: 20px;
         }
 
-        /* Responsive Breakpoint for Mobile/Tablets */
         @media (max-width: 1024px) {
             .main-layout {
                 flex-direction: column;
@@ -101,16 +102,14 @@
             border-radius: 24px;
             box-shadow: var(--shadow);
             padding: 28px;
-            /* Flex layout specific */
             flex: 1; 
-            min-width: 300px; /* Prevent squishing too much */
+            min-width: 300px;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
         
-        /* Make the center panel slightly larger if desired, or keep equal */
         .panel-center {
             flex: 1.2; 
         }
@@ -125,13 +124,7 @@
             padding: 0 10px;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-right {
+        .header-left, .header-right {
             display: flex;
             align-items: center;
             gap: 15px;
@@ -173,7 +166,7 @@
         .footer {
             width: 100%;
             max-width: 1400px;
-            margin-top: auto; /* Push to bottom */
+            margin-top: auto;
             padding: 20px 10px 0 10px;
             font-size: 0.75rem;
             color: var(--text-dim);
@@ -185,10 +178,18 @@
         /* Icons */
         .icon { width: 20px; height: 20px; }
         .icon-lg { width: 24px; height: 24px; }
-        .icon-sm { width: 16px; height: 16px; }
 
         /* QR & ID Section */
-        h2 { margin: 10px 0; font-weight: 700; letter-spacing: 1px; }
+        h2 { 
+            margin: 0; /* Reset margin for flex layout */
+            font-weight: 700; 
+            letter-spacing: 1px;
+            word-break: break-all;
+            font-size: 1.1rem;
+            line-height: 1.4;
+            font-family: monospace;
+            color: var(--primary);
+        }
         
         h3 { 
             margin: 0; 
@@ -198,6 +199,39 @@
             text-transform: uppercase; 
             letter-spacing: 1px;
             line-height: 1; 
+        }
+
+        /* New ID Wrapper for Alignment */
+        .id-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        /* Copy Button Style */
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-1px);
         }
         
         #qrcode {
@@ -219,10 +253,11 @@
             border: 1px solid var(--glass-border);
             background: var(--input-bg);
             color: var(--text-main);
-            font-size: 16px;
+            font-size: 14px; /* Smaller font for UUID input */
             outline: none;
             text-align: left; 
             padding-left: 20px;
+            font-family: monospace;
         }
         input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
 
@@ -354,7 +389,7 @@
             margin-top: 15px;
             overflow-y: auto;
             text-align: left;
-            flex-grow: 1; /* Fill remaining vertical space in the card */
+            flex-grow: 1;
             min-height: 200px;
         }
 
@@ -376,6 +411,9 @@
         .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .badge-sent { background: rgba(59, 130, 246, 0.2); color: var(--primary); }
         .badge-received { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        
+        .hash-verified { color: var(--success); margin-left: 5px; cursor: help; }
+        .hash-failed { color: var(--danger); margin-left: 5px; cursor: help; }
 
         /* Preview Area Styles */
         .preview-area {
@@ -384,7 +422,7 @@
             border-radius: 16px;
             padding: 15px;
             border: 1px solid var(--glass-border);
-            display: none; /* Hidden by default */
+            display: none;
             animation: fadeIn 0.3s ease-out;
         }
 
@@ -470,6 +508,16 @@
             width: 90%;
             max-width: 400px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .warning-text {
+            color: var(--warning);
+            font-size: 11px;
+            margin-top: 5px;
+            text-align: left;
+            padding-left: 5px;
+            line-height: 1.4;
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -482,7 +530,7 @@
 </head>
 <body>
 
-    <!-- Header with Time and Theme Toggle -->
+    <!-- Header -->
     <div class="header">
         <div class="header-left">
             <div class="app-title">
@@ -494,21 +542,27 @@
         <div class="header-right">
             <span id="system-time">--:--</span>
             <button class="theme-toggle" id="theme-btn" title="Toggle Theme">
-                <!-- Sun Icon -->
                 <svg id="icon-sun" class="icon" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                <!-- Moon Icon -->
                 <svg id="icon-moon" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
         </div>
     </div>
 
-    <!-- Main Horizontal Layout -->
+    <!-- Main Layout -->
     <div class="main-layout">
         
         <!-- LEFT: Identity Card -->
         <div class="glass-panel" style="text-align: center;">
             <h3 style="margin-bottom: 8px;">My Identity</h3>
-            <h2 id="my-id" style="color: var(--primary);">Loading...</h2>
+            
+            <!-- Updated ID display with Copy Button -->
+            <div class="id-wrapper">
+                <h2 id="my-id">Generating UUID...</h2>
+                <button id="copy-id-btn" class="copy-btn" title="Copy to Clipboard">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                </button>
+            </div>
+
             <div id="qrcode"></div>
             <div>
                 <div id="status-tag">
@@ -528,7 +582,7 @@
                 <h3>Connection</h3>
             </div>
             
-            <input type="text" id="peer-id-input" placeholder="Enter remote 6-digit ID">
+            <input type="text" id="peer-id-input" placeholder="Enter remote UUID">
             <button id="connect-btn" class="action-btn">
                 Connect Device
             </button>
@@ -557,15 +611,13 @@
                 </button>
             </div>
 
-            <!-- New: Confirmation Preview Area -->
+            <!-- Confirmation Preview Area -->
             <div id="preview-area" class="preview-area">
                 <div style="margin-bottom:10px; font-weight:600; color:var(--text-main);">Confirm Transfer</div>
-                <div id="preview-list" class="preview-list">
-                    <!-- Preview items injected here -->
-                </div>
+                <div id="preview-list" class="preview-list"></div>
                 <div class="preview-actions">
                     <button class="btn-cancel" onclick="cancelTransfer()">Cancel</button>
-                    <button class="btn-confirm" onclick="confirmSend()">Confirm Send</button>
+                    <button class="btn-confirm" onclick="confirmSend()">Confirm & Send</button>
                 </div>
             </div>
             
@@ -587,7 +639,6 @@
                 <span style="font-size: 11px; color: var(--text-dim); cursor: pointer;" onclick="document.getElementById('history-list').innerHTML = ''">Clear</span>
             </div>
             <div id="history-list" class="history-list">
-                <!-- Items will be injected here via JS -->
                 <div style="text-align: center; color: var(--text-dim); padding: 10px; font-size: 12px; font-style: italic;">No recent transfers</div>
             </div>
         </div>
@@ -596,21 +647,42 @@
 
     <!-- URL Import Modal -->
     <div id="url-modal" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content" style="text-align: left;">
             <h3 style="margin-bottom: 15px; color: var(--text-main);">Import from Cloud URL</h3>
             <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 15px;">
-                Enter a direct file link or Google Drive sharing link. The sender device will fetch it and prepare for transfer.
+                Enter a direct file link or Google Drive sharing link.
             </p>
             <input type="text" id="url-input" placeholder="https://drive.google.com/..." style="margin-bottom: 10px;">
             
-            <label class="switch-label" style="font-size: 12px; margin-bottom: 20px;">
+            <label class="switch-label" style="font-size: 12px; margin-bottom: 5px;">
                 <input type="checkbox" id="cors-proxy-check"> 
                 <span>Use CORS Proxy (Enable if direct fetch fails)</span>
             </label>
+            <!-- Point 4: Warning sentence -->
+            <p class="warning-text">
+                ⚠️ Warning: Using a proxy sends traffic through a third-party server. Do not use for sensitive data.
+            </p>
 
-            <div class="preview-actions">
+            <div class="preview-actions" style="margin-top: 20px;">
                 <button class="btn-cancel" onclick="closeUrlModal()">Close</button>
                 <button class="btn-confirm" onclick="processUrlImport()">Fetch File</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Request Modal (Point 3) -->
+    <div id="connection-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="margin-bottom: 15px;">
+                <svg class="icon-lg" style="width: 48px; height: 48px; color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 style="margin-bottom: 10px; color: var(--text-main);">Incoming Connection Request</h3>
+            <p id="conn-req-text" style="font-size: 13px; color: var(--text-dim); margin-bottom: 20px;">
+                A remote device is attempting to connect.
+            </p>
+            <div class="preview-actions">
+                <button class="btn-cancel" id="btn-reject-conn">Reject</button>
+                <button class="btn-confirm" id="btn-accept-conn">Accept</button>
             </div>
         </div>
     </div>
@@ -626,15 +698,9 @@
     function updateClock() {
         const now = new Date();
         const timeString = now.toLocaleTimeString(undefined, { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit',
-            hour12: false 
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false 
         });
-        const dateString = now.toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric'
-        });
+        const dateString = now.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
         document.getElementById('system-time').innerText = `${dateString} ${timeString}`;
     }
     setInterval(updateClock, 1000);
@@ -674,8 +740,28 @@
         }
     }
 
-    // --- History Logic ---
-    function addToHistory(type, fileName, fileSize) {
+    // --- Copy ID Logic ---
+    document.getElementById('copy-id-btn').onclick = () => {
+        const idText = document.getElementById('my-id').innerText;
+        navigator.clipboard.writeText(idText).then(() => {
+            const btn = document.getElementById('copy-id-btn');
+            const originalHtml = btn.innerHTML;
+            
+            // Temporary Check Icon
+            btn.innerHTML = `<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            btn.style.background = 'var(--success)';
+            btn.style.color = 'white';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                btn.style.background = '';
+                btn.style.color = '';
+            }, 2000);
+        });
+    };
+
+    // --- History Logic with Verification Status ---
+    function addToHistory(type, fileName, fileSize, verified = null) {
         const list = document.getElementById('history-list');
         if (list.children.length > 0 && list.children[0].innerText.includes('No recent transfers')) {
             list.innerHTML = '';
@@ -686,13 +772,18 @@
         const badgeClass = type === 'sent' ? 'badge-sent' : 'badge-received';
         const typeLabel = type === 'sent' ? 'OUT' : 'IN';
         
+        // Status Icon for Verification
+        let verifyIcon = '';
+        if (verified === true) verifyIcon = '<span class="hash-verified" title="Integrity Verified">✅</span>';
+        if (verified === false) verifyIcon = '<span class="hash-failed" title="Hash Mismatch!">❌</span>';
+
         const item = document.createElement('div');
         item.className = 'history-item';
         item.innerHTML = `
             <div class="history-item-left">
                 <span class="badge ${badgeClass}">${typeLabel}</span>
                 <div style="display:flex; flex-direction:column;">
-                    <span class="history-name" title="${fileName}">${fileName}</span>
+                    <span class="history-name" title="${fileName}">${fileName}${verifyIcon}</span>
                     <span style="font-size:10px; color:var(--text-dim);">${sizeStr}</span>
                 </div>
             </div>
@@ -711,12 +802,21 @@
     }
 
     // --- Core P2P Logic ---
-    const customId = Math.floor(100000 + Math.random() * 900000).toString();
+    // Point 2: Use UUID
+    const customId = crypto.randomUUID ? crypto.randomUUID() : Math.floor(100000000000 + Math.random() * 900000000000).toString(); 
     const peer = new Peer(customId);
     let activeConn = null;
     let zip = null;
     const CHUNK_SIZE = 65536; 
-    let filesQueue = []; // Queue for confirmation
+    let filesQueue = [];
+    
+    // Hash Helper (Point 6)
+    async function calculateHash(buffer) {
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    }
 
     peer.on('open', id => {
         document.getElementById('my-id').innerText = id;
@@ -727,19 +827,50 @@
         new QRCode(document.getElementById("qrcode"), {
             text: shareUrl,
             width: 140, height: 140,
-            colorDark : "#000000",
-            colorLight : "#ffffff"
+            colorDark : "#000000", colorLight : "#ffffff"
         });
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');
     });
 
-    peer.on('connection', conn => setupConnection(conn));
+    // Point 3: Handle Incoming Connection with Modal
+    peer.on('connection', conn => {
+        const modal = document.getElementById('connection-modal');
+        const text = document.getElementById('conn-req-text');
+        const btnAccept = document.getElementById('btn-accept-conn');
+        const btnReject = document.getElementById('btn-reject-conn');
+
+        text.innerText = `Incoming connection from: ${conn.peer}`;
+        modal.style.display = 'flex';
+
+        // Clean up previous listeners to avoid duplicates
+        const newAccept = btnAccept.cloneNode(true);
+        const newReject = btnReject.cloneNode(true);
+        btnAccept.parentNode.replaceChild(newAccept, btnAccept);
+        btnReject.parentNode.replaceChild(newReject, btnReject);
+
+        newAccept.onclick = () => {
+            modal.style.display = 'none';
+            setupConnection(conn);
+            // Notify sender we accepted (simple handshake)
+            setTimeout(() => {
+                if(conn.open) conn.send({ type: 'handshake-ack' });
+            }, 500);
+        };
+
+        newReject.onclick = () => {
+            modal.style.display = 'none';
+            conn.close();
+        };
+    });
 
     document.getElementById('connect-btn').onclick = () => {
         const tid = document.getElementById('peer-id-input').value.trim();
-        if (tid) setupConnection(peer.connect(tid, { reliable: true }));
+        if (tid) {
+            const conn = peer.connect(tid, { reliable: true });
+            setupConnection(conn);
+        }
     };
 
     function setupConnection(conn) {
@@ -747,58 +878,87 @@
         activeConn = conn;
 
         conn.on('open', () => {
-            document.getElementById('status-text').innerText = "Connected to: " + conn.peer;
-            document.getElementById('file-input').disabled = false;
-            document.getElementById('connect-btn').innerHTML = `<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Secure Link Active`;
-            document.getElementById('connect-btn').style.background = "var(--success)";
-            document.getElementById('connect-btn').disabled = true;
-            document.getElementById('transfer-info').innerText = "Ready to transfer files";
-            document.querySelector('.file-upload-btn').style.borderColor = "var(--primary)";
-            document.querySelector('.file-upload-btn span').innerText = "Tap or Drop files to send";
+            // If we are the sender, we might wait for ACK, but for simplicity we show connected.
+            // In a strict handshake, we would wait for 'data'='handshake-ack'.
+            updateConnectionUI(conn.peer);
         });
-
-        let receivedChunks = {};
         
+        // Handle Handshake ACK from receiver
         conn.on('data', async (data) => {
-            if (data.type === 'file-start') {
-                if (document.getElementById('zip-mode').checked && !zip) zip = new JSZip();
-                receivedChunks[data.name] = [];
-                document.getElementById('progress-container').style.display = 'block';
-            } else if (data.type === 'file-chunk') {
-                receivedChunks[data.name].push(data.chunk);
-                updateProgress((data.current / data.total) * 100, `Downloading: ${data.name}`);
-            } else if (data.type === 'file-end') {
-                const blob = new Blob(receivedChunks[data.name]);
-                
-                // Add to History
-                addToHistory('received', data.name, blob.size);
-
-                if (document.getElementById('zip-mode').checked) {
-                    zip.file(data.name, blob);
-                    document.getElementById('transfer-info').innerText = `${data.name} added to ZIP queue`;
-                } else {
-                    saveFile(blob, data.name);
-                }
-                delete receivedChunks[data.name];
-            } else if (data.type === 'batch-end') {
-                if (zip) {
-                    document.getElementById('transfer-info').innerText = "Compiling ZIP archive...";
-                    const content = await zip.generateAsync({type:"blob"});
-                    saveFile(content, "P2P_Air_Channel_" + Date.now() + ".zip");
-                    zip = null;
-                }
-                document.getElementById('transfer-info').innerText = "All transfers completed successfully.";
-                setTimeout(() => { 
-                    document.getElementById('progress-container').style.display = 'none';
-                    document.getElementById('progress-bar').style.width = '0%';
-                }, 3000);
-            }
+             if (data.type === 'handshake-ack') {
+                 updateConnectionUI(conn.peer); // Ensure UI is updated
+             }
+             else handleData(data);
         });
 
         conn.on('close', () => { 
             document.getElementById('transfer-info').innerText = "Connection lost. Reconnecting...";
             setTimeout(() => location.reload(), 2000); 
         });
+    }
+
+    function updateConnectionUI(peerId) {
+        document.getElementById('status-text').innerText = "Connected";
+        document.getElementById('file-input').disabled = false;
+        document.getElementById('connect-btn').innerHTML = `<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Secure Link Active`;
+        document.getElementById('connect-btn').style.background = "var(--success)";
+        document.getElementById('connect-btn').disabled = true;
+        document.getElementById('transfer-info').innerText = "Ready to transfer files";
+        document.querySelector('.file-upload-btn').style.borderColor = "var(--primary)";
+        document.querySelector('.file-upload-btn span').innerText = "Tap or Drop files to send";
+    }
+
+    // Data Handling Logic
+    let receivedChunks = {};
+    let expectedHashes = {}; // Store hashes from sender
+
+    async function handleData(data) {
+        if (data.type === 'file-start') {
+            if (document.getElementById('zip-mode').checked && !zip) zip = new JSZip();
+            receivedChunks[data.name] = [];
+            expectedHashes[data.name] = data.hash; // Store expected hash
+            document.getElementById('progress-container').style.display = 'block';
+        } 
+        else if (data.type === 'file-chunk') {
+            receivedChunks[data.name].push(data.chunk);
+            updateProgress((data.current / data.total) * 100, `Downloading: ${data.name}`);
+        } 
+        else if (data.type === 'file-end') {
+            const blob = new Blob(receivedChunks[data.name]);
+            
+            // Point 6: Verify Hash
+            document.getElementById('transfer-info').innerText = `Verifying ${data.name}...`;
+            const arrayBuffer = await blob.arrayBuffer();
+            const calculatedHash = await calculateHash(arrayBuffer);
+            const isVerified = (calculatedHash === expectedHashes[data.name]);
+
+            // Add to History with verification status
+            addToHistory('received', data.name, blob.size, isVerified);
+
+            if (document.getElementById('zip-mode').checked) {
+                zip.file(data.name, blob);
+                document.getElementById('transfer-info').innerText = `${data.name} queued`;
+            } else {
+                saveFile(blob, data.name);
+            }
+            
+            // Cleanup
+            delete receivedChunks[data.name];
+            delete expectedHashes[data.name];
+        } 
+        else if (data.type === 'batch-end') {
+            if (zip) {
+                document.getElementById('transfer-info').innerText = "Compiling ZIP archive...";
+                const content = await zip.generateAsync({type:"blob"});
+                saveFile(content, "P2P_Secure_" + Date.now() + ".zip");
+                zip = null;
+            }
+            document.getElementById('transfer-info').innerText = "Transfer completed.";
+            setTimeout(() => { 
+                document.getElementById('progress-container').style.display = 'none';
+                document.getElementById('progress-bar').style.width = '0%';
+            }, 3000);
+        }
     }
 
     // --- File Selection & Preview Logic ---
@@ -811,7 +971,7 @@
 
     function renderPreview(files) {
         const previewList = document.getElementById('preview-list');
-        previewList.innerHTML = ''; // Clear previous
+        previewList.innerHTML = ''; 
 
         files.forEach(file => {
             const dateStr = new Date(file.lastModified).toLocaleString();
@@ -832,7 +992,6 @@
             previewList.appendChild(item);
         });
 
-        // Show preview area, hide default upload wrapper visually (or keep it but below)
         document.getElementById('upload-wrapper').style.display = 'none';
         document.getElementById('preview-area').style.display = 'block';
         document.getElementById('transfer-info').innerText = "Waiting for confirmation...";
@@ -840,7 +999,7 @@
 
     function cancelTransfer() {
         filesQueue = [];
-        document.getElementById('file-input').value = ''; // Reset input
+        document.getElementById('file-input').value = ''; 
         document.getElementById('preview-area').style.display = 'none';
         document.getElementById('upload-wrapper').style.display = 'inline-block';
         document.getElementById('transfer-info').innerText = "Transfer cancelled.";
@@ -849,7 +1008,6 @@
     function confirmSend() {
         if (filesQueue.length > 0) {
             sendFiles(filesQueue);
-            // Reset UI
             document.getElementById('preview-area').style.display = 'none';
             document.getElementById('upload-wrapper').style.display = 'inline-block';
             document.getElementById('file-input').value = ''; 
@@ -861,14 +1019,22 @@
         document.getElementById('progress-container').style.display = 'block';
         
         for (let file of files) {
-            // Include file size in start message
-            activeConn.send({ type: 'file-start', name: file.name, size: file.size });
+            // Point 6: Calculate Hash before sending
+            updateProgress(0, `Hashing: ${file.name}...`);
+            const fileBuffer = await file.arrayBuffer();
+            const fileHash = await calculateHash(fileBuffer);
             
-            const buffer = await file.arrayBuffer();
-            const totalChunks = Math.ceil(buffer.byteLength / CHUNK_SIZE);
+            activeConn.send({ 
+                type: 'file-start', 
+                name: file.name, 
+                size: file.size, 
+                hash: fileHash // Send hash to receiver
+            });
+            
+            const totalChunks = Math.ceil(fileBuffer.byteLength / CHUNK_SIZE);
 
             for (let i = 0; i < totalChunks; i++) {
-                const chunk = buffer.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                const chunk = fileBuffer.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
                 activeConn.send({
                     type: 'file-chunk', 
                     name: file.name, 
@@ -881,11 +1047,10 @@
             }
             activeConn.send({ type: 'file-end', name: file.name });
             
-            // Add to History (Sender side)
-            addToHistory('sent', file.name, file.size);
+            addToHistory('sent', file.name, file.size, true); // Sender knows their own file is valid
         }
         activeConn.send({ type: 'batch-end' });
-        filesQueue = []; // Clear queue after sending
+        filesQueue = [];
     }
 
     function updateProgress(pct, msg) {
@@ -900,7 +1065,7 @@
         setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
-    // --- New URL Import Logic ---
+    // --- URL Import Logic ---
     function openUrlModal() {
         document.getElementById('url-modal').style.display = 'flex';
         document.getElementById('url-input').focus();
@@ -918,28 +1083,22 @@
 
         if (!url) return;
 
-        // Smart Google Drive Detection & Conversion
-        // Detects: /d/ID, id=ID, open?id=ID
         const gdriveRegex = /\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/;
         const match = url.match(gdriveRegex);
         
         if (match) {
             const fileId = match[1] || match[2];
-            // Convert to direct download link
             url = `https://drive.google.com/uc?export=download&id=${fileId}`;
-            console.log("Converted to GDrive direct link:", url);
         }
 
-        // Apply CORS Proxy if checked
         if (useProxy) {
-            // Using corsproxy.io (free, public)
             url = 'https://corsproxy.io/?' + encodeURIComponent(url);
         }
 
         closeUrlModal();
         info.innerText = "Fetching file from cloud...";
         document.getElementById('progress-container').style.display = 'block';
-        document.getElementById('progress-bar').style.width = '50%'; // Indeterminate loading
+        document.getElementById('progress-bar').style.width = '50%'; 
 
         try {
             const response = await fetch(url);
@@ -947,9 +1106,7 @@
             
             const blob = await response.blob();
             
-            // Try to get filename from URL or default
             let fileName = "imported_file_" + Date.now();
-            // Simple heuristic for filename (if not gdrive)
             if (!match && url.lastIndexOf('/') > 0) {
                 const parts = url.split('?')[0].split('/');
                 const potentialName = parts[parts.length - 1];
@@ -958,10 +1115,8 @@
                  fileName = "gdrive_file_" + match[1] || match[2];
             }
 
-            // Create a File object from the Blob
             const file = new File([blob], fileName, { type: blob.type, lastModified: Date.now() });
             
-            // Add to queue and show preview
             filesQueue = [file];
             renderPreview(filesQueue);
             
@@ -974,7 +1129,7 @@
         } catch (error) {
             console.error(error);
             info.innerText = "Error fetching file. Try enabling CORS Proxy.";
-            alert("Fetch failed. This is likely a CORS security block.\n\nPlease try checking 'Use CORS Proxy' in the import modal.");
+            alert("Fetch failed. Try checking 'Use CORS Proxy' in the import modal.");
             document.getElementById('progress-container').style.display = 'none';
         }
     }
