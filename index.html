@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- Lucide Icons (for consistent iconography) -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
@@ -52,7 +52,6 @@
             --card-bg: rgba(255, 255, 255, 0.4);
         }
 
-        /* Global Reset & Typography */
         * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
         
         body {
@@ -297,6 +296,15 @@
         button.action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
         button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
 
+        /* Modified Connect Button Styles for Disconnect state */
+        .btn-disconnect {
+            background: var(--danger) !important;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+        }
+        .btn-disconnect:hover {
+            filter: brightness(1.1);
+        }
+
         .text-btn {
             background: none;
             border: none;
@@ -448,13 +456,36 @@
 
         .preview-item {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            align-items: center;
             padding: 10px;
             background: rgba(255,255,255,0.05);
             border-radius: 8px;
             margin-bottom: 8px;
             font-size: 13px;
             border-left: 3px solid var(--primary);
+            gap: 10px;
+        }
+
+        .preview-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .preview-remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .preview-remove-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--danger);
         }
 
         .preview-item-row {
@@ -497,8 +528,23 @@
             font-weight: 600;
             cursor: pointer;
         }
+        
+        .btn-add {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
 
-        .btn-confirm:hover { filter: brightness(1.1); }
+        .btn-confirm:hover, .btn-add:hover { filter: brightness(1.1); }
         .btn-cancel:hover { background: rgba(255, 255, 255, 0.2); }
 
         /* Modal Styles */
@@ -566,6 +612,9 @@
 
         .range-slider { width: 100%; height: 4px; background: var(--glass-border); border-radius: 2px; -webkit-appearance: none; outline: none; margin: 10px 0; }
         .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid white; }
+
+        /* Make dropzone clickable for mobile */
+        #batcher-dropzone { cursor: pointer; }
 
         .toast {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -675,13 +724,21 @@
                 </button>
             </div>
 
-            <!-- Confirmation Preview Area -->
+            <!-- Confirmation Preview Area (Modified for Individual file management) -->
             <div id="preview-area" class="preview-area">
-                <div style="margin-bottom:10px; font-weight:600; color:var(--text-main);">Confirm Transfer</div>
+                <div style="margin-bottom:10px; font-weight:600; color:var(--text-main); display:flex; justify-content:space-between; align-items:center;">
+                    <span>Confirm Transfer</span>
+                    <span id="queue-count" style="font-size:12px; color:var(--text-dim); font-weight:normal;">0 files</span>
+                </div>
                 <div id="preview-list" class="preview-list"></div>
                 <div class="preview-actions">
-                    <button class="btn-cancel" onclick="cancelTransfer()">Cancel</button>
-                    <button class="btn-confirm" onclick="confirmSend()">Confirm & Send</button>
+                    <button class="btn-cancel" onclick="cancelTransfer()">Cancel All</button>
+                    <!-- Hidden input for adding more files -->
+                    <input type="file" id="add-more-input" multiple style="display:none" onchange="handleAddMoreFiles(this)">
+                    <button class="btn-add" onclick="document.getElementById('add-more-input').click()">
+                        <i data-lucide="plus" style="width:16px;height:16px;"></i> Add
+                    </button>
+                    <button class="btn-confirm" onclick="confirmSend()">Send Now</button>
                 </div>
             </div>
             
@@ -790,10 +847,11 @@
                         </div>
                         <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80" step="5" oninput="document.getElementById('quality-val').innerText = this.value + '%'">
                         
+                        <!-- Updated Output Format Options with Descriptions -->
                         <select id="batcher-format" style="margin-top: 10px;">
-                            <option value="image/jpeg">JPG</option>
-                            <option value="image/png">PNG</option>
-                            <option value="image/webp">WebP</option>
+                            <option value="image/jpeg">JPG (Best for Photos)</option>
+                            <option value="image/png">PNG (Lossless / Transparent)</option>
+                            <option value="image/webp">WebP (Smallest Size)</option>
                         </select>
                     </div>
 
@@ -803,11 +861,14 @@
                     <div id="batcher-log" style="font-size: 11px; color: var(--text-dim); margin-top: 10px; text-align: center; min-height: 15px;"></div>
                 </div>
 
-                <!-- Main Grid -->
-                <div class="batcher-main" id="batcher-dropzone">
+                <!-- Main Grid with Click Handler -->
+                <div class="batcher-main" id="batcher-dropzone" onclick="document.getElementById('batcher-input').click()">
+                    <!-- Hidden Input for Mobile/Click Support -->
+                    <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files); this.value=null;" onclick="event.stopPropagation()">
+                    
                     <div id="batcher-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.5;">
                         <i data-lucide="image-plus" style="width: 48px; height: 48px; margin-bottom: 10px;"></i>
-                        <p>Drag local images here<br>or receive them via P2P</p>
+                        <p>Drag images here or click to upload<br>or receive via P2P</p>
                     </div>
                     <div class="batcher-grid" id="batcher-grid"></div>
                 </div>
@@ -992,47 +1053,82 @@
         };
     });
 
+    // Modified Connect Button Action (Connect / Disconnect)
     document.getElementById('connect-btn').onclick = () => {
-        const tid = document.getElementById('peer-id-input').value.trim();
-        if (tid) {
-            const conn = peer.connect(tid, { reliable: true });
-            setupConnection(conn);
+        if (activeConn) {
+            disconnectPeer();
+        } else {
+            const tid = document.getElementById('peer-id-input').value.trim();
+            if (tid) {
+                const conn = peer.connect(tid, { reliable: true });
+                setupConnection(conn);
+            }
         }
     };
+
+    function disconnectPeer() {
+        if (activeConn) {
+            activeConn.close(); // This will trigger the 'close' event handler below
+        }
+    }
 
     function setupConnection(conn) {
         if (activeConn) return; 
         activeConn = conn;
 
-        if (conn.open) updateConnectionUI(conn.peer);
+        if (conn.open) updateConnectionUI(true);
 
-        conn.on('open', () => updateConnectionUI(conn.peer));
+        conn.on('open', () => updateConnectionUI(true));
         
         conn.on('data', async (data) => {
-             if (data.type === 'handshake-ack') updateConnectionUI(conn.peer);
+             if (data.type === 'handshake-ack') updateConnectionUI(true);
              else handleData(data);
         });
 
         conn.on('close', () => { 
-            document.getElementById('transfer-info').innerText = "Connection lost. Reconnecting...";
-            setTimeout(() => location.reload(), 2000); 
+            updateConnectionUI(false);
+            document.getElementById('transfer-info').innerText = "Connection disconnected.";
+            activeConn = null;
         });
     }
 
-    function updateConnectionUI(peerId) {
-        document.getElementById('status-text').innerText = "Connected";
-        document.getElementById('file-input').disabled = false;
-        document.getElementById('connect-btn').innerHTML = `<i data-lucide="check-circle" class="icon" style="margin-right:5px"></i> Secure Link Active`;
+    // Updated UI logic for Connection/Disconnection
+    function updateConnectionUI(isConnected) {
+        const btn = document.getElementById('connect-btn');
+        const input = document.getElementById('peer-id-input');
+        const statusText = document.getElementById('status-text');
+        const transferInfo = document.getElementById('transfer-info');
+        const fileInput = document.getElementById('file-input');
+
+        if (isConnected) {
+            statusText.innerText = "Connected";
+            fileInput.disabled = false;
+            
+            btn.innerHTML = `<i data-lucide="x-circle" class="icon" style="margin-right:5px"></i> Disconnect`;
+            btn.classList.add('btn-disconnect');
+            
+            // Disable ID input to prevent changing while connected
+            input.disabled = true;
+            transferInfo.innerText = "Ready to transfer files";
+        } else {
+            statusText.innerText = "System Online";
+            fileInput.disabled = true;
+            
+            btn.innerHTML = "Connect Device";
+            btn.classList.remove('btn-disconnect');
+            btn.style.background = ""; // Reset inline style
+            
+            input.disabled = false;
+            input.value = ""; // Optional: clear input on disconnect
+            transferInfo.innerText = "Waiting for connection...";
+        }
         lucide.createIcons();
-        document.getElementById('connect-btn').style.background = "var(--success)";
-        document.getElementById('connect-btn').disabled = true;
-        document.getElementById('transfer-info').innerText = "Ready to transfer files";
     }
 
     // Data Handling & Image Detection
     let receivedChunks = {};
     let expectedHashes = {};
-    let receivedImageCount = 0; // For smart detection
+    let receivedImageCount = 0; 
 
     async function handleData(data) {
         if (data.type === 'file-start') {
@@ -1057,11 +1153,9 @@
             const isImage = data.name.match(/\.(jpg|jpeg|png|webp|gif)$/i);
             if (isImage) {
                 receivedImageCount++;
-                // Add to Batcher memory automatically (without duplicating UI yet)
                 const file = new File([blob], data.name, { type: 'image/' + data.name.split('.').pop() });
                 addFileToBatcher(file);
                 
-                // Show Toast
                 if (receivedImageCount > 0) {
                     const toast = document.getElementById('smart-toast');
                     toast.style.display = 'flex';
@@ -1099,36 +1193,63 @@
     document.getElementById('file-input').onchange = (e) => {
         if (e.target.files.length > 0) {
             filesQueue = Array.from(e.target.files);
-            renderPreview(filesQueue);
+            renderPreview();
         }
     };
 
-    function renderPreview(files) {
-        const previewList = document.getElementById('preview-list');
-        previewList.innerHTML = ''; 
+    // Modified to handle Adding more files
+    function handleAddMoreFiles(input) {
+        if (input.files.length > 0) {
+            const newFiles = Array.from(input.files);
+            filesQueue = [...filesQueue, ...newFiles];
+            renderPreview();
+            input.value = ""; // Reset hidden input
+        }
+    }
 
-        files.forEach(file => {
+    // Modified to allow removing individual items
+    function renderPreview() {
+        const previewList = document.getElementById('preview-list');
+        const queueCount = document.getElementById('queue-count');
+        
+        previewList.innerHTML = ''; 
+        queueCount.innerText = `${filesQueue.length} files`;
+
+        filesQueue.forEach((file, index) => {
             const dateStr = new Date(file.lastModified).toLocaleString();
             const sizeStr = formatBytes(file.size);
             
             const item = document.createElement('div');
             item.className = 'preview-item';
             item.innerHTML = `
-                <div class="preview-item-row">
-                    <span style="font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${file.name}</span>
+                <div class="preview-content">
+                    <div class="preview-item-row">
+                        <span style="font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${file.name}</span>
+                    </div>
+                    <div class="preview-meta">
+                        <span>${sizeStr}</span>
+                        <span>•</span>
+                        <span>${dateStr}</span>
+                    </div>
                 </div>
-                <div class="preview-meta">
-                    <span>${sizeStr}</span>
-                    <span>•</span>
-                    <span>${dateStr}</span>
-                </div>
+                <button class="preview-remove-btn" onclick="removeFileFromQueue(${index})" title="Remove file">
+                    <i data-lucide="x" style="width:16px;height:16px;"></i>
+                </button>
             `;
             previewList.appendChild(item);
         });
+        
+        lucide.createIcons();
 
         document.getElementById('upload-wrapper').style.display = 'none';
         document.getElementById('preview-area').style.display = 'block';
         document.getElementById('transfer-info').innerText = "Waiting for confirmation...";
+    }
+
+    function removeFileFromQueue(index) {
+        filesQueue.splice(index, 1);
+        renderPreview();
+        if(filesQueue.length === 0) cancelTransfer();
     }
 
     function cancelTransfer() {
@@ -1232,7 +1353,7 @@
             const file = new File([blob], fileName, { type: blob.type, lastModified: Date.now() });
             
             filesQueue = [file];
-            renderPreview(filesQueue);
+            renderPreview();
             
             info.innerText = "File fetched successfully. Please confirm send.";
             document.getElementById('progress-bar').style.width = '100%';
@@ -1245,7 +1366,7 @@
         }
     }
 
-    // --- IMAGE BATCHER LOGIC (Ported from React) ---
+    // --- IMAGE BATCHER LOGIC ---
     let batcherFiles = [];
     
     document.getElementById('batcher-toggle').onclick = () => toggleBatcher(true);
@@ -1253,7 +1374,7 @@
     function toggleBatcher(show) {
         document.getElementById('batcher-modal').style.display = show ? 'flex' : 'none';
         if(show) {
-            document.getElementById('batcher-dot').style.display = 'none'; // Clear notification
+            document.getElementById('batcher-dot').style.display = 'none'; 
             renderBatcherGrid();
         }
     }
@@ -1269,6 +1390,7 @@
     batcherDropzone.addEventListener('dragover', (e) => e.preventDefault());
     batcherDropzone.addEventListener('drop', (e) => {
         e.preventDefault();
+        e.stopPropagation(); // Stop propagation to avoid bubbling to click handler
         if (e.dataTransfer.files) handleBatcherFiles(e.dataTransfer.files);
     });
 
@@ -1310,9 +1432,10 @@
         batcherFiles.forEach(item => {
             const card = document.createElement('div');
             card.className = 'batcher-card';
+            card.onclick = (e) => e.stopPropagation(); // Prevent triggering upload when clicking card
             card.innerHTML = `
                 <img src="${item.preview}" class="batcher-img">
-                <div class="batcher-remove" onclick="removeBatcherFile('${item.id}')">×</div>
+                <div class="batcher-remove" onclick="removeBatcherFile('${item.id}'); event.stopPropagation()">×</div>
                 <div class="batcher-info" title="${item.file.name}">${item.file.name}</div>
                 <div class="batcher-info" style="font-size:10px;">${item.originalSize} KB</div>
             `;
