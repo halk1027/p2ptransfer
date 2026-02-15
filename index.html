@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P Air Channel - Glass Edition</title>
+    <title>P2P Air Channel</title>
     <!-- PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <!-- QRCode.js -->
@@ -25,6 +25,7 @@
             --input-bg: rgba(15, 23, 42, 0.6);
             --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
             --history-item-bg: rgba(255, 255, 255, 0.05);
+            --modal-bg: rgba(15, 23, 42, 0.85);
         }
 
         [data-theme="light"] {
@@ -41,6 +42,7 @@
             --input-bg: rgba(241, 245, 249, 0.7);
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             --history-item-bg: rgba(0, 0, 0, 0.03);
+            --modal-bg: rgba(255, 255, 255, 0.85);
         }
 
         /* Global Reset & Typography */
@@ -246,6 +248,21 @@
         button.action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
         button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
 
+        .text-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 5px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .text-btn:hover { text-decoration: underline; }
+
         /* File Input Customization */
         .file-upload-wrapper {
             position: relative;
@@ -432,6 +449,29 @@
         .btn-confirm:hover { filter: brightness(1.1); }
         .btn-cancel:hover { background: rgba(255, 255, 255, 0.2); }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+        
+        .modal-content {
+            background: var(--modal-bg);
+            border: 1px solid var(--glass-border);
+            padding: 24px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Scrollbar */
@@ -510,6 +550,11 @@
                     <span>Tap or Drop files here to send</span>
                 </div>
                 <input type="file" id="file-input" multiple disabled title="Select files to send">
+                
+                <button class="text-btn" onclick="openUrlModal()" style="margin-top: 15px; width: 100%; justify-content: center;">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    <span>Import from URL / Google Drive</span>
+                </button>
             </div>
 
             <!-- New: Confirmation Preview Area -->
@@ -547,6 +592,27 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- URL Import Modal -->
+    <div id="url-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px; color: var(--text-main);">Import from Cloud URL</h3>
+            <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 15px;">
+                Enter a direct file link or Google Drive sharing link. The sender device will fetch it and prepare for transfer.
+            </p>
+            <input type="text" id="url-input" placeholder="https://drive.google.com/..." style="margin-bottom: 10px;">
+            
+            <label class="switch-label" style="font-size: 12px; margin-bottom: 20px;">
+                <input type="checkbox" id="cors-proxy-check"> 
+                <span>Use CORS Proxy (Enable if direct fetch fails)</span>
+            </label>
+
+            <div class="preview-actions">
+                <button class="btn-cancel" onclick="closeUrlModal()">Close</button>
+                <button class="btn-confirm" onclick="processUrlImport()">Fetch File</button>
+            </div>
+        </div>
     </div>
 
     <!-- Footer Disclaimer -->
@@ -832,6 +898,85 @@
         const a = document.createElement('a');
         a.href = url; a.download = name; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    // --- New URL Import Logic ---
+    function openUrlModal() {
+        document.getElementById('url-modal').style.display = 'flex';
+        document.getElementById('url-input').focus();
+    }
+
+    function closeUrlModal() {
+        document.getElementById('url-modal').style.display = 'none';
+        document.getElementById('url-input').value = '';
+    }
+
+    async function processUrlImport() {
+        let url = document.getElementById('url-input').value.trim();
+        const useProxy = document.getElementById('cors-proxy-check').checked;
+        const info = document.getElementById('transfer-info');
+
+        if (!url) return;
+
+        // Smart Google Drive Detection & Conversion
+        // Detects: /d/ID, id=ID, open?id=ID
+        const gdriveRegex = /\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/;
+        const match = url.match(gdriveRegex);
+        
+        if (match) {
+            const fileId = match[1] || match[2];
+            // Convert to direct download link
+            url = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            console.log("Converted to GDrive direct link:", url);
+        }
+
+        // Apply CORS Proxy if checked
+        if (useProxy) {
+            // Using corsproxy.io (free, public)
+            url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+        }
+
+        closeUrlModal();
+        info.innerText = "Fetching file from cloud...";
+        document.getElementById('progress-container').style.display = 'block';
+        document.getElementById('progress-bar').style.width = '50%'; // Indeterminate loading
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const blob = await response.blob();
+            
+            // Try to get filename from URL or default
+            let fileName = "imported_file_" + Date.now();
+            // Simple heuristic for filename (if not gdrive)
+            if (!match && url.lastIndexOf('/') > 0) {
+                const parts = url.split('?')[0].split('/');
+                const potentialName = parts[parts.length - 1];
+                if (potentialName && potentialName.length < 50) fileName = potentialName;
+            } else if (match) {
+                 fileName = "gdrive_file_" + match[1] || match[2];
+            }
+
+            // Create a File object from the Blob
+            const file = new File([blob], fileName, { type: blob.type, lastModified: Date.now() });
+            
+            // Add to queue and show preview
+            filesQueue = [file];
+            renderPreview(filesQueue);
+            
+            info.innerText = "File fetched successfully. Please confirm send.";
+            document.getElementById('progress-bar').style.width = '100%';
+            setTimeout(() => {
+                document.getElementById('progress-container').style.display = 'none';
+            }, 1000);
+
+        } catch (error) {
+            console.error(error);
+            info.innerText = "Error fetching file. Try enabling CORS Proxy.";
+            alert("Fetch failed. This is likely a CORS security block.\n\nPlease try checking 'Use CORS Proxy' in the import modal.");
+            document.getElementById('progress-container').style.display = 'none';
+        }
     }
 </script>
 </body>
