@@ -877,6 +877,11 @@
         if (activeConn) return; 
         activeConn = conn;
 
+        // FIX: Check if connection is already open (common in incoming connections)
+        if (conn.open) {
+            updateConnectionUI(conn.peer);
+        }
+
         conn.on('open', () => {
             // If we are the sender, we might wait for ACK, but for simplicity we show connected.
             // In a strict handshake, we would wait for 'data'='handshake-ack'.
