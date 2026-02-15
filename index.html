@@ -1,186 +1,170 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.3">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Private File Transfer</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root { --primary: #2563eb; --success: #16a34a; --bg: #f8fafc; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; color: #1e293b; }
+        .card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 420px; text-align: center; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        h2, h3 { margin-top: 0; color: #0f172a; }
+        #qrcode { margin: 15px auto; padding: 12px; background: white; border: 1px solid #f1f5f9; display: inline-block; border-radius: 8px; }
+        input[type="text"], button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; outline: none; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+        .progress-container { width: 100%; background: #e2e8f0; height: 10px; border-radius: 5px; margin: 15px 0; overflow: hidden; display: none; }
+        #progress-bar { width: 0%; height: 100%; background: var(--success); transition: width 0.1s linear; }
+        .options { text-align: left; font-size: 14px; color: #64748b; margin: 15px 0; padding: 12px; background: #f1f5f9; border-radius: 8px; }
+        #status-tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; background: #fef3c7; color: #92400e; margin-top: 8px; }
+        .file-info { font-size: 13px; color: #475569; margin-top: 5px; min-height: 1.2em; }
+    </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;P2P Private File Transfer&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>:root { --primary: #2563eb; --success: #16a34a; --bg: #f8fafc; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; color: #1e293b; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 420px; text-align: center; margin-bottom: 20px; border: 1px solid #e2e8f0; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>h2, h3 { margin-top: 0; color: #0f172a; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>#qrcode { margin: 15px auto; padding: 12px; background: white; border: 1px solid #f1f5f9; display: inline-block; border-radius: 8px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>input[type="text"], button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; outline: none; box-sizing: border-box; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>button:hover { opacity: 0.9; transform: translateY(-1px); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>button:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.progress-container { width: 100%; background: #e2e8f0; height: 10px; border-radius: 5px; margin: 15px 0; overflow: hidden; display: none; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>#progress-bar { width: 0%; height: 100%; background: var(--success); transition: width 0.1s linear; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.options { text-align: left; font-size: 14px; color: #64748b; margin: 15px 0; padding: 12px; background: #f1f5f9; border-radius: 8px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>#status-tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; background: #fef3c7; color: #92400e; margin-top: 8px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.file-info { font-size: 13px; color: #475569; margin-top: 5px; min-height: 1.2em; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h3&gt;My Peer ID: &lt;span id="my-id"&gt;...&lt;/span&gt;&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="qrcode"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div&gt;&lt;span id="status-tag"&gt;Initializing...&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="text" id="peer-id-input" placeholder="Enter remote 6-digit ID"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="connect-btn"&gt;Connect Device&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="options"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label style="cursor: pointer;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="checkbox" id="zip-mode"&gt; Auto-pack files into ZIP</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="file" id="file-input" multiple disabled title="Select files to send"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="progress-container" id="progress-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="progress-bar"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="transfer-info" class="file-info"&gt;Ready for bidirectional transfer&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Generate a 6-digit random ID</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const customId = Math.floor(100000 + Math.random() * 900000).toString();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const peer = new Peer(customId);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>let activeConn = null;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>let zip = null;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const CHUNK_SIZE = 65536; // 64KB per chunk</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// 1. Peer Events</p>
-<p class="p1"><span class="Apple-converted-space">    </span>peer.on('open', id =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('my-id').innerText = id;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('status-tag').innerText = "Online &amp; Ready";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>new QRCode(document.getElementById("qrcode"), {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text: window.location.href.split('?')[0] + "?join=" + id,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 140, height: 140</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const urlParams = new URLSearchParams(window.location.search);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>peer.on('connection', conn =&gt; setupConnection(conn));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// 2. Connectivity</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('connect-btn').onclick = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const tid = document.getElementById('peer-id-input').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (tid) setupConnection(peer.connect(tid, { reliable: true }));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function setupConnection(conn) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (activeConn) return;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>activeConn = conn;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>conn.on('open', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const tag = document.getElementById('status-tag');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tag.innerText = "Connected to: " + conn.peer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tag.style.background = "#dcfce7";</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tag.style.color = "#166534";</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('file-input').disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('connect-btn').innerText = "Link Established";</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('connect-btn').disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>let receivedChunks = {};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>conn.on('data', async (data) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (data.type === 'file-start') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (document.getElementById('zip-mode').checked &amp;&amp; !zip) zip = new JSZip();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>receivedChunks[data.name] = [];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('progress-container').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else if (data.type === 'file-chunk') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>receivedChunks[data.name].push(data.chunk);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateProgress((data.current / data.total) * 100, `Receiving: ${data.name}`);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else if (data.type === 'file-end') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const blob = new Blob(receivedChunks[data.name]);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (document.getElementById('zip-mode').checked) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>zip.file(data.name, blob);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('transfer-info').innerText = `${data.name} added to queue`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>saveFile(blob, data.name);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>delete receivedChunks[data.name];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else if (data.type === 'batch-end') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (zip) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('transfer-info').innerText = "Generating ZIP archive...";</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const content = await zip.generateAsync({type:"blob"});</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>saveFile(content, "transferred_bundle_" + Date.now() + ".zip");</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>zip = null;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('transfer-info').innerText = "All transfers completed successfully.";</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>conn.on('close', () =&gt; {<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>alert("Connection lost. Refreshing...");<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>location.reload();<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// 3. Transmission Logic</p>
-<p class="p1"><span class="Apple-converted-space">    </span>async function sendFiles(files) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (!activeConn) return;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('progress-container').style.display = 'block';</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>for (let file of files) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>activeConn.send({ type: 'file-start', name: file.name });</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const buffer = await file.arrayBuffer();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const totalChunks = Math.ceil(buffer.byteLength / CHUNK_SIZE);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; totalChunks; i++) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const chunk = buffer.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>activeConn.send({</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>type: 'file-chunk', name: file.name, chunk: chunk,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>current: i + 1, total: totalChunks</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateProgress(((i + 1) / totalChunks) * 100, `Sending: ${file.name}`);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Small delay to prevent DataChannel congestion</p>
-<p class="p1"><span class="Apple-converted-space">                </span>await new Promise(r =&gt; setTimeout(r, 2));<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>activeConn.send({ type: 'file-end', name: file.name });</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>activeConn.send({ type: 'batch-end' });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('file-input').onchange = (e) =&gt; sendFiles(e.target.files);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function updateProgress(pct, msg) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('progress-bar').style.width = pct + "%";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('transfer-info').innerText = msg;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function saveFile(blob, name) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const url = URL.createObjectURL(blob);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const a = document.createElement('a');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>a.href = url; a.download = name; a.click();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setTimeout(() =&gt; URL.revokeObjectURL(url), 1000);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+<div class="card">
+    <h3>My Peer ID: <span id="my-id">...</span></h3>
+    <div id="qrcode"></div>
+    <div><span id="status-tag">Initializing...</span></div>
+</div>
+
+<div class="card">
+    <input type="text" id="peer-id-input" placeholder="Enter remote 6-digit ID">
+    <button id="connect-btn">Connect Device</button>
+    
+    <div class="options">
+        <label style="cursor: pointer;">
+            <input type="checkbox" id="zip-mode"> Auto-pack files into ZIP
+        </label>
+    </div>
+
+    <input type="file" id="file-input" multiple disabled title="Select files to send">
+    <div class="progress-container" id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+    <div id="transfer-info" class="file-info">Ready for bidirectional transfer</div>
+</div>
+
+<script>
+    // Generate a 6-digit random ID
+    const customId = Math.floor(100000 + Math.random() * 900000).toString();
+    const peer = new Peer(customId);
+    let activeConn = null;
+    let zip = null;
+    const CHUNK_SIZE = 65536; // 64KB per chunk
+
+    // 1. Peer Events
+    peer.on('open', id => {
+        document.getElementById('my-id').innerText = id;
+        document.getElementById('status-tag').innerText = "Online & Ready";
+        new QRCode(document.getElementById("qrcode"), {
+            text: window.location.href.split('?')[0] + "?join=" + id,
+            width: 140, height: 140
+        });
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');
+    });
+
+    peer.on('connection', conn => setupConnection(conn));
+
+    // 2. Connectivity
+    document.getElementById('connect-btn').onclick = () => {
+        const tid = document.getElementById('peer-id-input').value.trim();
+        if (tid) setupConnection(peer.connect(tid, { reliable: true }));
+    };
+
+    function setupConnection(conn) {
+        if (activeConn) return; 
+        activeConn = conn;
+
+        conn.on('open', () => {
+            const tag = document.getElementById('status-tag');
+            tag.innerText = "Connected to: " + conn.peer;
+            tag.style.background = "#dcfce7";
+            tag.style.color = "#166534";
+            document.getElementById('file-input').disabled = false;
+            document.getElementById('connect-btn').innerText = "Link Established";
+            document.getElementById('connect-btn').disabled = true;
+        });
+
+        let receivedChunks = {};
+
+        conn.on('data', async (data) => {
+            if (data.type === 'file-start') {
+                if (document.getElementById('zip-mode').checked && !zip) zip = new JSZip();
+                receivedChunks[data.name] = [];
+                document.getElementById('progress-container').style.display = 'block';
+            } else if (data.type === 'file-chunk') {
+                receivedChunks[data.name].push(data.chunk);
+                updateProgress((data.current / data.total) * 100, `Receiving: ${data.name}`);
+            } else if (data.type === 'file-end') {
+                const blob = new Blob(receivedChunks[data.name]);
+                if (document.getElementById('zip-mode').checked) {
+                    zip.file(data.name, blob);
+                    document.getElementById('transfer-info').innerText = `${data.name} added to queue`;
+                } else {
+                    saveFile(blob, data.name);
+                }
+                delete receivedChunks[data.name];
+            } else if (data.type === 'batch-end') {
+                if (zip) {
+                    document.getElementById('transfer-info').innerText = "Generating ZIP archive...";
+                    const content = await zip.generateAsync({type:"blob"});
+                    saveFile(content, "transferred_bundle_" + Date.now() + ".zip");
+                    zip = null;
+                }
+                document.getElementById('transfer-info').innerText = "All transfers completed successfully.";
+            }
+        });
+
+        conn.on('close', () => { 
+            alert("Connection lost. Refreshing..."); 
+            location.reload(); 
+        });
+    }
+
+    // 3. Transmission Logic
+    async function sendFiles(files) {
+        if (!activeConn) return;
+        document.getElementById('progress-container').style.display = 'block';
+        
+        for (let file of files) {
+            activeConn.send({ type: 'file-start', name: file.name });
+            const buffer = await file.arrayBuffer();
+            const totalChunks = Math.ceil(buffer.byteLength / CHUNK_SIZE);
+
+            for (let i = 0; i < totalChunks; i++) {
+                const chunk = buffer.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                activeConn.send({
+                    type: 'file-chunk', name: file.name, chunk: chunk,
+                    current: i + 1, total: totalChunks
+                });
+                updateProgress(((i + 1) / totalChunks) * 100, `Sending: ${file.name}`);
+                // Small delay to prevent DataChannel congestion
+                await new Promise(r => setTimeout(r, 2)); 
+            }
+            activeConn.send({ type: 'file-end', name: file.name });
+        }
+        activeConn.send({ type: 'batch-end' });
+    }
+
+    document.getElementById('file-input').onchange = (e) => sendFiles(e.target.files);
+
+    function updateProgress(pct, msg) {
+        document.getElementById('progress-bar').style.width = pct + "%";
+        document.getElementById('transfer-info').innerText = msg;
+    }
+
+    function saveFile(blob, name) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = name; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+</script>
 </body>
 </html>
