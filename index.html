@@ -211,7 +211,7 @@
         .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; }
         .metrics-item { display: flex; align-items: center; gap: 4px; }
 
-        /* Modified Status Tag with Backgrounds */
+        /* Modified Status Tag Centering */
         #status-tag {
             display: inline-flex;
             align-items: center;
@@ -220,7 +220,7 @@
             border-radius: 25px;
             font-size: 13px;
             font-weight: 700;
-            margin-top: 5px;
+            margin: 5px auto 0 auto; /* CENTERED HERE */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: rgba(59, 130, 246, 0.15); /* Default standby blue */
             color: var(--primary);
@@ -284,6 +284,13 @@
         .batcher-card:hover { border-color: var(--primary); }
         .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #000; }
         .batcher-remove { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+
+        /* Mobile Batcher Layout Fix */
+        @media (max-width: 768px) {
+            .batcher-layout { flex-direction: column; }
+            .batcher-sidebar { width: 100%; height: auto; max-height: 40%; border-right: none; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+            .batcher-main { height: auto; flex: 1; }
+        }
 
         .switch-label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim); cursor: pointer; margin: 5px 0; }
         .range-slider { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; -webkit-appearance: none; outline: none; margin: 10px 0; }
