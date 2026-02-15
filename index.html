@@ -199,17 +199,40 @@
         .file-upload-wrapper:hover .file-upload-btn { border-color: var(--primary); background: rgba(255,255,255,0.05); }
 
         .text-btn {
-            background: none; border: none; color: var(--primary); cursor: pointer;
-            font-size: 13px; padding: 10px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;
-            width: 100%;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--primary); cursor: pointer;
+            font-size: 13px; padding: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; border-radius: 12px; margin-top: 10px;
         }
-        .text-btn:hover { text-decoration: underline; color: var(--text-main); }
+        .text-btn:hover { background: rgba(59, 130, 246, 0.1); color: var(--text-main); }
 
-        .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 10px 0 5px 0; overflow: hidden; display: none; }
+        .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 15px 0 5px 0; overflow: hidden; display: none; }
         #progress-bar { width: 0%; height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.1s linear; }
 
         .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; }
         .metrics-item { display: flex; align-items: center; gap: 4px; }
+
+        /* Modified Status Tag with Backgrounds */
+        #status-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(59, 130, 246, 0.15); /* Default standby blue */
+            color: var(--primary);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        #status-tag.status-online {
+            background: rgba(16, 185, 129, 0.2); /* Connected green */
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
 
         .history-list { margin-top: 10px; overflow-y: auto; text-align: left; flex-grow: 1; min-height: 250px; }
         .history-item {
@@ -239,6 +262,19 @@
         }
         .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
         .modal-large { max-width: 960px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+
+        .warning-text {
+            color: var(--warning);
+            font-size: 11px;
+            margin-top: 10px;
+            text-align: left;
+            padding-left: 5px;
+            line-height: 1.5;
+            background: rgba(245, 158, 11, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            border-left: 3px solid var(--warning);
+        }
 
         .batcher-layout { display: flex; height: 100%; overflow: hidden; }
         .batcher-sidebar { width: 280px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
@@ -285,7 +321,7 @@
                 <button id="copy-id-btn" class="copy-btn" title="Copy ID"><i data-lucide="copy" class="icon"></i></button>
             </div>
             <div id="qrcode"></div>
-            <div id="status-tag" style="align-self: center;"><div class="status-dot"></div><span id="status-text">Initializing...</span></div>
+            <div id="status-tag"><div class="status-dot"></div><span id="status-text">Initializing...</span></div>
             <div style="margin-top: 15px; font-size: 12px; color: var(--text-dim); text-align: center; line-height: 1.5;">
                 Scan QR or share UUID to establish link.
             </div>
@@ -300,7 +336,6 @@
             <div style="margin-top: 20px; display: flex; align-items: center; gap: 8px;"><i data-lucide="file-up" class="icon-sm"></i><h3>File Transfer</h3></div>
             <label class="switch-label"><input type="checkbox" id="zip-mode" style="accent-color: var(--primary); transform: scale(1.1);"> <span>Auto-pack received files into ZIP</span></label>
 
-            <!-- Corrected Container Logic -->
             <div class="file-upload-wrapper" id="upload-wrapper">
                 <div class="file-upload-btn" id="drop-zone">
                     <i data-lucide="upload-cloud" class="icon-lg" style="width:40px; height:40px; color: var(--primary);"></i>
@@ -308,7 +343,6 @@
                 </div>
                 <input type="file" id="file-input" multiple disabled>
             </div>
-            <!-- Import button moved OUTSIDE wrapper to prevent overlap -->
             <button class="text-btn" onclick="openUrlModal()"><i data-lucide="cloud-download" class="icon-sm"></i><span>Import from Google Drive / URL</span></button>
 
             <div id="preview-area" class="preview-area">
@@ -353,7 +387,12 @@
             <h3 style="margin-bottom: 15px;">Cloud Import</h3>
             <input type="text" id="url-input" placeholder="Google Drive sharing link or URL">
             <label class="switch-label"><input type="checkbox" id="cors-proxy-check"> <span>Use CORS Proxy (for GDrive)</span></label>
-            <p style="font-size: 11px; color: var(--warning); margin-top: 8px;">* Files >100MB may fail GDrive scan.</p>
+            
+            <!-- Restored Point 4: Warning sentence -->
+            <p class="warning-text">
+                ⚠️ Warning: Using a proxy sends traffic through a third-party server. Do not use for sensitive data.
+            </p>
+            
             <div class="preview-actions" style="margin-top:20px;">
                 <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" onclick="closeUrlModal()">Cancel</button>
                 <button class="action-btn" style="margin-top:0; flex:2;" onclick="processUrlImport()">Fetch File</button>
@@ -373,7 +412,6 @@
         </div>
     </div>
 
-    <!-- Batcher Modal -->
     <div id="batcher-modal" class="modal-overlay">
         <div class="modal-content modal-large">
             <div style="padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1);">
@@ -440,7 +478,7 @@
 
     peer.on('open', id => {
         document.getElementById('my-id').innerText = id;
-        document.getElementById('status-tag').classList.add('status-online');
+        document.getElementById('status-tag').classList.remove('status-online');
         document.getElementById('status-text').innerText = "System Online";
         new QRCode(document.getElementById("qrcode"), { text: window.location.href.split('?')[0] + "?join=" + id, width: 140, height: 140 });
         const urlParams = new URLSearchParams(window.location.search);
@@ -476,9 +514,11 @@
         const btn = document.getElementById('connect-btn');
         const input = document.getElementById('peer-id-input');
         const statusText = document.getElementById('status-text');
+        const statusTag = document.getElementById('status-tag');
         const fileInput = document.getElementById('file-input');
         if (isConnected) {
             statusText.innerText = "Connected";
+            statusTag.classList.add('status-online');
             fileInput.disabled = false;
             btn.innerHTML = `<i data-lucide="x-circle" class="icon-sm" style="margin-right:5px"></i> Disconnect Device`;
             btn.classList.add('btn-disconnect');
@@ -486,6 +526,7 @@
             document.getElementById('transfer-info').innerText = "Connection Secure. Ready to Transfer.";
         } else {
             statusText.innerText = "System Online";
+            statusTag.classList.remove('status-online');
             fileInput.disabled = true;
             btn.innerHTML = "Connect Device";
             btn.classList.remove('btn-disconnect');
@@ -791,20 +832,45 @@
         
         const gdriveRegex = /\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/;
         const match = url.match(gdriveRegex);
-        if (match) url = `https://drive.google.com/uc?export=download&id=${match[1] || match[2]}`;
+        
+        let isGDrive = false;
+        if (match) {
+            isGDrive = true;
+            const fileId = match[1] || match[2];
+            url = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        }
 
         closeUrlModal();
         info.innerText = "Fetching Cloud File...";
         try {
             const useProxy = document.getElementById('cors-proxy-check').checked;
-            const finalUrl = useProxy ? 'https://corsproxy.io/?' + encodeURIComponent(url) : url;
-            const res = await fetch(finalUrl);
+            let res;
+            
+            if (useProxy || isGDrive) {
+                try {
+                    res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+                    if (!res.ok) throw new Error();
+                } catch (e) {
+                    res = await fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url));
+                }
+            } else {
+                res = await fetch(url);
+            }
+
             const blob = await res.blob();
+            
+            if (isGDrive && blob.type.includes('text/html') && blob.size < 100000) {
+                 throw new Error("Virus Scan Warning: File too large for direct fetch.");
+            }
+
             const f = new File([blob], "cloud_import_" + Date.now(), {type: blob.type});
             filesQueue = [f];
             renderPreview();
             info.innerText = "Cloud File Ready.";
-        } catch(e) { alert("Fetch failed. Please try with CORS Proxy enabled."); info.innerText = "Fetch failed."; }
+        } catch(e) { 
+            alert(e.message || "Fetch failed. Try proxy or check file sharing settings."); 
+            info.innerText = "Fetch failed."; 
+        }
     }
 
     // Theme Toggle
