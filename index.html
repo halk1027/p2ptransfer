@@ -1,77 +1,589 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P Private File Transfer</title>
+    <title>P2P Air Channel - Glass Edition</title>
+    <!-- PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --success: #16a34a; --bg: #f8fafc; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; color: #1e293b; }
-        .card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 420px; text-align: center; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        h2, h3 { margin-top: 0; color: #0f172a; }
-        #qrcode { margin: 15px auto; padding: 12px; background: white; border: 1px solid #f1f5f9; display: inline-block; border-radius: 8px; }
-        input[type="text"], button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; outline: none; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        button:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
-        .progress-container { width: 100%; background: #e2e8f0; height: 10px; border-radius: 5px; margin: 15px 0; overflow: hidden; display: none; }
-        #progress-bar { width: 0%; height: 100%; background: var(--success); transition: width 0.1s linear; }
-        .options { text-align: left; font-size: 14px; color: #64748b; margin: 15px 0; padding: 12px; background: #f1f5f9; border-radius: 8px; }
-        #status-tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; background: #fef3c7; color: #92400e; margin-top: 8px; }
-        .file-info { font-size: 13px; color: #475569; margin-top: 5px; min-height: 1.2em; }
+        :root {
+            /* Dark Theme (Default) */
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(30, 41, 59, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+            --history-item-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] {
+            /* Light Theme (MacOS Inspired) */
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --primary: #0ea5e9;
+            --primary-hover: #0284c7;
+            --success: #059669;
+            --input-bg: rgba(241, 245, 249, 0.7);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --history-item-bg: rgba(0, 0, 0, 0.03);
+        }
+
+        /* Global Reset & Typography */
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Layout Structure */
+        .main-layout {
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            width: 100%;
+            max-width: 1400px;
+            align-items: flex-start; /* Align to top */
+            flex: 1; /* Allow to expand */
+            margin-top: 20px;
+        }
+
+        /* Responsive Breakpoint for Mobile/Tablets */
+        @media (max-width: 1024px) {
+            .main-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+            .glass-panel {
+                max-width: 500px !important;
+                width: 100% !important;
+            }
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 28px;
+            /* Flex layout specific */
+            flex: 1; 
+            min-width: 300px; /* Prevent squishing too much */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Make the center panel slightly larger if desired, or keep equal */
+        .panel-center {
+            flex: 1.2; 
+        }
+
+        /* Header & Toggle */
+        .header {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .app-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #system-time {
+            font-size: 0.9rem;
+            font-family: "SF Mono", "Menlo", monospace;
+            color: var(--text-dim);
+            background: rgba(0,0,0,0.1);
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Footer */
+        .footer {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: auto; /* Push to bottom */
+            padding: 20px 10px 0 10px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            opacity: 0.7;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        /* Icons */
+        .icon { width: 20px; height: 20px; }
+        .icon-lg { width: 24px; height: 24px; }
+        .icon-sm { width: 16px; height: 16px; }
+
+        /* QR & ID Section */
+        h2 { margin: 10px 0; font-weight: 700; letter-spacing: 1px; }
+        
+        h3 { 
+            margin: 0; 
+            color: var(--text-dim); 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            line-height: 1; 
+        }
+        
+        #qrcode {
+            margin: 20px auto;
+            padding: 12px;
+            background: white;
+            border-radius: 16px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #qrcode img { display: block; }
+
+        /* Inputs & Buttons */
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            margin: 10px 0;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 16px;
+            outline: none;
+            text-align: left; 
+            padding-left: 20px;
+        }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+
+        button.action-btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 10px;
+            border-radius: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+            transition: transform 0.2s, filter 0.2s;
+        }
+        
+        button.action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
+
+        /* File Input Customization */
+        .file-upload-wrapper {
+            position: relative;
+            margin-top: 15px;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-btn {
+            background: var(--input-bg);
+            border: 1px dashed var(--text-dim);
+            color: var(--text-dim);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-upload-wrapper:hover .file-upload-btn {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Status Tags */
+        #status-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            margin-top: 15px;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; }
+        .status-online .status-dot { background: #10b981; }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.1s linear;
+        }
+
+        /* Toggle Switch Checkbox */
+        .switch-label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-dim);
+            margin: 15px 0;
+            cursor: pointer;
+            user-select: none;
+            padding-left: 5px;
+        }
+
+        /* History Section */
+        .history-list {
+            margin-top: 15px;
+            overflow-y: auto;
+            text-align: left;
+            flex-grow: 1; /* Fill remaining vertical space in the card */
+            min-height: 200px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: var(--history-item-bg);
+            border-radius: 10px;
+            font-size: 13px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .history-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .history-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; font-weight: 500; }
+        .history-time { font-size: 11px; color: var(--text-dim); min-width: 50px; text-align: right; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-sent { background: rgba(59, 130, 246, 0.2); color: var(--primary); }
+        .badge-received { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 3px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h3>My Peer ID: <span id="my-id">...</span></h3>
-    <div id="qrcode"></div>
-    <div><span id="status-tag">Initializing...</span></div>
-</div>
-
-<div class="card">
-    <input type="text" id="peer-id-input" placeholder="Enter remote 6-digit ID">
-    <button id="connect-btn">Connect Device</button>
-    
-    <div class="options">
-        <label style="cursor: pointer;">
-            <input type="checkbox" id="zip-mode"> Auto-pack files into ZIP
-        </label>
+    <!-- Header with Time and Theme Toggle -->
+    <div class="header">
+        <div class="header-left">
+            <div class="app-title">
+                <svg class="icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                P2P Air Channel
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <span id="system-time">--:--</span>
+            <button class="theme-toggle" id="theme-btn" title="Toggle Theme">
+                <!-- Sun Icon -->
+                <svg id="icon-sun" class="icon" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <!-- Moon Icon -->
+                <svg id="icon-moon" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+        </div>
     </div>
 
-    <input type="file" id="file-input" multiple disabled title="Select files to send">
-    <div class="progress-container" id="progress-container">
-        <div id="progress-bar"></div>
+    <!-- Main Horizontal Layout -->
+    <div class="main-layout">
+        
+        <!-- LEFT: Identity Card -->
+        <div class="glass-panel" style="text-align: center;">
+            <h3 style="margin-bottom: 8px;">My Identity</h3>
+            <h2 id="my-id" style="color: var(--primary);">Loading...</h2>
+            <div id="qrcode"></div>
+            <div>
+                <div id="status-tag">
+                    <div class="status-dot"></div>
+                    <span id="status-text">Initializing...</span>
+                </div>
+            </div>
+            <div style="margin-top: 20px; font-size: 13px; color: var(--text-dim); text-align: left; padding: 0 10px;">
+                <p>Scan this QR code with another device to connect instantly.</p>
+            </div>
+        </div>
+
+        <!-- CENTER: Connection & Transfer Card -->
+        <div class="glass-panel panel-center">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; margin-left: 2px;">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                <h3>Connection</h3>
+            </div>
+            
+            <input type="text" id="peer-id-input" placeholder="Enter remote 6-digit ID">
+            <button id="connect-btn" class="action-btn">
+                Connect Device
+            </button>
+            
+            <div style="margin-top: 30px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; margin-left: 2px;">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                <h3>File Transfer</h3>
+            </div>
+
+            <label class="switch-label">
+                <input type="checkbox" id="zip-mode" style="accent-color: var(--primary); transform: scale(1.2);"> 
+                <span>Auto-pack received files into ZIP</span>
+            </label>
+
+            <div class="file-upload-wrapper">
+                <div class="file-upload-btn" id="drop-zone">
+                    <svg class="icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <span>Tap or Drop files here to send</span>
+                </div>
+                <input type="file" id="file-input" multiple disabled title="Select files to send">
+            </div>
+            
+            <div class="progress-container" id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="transfer-info" style="font-size: 13px; color: var(--text-dim); text-align: center; margin-top: 10px; min-height: 20px;">
+                Waiting for connection...
+            </div>
+        </div>
+
+        <!-- RIGHT: History Card -->
+        <div class="glass-panel">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-left: 2px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h3>Activity History</h3>
+                </div>
+                <span style="font-size: 11px; color: var(--text-dim); cursor: pointer;" onclick="document.getElementById('history-list').innerHTML = ''">Clear</span>
+            </div>
+            <div id="history-list" class="history-list">
+                <!-- Items will be injected here via JS -->
+                <div style="text-align: center; color: var(--text-dim); padding: 10px; font-size: 12px; font-style: italic;">No recent transfers</div>
+            </div>
+        </div>
+
     </div>
-    <div id="transfer-info" class="file-info">Ready for bidirectional transfer</div>
-</div>
+
+    <!-- Footer Disclaimer -->
+    <div class="footer">
+        Disclaimer: This tool facilitates direct P2P transfer; files are not stored on any server. Reloading the page will result in the loss of transfer history.<br>
+        &copy; 2026 Haley Kwok. All rights reserved.
+    </div>
 
 <script>
-    // Generate a 6-digit random ID
+    // --- Clock Logic ---
+    function updateClock() {
+        const now = new Date();
+        // Use user's locale but force specific format options for cleanliness
+        const timeString = now.toLocaleTimeString(undefined, { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit',
+            hour12: false 
+        });
+        const dateString = now.toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric'
+        });
+        document.getElementById('system-time').innerText = `${dateString} ${timeString}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // --- Theme Logic ---
+    const themeBtn = document.getElementById('theme-btn');
+    const htmlEl = document.documentElement;
+    const sunIcon = document.getElementById('icon-sun');
+    const moonIcon = document.getElementById('icon-moon');
+
+    if (localStorage.getItem('theme') === 'light') {
+        htmlEl.setAttribute('data-theme', 'light');
+        toggleIcons(true);
+    }
+
+    themeBtn.addEventListener('click', () => {
+        const isLight = htmlEl.getAttribute('data-theme') === 'light';
+        if (isLight) {
+            htmlEl.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            toggleIcons(false);
+        } else {
+            htmlEl.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+            toggleIcons(true);
+        }
+    });
+
+    function toggleIcons(isLight) {
+        if (isLight) {
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+        } else {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        }
+    }
+
+    // --- History Logic ---
+    function addToHistory(type, fileName, fileSize) {
+        const list = document.getElementById('history-list');
+        if (list.children.length > 0 && list.children[0].innerText.includes('No recent transfers')) {
+            list.innerHTML = '';
+        }
+
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const sizeStr = formatBytes(fileSize);
+        const badgeClass = type === 'sent' ? 'badge-sent' : 'badge-received';
+        const typeLabel = type === 'sent' ? 'OUT' : 'IN';
+        
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `
+            <div class="history-item-left">
+                <span class="badge ${badgeClass}">${typeLabel}</span>
+                <div style="display:flex; flex-direction:column;">
+                    <span class="history-name" title="${fileName}">${fileName}</span>
+                    <span style="font-size:10px; color:var(--text-dim);">${sizeStr}</span>
+                </div>
+            </div>
+            <span class="history-time">${time}</span>
+        `;
+        list.prepend(item);
+    }
+
+    function formatBytes(bytes, decimals = 1) {
+        if (!+bytes) return '0 B';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    }
+
+    // --- Core P2P Logic ---
     const customId = Math.floor(100000 + Math.random() * 900000).toString();
     const peer = new Peer(customId);
     let activeConn = null;
     let zip = null;
-    const CHUNK_SIZE = 65536; // 64KB per chunk
+    const CHUNK_SIZE = 65536; 
 
-    // 1. Peer Events
     peer.on('open', id => {
         document.getElementById('my-id').innerText = id;
-        document.getElementById('status-tag').innerText = "Online & Ready";
+        document.getElementById('status-tag').classList.add('status-online');
+        document.getElementById('status-text').innerText = "System Online";
+        
+        const shareUrl = window.location.href.split('?')[0] + "?join=" + id;
         new QRCode(document.getElementById("qrcode"), {
-            text: window.location.href.split('?')[0] + "?join=" + id,
-            width: 140, height: 140
+            text: shareUrl,
+            width: 140, height: 140,
+            colorDark : "#000000",
+            colorLight : "#ffffff"
         });
+
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');
     });
 
     peer.on('connection', conn => setupConnection(conn));
 
-    // 2. Connectivity
     document.getElementById('connect-btn').onclick = () => {
         const tid = document.getElementById('peer-id-input').value.trim();
         if (tid) setupConnection(peer.connect(tid, { reliable: true }));
@@ -82,17 +594,18 @@
         activeConn = conn;
 
         conn.on('open', () => {
-            const tag = document.getElementById('status-tag');
-            tag.innerText = "Connected to: " + conn.peer;
-            tag.style.background = "#dcfce7";
-            tag.style.color = "#166534";
+            document.getElementById('status-text').innerText = "Connected to: " + conn.peer;
             document.getElementById('file-input').disabled = false;
-            document.getElementById('connect-btn').innerText = "Link Established";
+            document.getElementById('connect-btn').innerHTML = `<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Secure Link Active`;
+            document.getElementById('connect-btn').style.background = "var(--success)";
             document.getElementById('connect-btn').disabled = true;
+            document.getElementById('transfer-info').innerText = "Ready to transfer files";
+            document.querySelector('.file-upload-btn').style.borderColor = "var(--primary)";
+            document.querySelector('.file-upload-btn span').innerText = "Tap or Drop files to send";
         });
 
         let receivedChunks = {};
-
+        
         conn.on('data', async (data) => {
             if (data.type === 'file-start') {
                 if (document.getElementById('zip-mode').checked && !zip) zip = new JSZip();
@@ -100,59 +613,75 @@
                 document.getElementById('progress-container').style.display = 'block';
             } else if (data.type === 'file-chunk') {
                 receivedChunks[data.name].push(data.chunk);
-                updateProgress((data.current / data.total) * 100, `Receiving: ${data.name}`);
+                updateProgress((data.current / data.total) * 100, `Downloading: ${data.name}`);
             } else if (data.type === 'file-end') {
                 const blob = new Blob(receivedChunks[data.name]);
+                
+                // Add to History
+                addToHistory('received', data.name, blob.size);
+
                 if (document.getElementById('zip-mode').checked) {
                     zip.file(data.name, blob);
-                    document.getElementById('transfer-info').innerText = `${data.name} added to queue`;
+                    document.getElementById('transfer-info').innerText = `${data.name} added to ZIP queue`;
                 } else {
                     saveFile(blob, data.name);
                 }
                 delete receivedChunks[data.name];
             } else if (data.type === 'batch-end') {
                 if (zip) {
-                    document.getElementById('transfer-info').innerText = "Generating ZIP archive...";
+                    document.getElementById('transfer-info').innerText = "Compiling ZIP archive...";
                     const content = await zip.generateAsync({type:"blob"});
-                    saveFile(content, "transferred_bundle_" + Date.now() + ".zip");
+                    saveFile(content, "P2P_Air_Channel_" + Date.now() + ".zip");
                     zip = null;
                 }
                 document.getElementById('transfer-info').innerText = "All transfers completed successfully.";
+                setTimeout(() => { 
+                    document.getElementById('progress-container').style.display = 'none';
+                    document.getElementById('progress-bar').style.width = '0%';
+                }, 3000);
             }
         });
 
         conn.on('close', () => { 
-            alert("Connection lost. Refreshing..."); 
-            location.reload(); 
+            document.getElementById('transfer-info').innerText = "Connection lost. Reconnecting...";
+            setTimeout(() => location.reload(), 2000); 
         });
     }
 
-    // 3. Transmission Logic
     async function sendFiles(files) {
         if (!activeConn) return;
         document.getElementById('progress-container').style.display = 'block';
         
         for (let file of files) {
-            activeConn.send({ type: 'file-start', name: file.name });
+            // Include file size in start message
+            activeConn.send({ type: 'file-start', name: file.name, size: file.size });
+            
             const buffer = await file.arrayBuffer();
             const totalChunks = Math.ceil(buffer.byteLength / CHUNK_SIZE);
 
             for (let i = 0; i < totalChunks; i++) {
                 const chunk = buffer.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
                 activeConn.send({
-                    type: 'file-chunk', name: file.name, chunk: chunk,
-                    current: i + 1, total: totalChunks
+                    type: 'file-chunk', 
+                    name: file.name, 
+                    chunk: chunk,
+                    current: i + 1, 
+                    total: totalChunks
                 });
                 updateProgress(((i + 1) / totalChunks) * 100, `Sending: ${file.name}`);
-                // Small delay to prevent DataChannel congestion
-                await new Promise(r => setTimeout(r, 2)); 
+                await new Promise(r => setTimeout(r, 1)); 
             }
             activeConn.send({ type: 'file-end', name: file.name });
+            
+            // Add to History (Sender side)
+            addToHistory('sent', file.name, file.size);
         }
         activeConn.send({ type: 'batch-end' });
     }
 
-    document.getElementById('file-input').onchange = (e) => sendFiles(e.target.files);
+    document.getElementById('file-input').onchange = (e) => {
+        if (e.target.files.length > 0) sendFiles(e.target.files);
+    };
 
     function updateProgress(pct, msg) {
         document.getElementById('progress-bar').style.width = pct + "%";
