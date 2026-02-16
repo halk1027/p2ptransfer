@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>P2P Air Channel</title>
-    <!-- PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <!-- QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
@@ -73,176 +69,69 @@
             100% { background-position: 0% 50%; }
         }
 
-        .main-layout {
-            display: flex;
-            flex-direction: row;
-            gap: 24px;
-            width: 100%;
-            max-width: 1400px;
-            align-items: stretch;
-            flex: 1;
-            margin-top: 20px;
-        }
-
+        .main-layout { display: flex; flex-direction: row; gap: 24px; width: 100%; max-width: 1400px; align-items: stretch; flex: 1; margin-top: 20px; }
         @media (max-width: 1024px) {
             .main-layout { flex-direction: column; align-items: center; }
             .glass-panel { max-width: 500px !important; width: 100% !important; min-height: auto !important; }
         }
 
         .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            padding: 28px;
-            flex: 1; 
-            min-width: 300px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: var(--shadow);
+            padding: 28px; flex: 1; min-width: 300px; position: relative; display: flex; flex-direction: column; gap: 12px;
         }
-        
         .panel-center { flex: 1.3; }
 
-        .header {
-            width: 100%;
-            max-width: 1400px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 10px;
-        }
-
+        .header { width: 100%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
         .header-left, .header-right { display: flex; align-items: center; gap: 15px; }
-
         .app-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        
-        #system-time {
-            font-size: 0.9rem; font-family: monospace; color: var(--text-dim);
-            background: rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--glass-border);
-        }
+        #system-time { font-size: 0.9rem; font-family: monospace; color: var(--text-dim); background: rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
 
-        .icon-btn {
-            background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main);
-            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; cursor: pointer; backdrop-filter: blur(10px); position: relative;
-        }
+        .icon-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); position: relative; }
         .icon-btn:hover { background: rgba(255,255,255,0.1); }
+        .notification-dot { position: absolute; top: 0; right: 0; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid var(--input-bg); display: none; }
 
-        .notification-dot {
-            position: absolute; top: 0; right: 0; width: 12px; height: 12px;
-            background: var(--primary); border-radius: 50%; border: 2px solid var(--input-bg); display: none;
-        }
+        .footer { width: 100%; max-width: 1400px; margin-top: 40px; padding: 20px 10px; font-size: 0.75rem; color: var(--text-dim); opacity: 0.7; text-align: left; line-height: 1.5; border-top: 1px solid var(--glass-border); }
 
-        .footer {
-            width: 100%; max-width: 1400px; margin-top: 40px; padding: 20px 10px;
-            font-size: 0.75rem; color: var(--text-dim); opacity: 0.7; text-align: left; line-height: 1.5;
-            border-top: 1px solid var(--glass-border);
-        }
+        .icon { width: 20px; height: 20px; } .icon-lg { width: 24px; height: 24px; } .icon-sm { width: 16px; height: 16px; }
 
-        .icon { width: 20px; height: 20px; }
-        .icon-lg { width: 24px; height: 24px; }
-        .icon-sm { width: 16px; height: 16px; }
-
-        h2 { 
-            margin: 0; font-weight: 700; letter-spacing: 1px; word-break: break-all;
-            font-size: 1.1rem; line-height: 1.4; font-family: monospace; color: var(--primary);
-        }
-        
-        h3 { 
-            margin: 0; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; 
-            text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; 
-        }
+        h2 { margin: 0; font-weight: 700; letter-spacing: 1px; word-break: break-all; font-size: 1.1rem; line-height: 1.4; font-family: monospace; color: var(--primary); }
+        h3 { margin: 0; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; }
 
         .id-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 5px 0; width: 100%; }
-
-        .copy-btn {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-dim);
-            width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; transition: all 0.2s; flex-shrink: 0; 
-        }
+        .copy-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
         .copy-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
         
-        #qrcode {
-            margin: 15px auto; padding: 12px; background: white; border-radius: 16px;
-            display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+        #qrcode { margin: 15px auto; padding: 12px; background: white; border-radius: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         #qrcode img { display: block; }
 
-        input[type="text"], input[type="number"], select {
-            width: 100%; padding: 14px; margin: 5px 0; border-radius: 12px; border: 1px solid var(--glass-border);
-            background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none;
-        }
-
-        button.action-btn {
-            width: 100%; padding: 16px; margin-top: 5px; border-radius: 16px;
-            background: var(--primary); color: white; border: none; cursor: pointer;
-            font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center;
-            gap: 8px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s, filter 0.2s;
-        }
+        input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 14px; margin: 5px 0; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none; font-family: inherit; }
+        button.action-btn { width: 100%; padding: 16px; margin-top: 5px; border-radius: 16px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s, filter 0.2s; }
         button.action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
         button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; opacity: 0.7; transform: none; }
-
         .btn-disconnect { background: var(--danger) !important; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important; }
 
         .file-upload-wrapper { position: relative; margin-top: 10px; border-radius: 16px; overflow: hidden; width: 100%; }
         .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
-        
-        .file-upload-btn {
-            background: var(--input-bg); border: 1px dashed var(--text-dim); color: var(--text-dim);
-            padding: 30px 20px; border-radius: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;
-            transition: all 0.2s;
-        }
+        .file-upload-btn { background: var(--input-bg); border: 1px dashed var(--text-dim); color: var(--text-dim); padding: 30px 20px; border-radius: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: all 0.2s; }
         .file-upload-wrapper:hover .file-upload-btn { border-color: var(--primary); background: rgba(255,255,255,0.05); }
 
-        .text-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--primary); cursor: pointer;
-            font-size: 13px; padding: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; border-radius: 12px; margin-top: 10px;
-        }
+        .text-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--primary); cursor: pointer; font-size: 13px; padding: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border-radius: 12px; margin-top: 10px; }
         .text-btn:hover { background: rgba(59, 130, 246, 0.1); color: var(--text-main); }
 
-        .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 15px 0 5px 0; overflow: hidden; display: none; }
+        .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 10px 0 5px 0; overflow: hidden; display: none; }
         #progress-bar { width: 0%; height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.1s linear; }
 
         .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; }
         .metrics-item { display: flex; align-items: center; gap: 4px; }
 
-        #status-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 13px;
-            font-weight: 700;
-            margin: 5px auto 0 auto;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(59, 130, 246, 0.15); 
-            color: var(--primary);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-        #status-tag.status-online {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-            border-color: rgba(16, 185, 129, 0.3);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
-        }
-        #status-tag.status-error {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-            border-color: rgba(239, 68, 68, 0.3);
-        }
+        #status-tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 25px; font-size: 13px; font-weight: 700; margin: 5px auto 0 auto; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(59, 130, 246, 0.15); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2); }
+        #status-tag.status-online { background: rgba(16, 185, 129, 0.2); color: var(--success); border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
+        #status-tag.status-error { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
 
         .history-list { margin-top: 10px; overflow-y: auto; text-align: left; flex-grow: 1; min-height: 250px; }
-        .history-item {
-            display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px;
-            background: var(--history-item-bg); border-radius: 12px; font-size: 13px; animation: fadeIn 0.3s ease-out;
-        }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: var(--history-item-bg); border-radius: 12px; font-size: 13px; animation: fadeIn 0.3s ease-out; }
         .history-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; }
         .history-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
         .history-actions { display: flex; align-items: center; gap: 10px; }
@@ -251,34 +140,17 @@
 
         .preview-area { margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 15px; border: 1px solid var(--glass-border); display: none; animation: fadeIn 0.3s; }
         .preview-list { max-height: 160px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
-        .preview-item {
-            display: flex; flex-direction: row; align-items: center; padding: 10px; background: rgba(255,255,255,0.05);
-            border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary); gap: 10px;
-        }
+        .preview-item { display: flex; flex-direction: row; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary); gap: 10px; }
         .preview-content { flex: 1; overflow: hidden; line-height: 1.4; }
         .preview-remove-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; }
         .preview-remove-btn:hover { color: var(--danger); }
         .preview-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
         .modal-large { max-width: 960px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
 
-        .warning-text {
-            color: var(--warning);
-            font-size: 11px;
-            margin-top: 10px;
-            text-align: left;
-            padding-left: 5px;
-            line-height: 1.5;
-            background: rgba(245, 158, 11, 0.1);
-            padding: 8px;
-            border-radius: 8px;
-            border-left: 3px solid var(--warning);
-        }
+        .warning-text { color: var(--warning); font-size: 11px; margin-top: 10px; text-align: left; padding-left: 5px; line-height: 1.5; background: rgba(245, 158, 11, 0.1); padding: 8px; border-radius: 8px; border-left: 3px solid var(--warning); }
 
         .batcher-layout { display: flex; height: 100%; overflow: hidden; }
         .batcher-sidebar { width: 280px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
@@ -299,12 +171,7 @@
         .range-slider { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; -webkit-appearance: none; outline: none; margin: 10px 0; }
         .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid #fff; }
 
-        .toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px;
-            z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px; z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
         @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -398,7 +265,7 @@
         <div class="modal-content">
             <h3 style="margin-bottom: 15px;">Network Settings</h3>
             <p style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">
-                Configure PeerServer. Default is Render (custom proxy).
+                Configure self-hosted PeerServer and STUN/TURN for firewall bypass.
             </p>
             
             <label style="font-size:12px; color:var(--text-dim);">Server Preset</label>
@@ -408,7 +275,7 @@
                 <option value="custom">Custom / Localhost</option>
             </select>
 
-            <label style="font-size:12px; color:var(--text-dim);">Host</label>
+            <label style="font-size:12px; color:var(--text-dim);">Host (IP or Domain)</label>
             <input type="text" id="conf-host" placeholder="my-p2p-server.onrender.com">
             
             <div style="display:flex; gap:10px;">
@@ -426,6 +293,12 @@
                 <input type="checkbox" id="conf-secure" checked> <span>Secure (HTTPS/WSS)</span>
             </label>
 
+            <!-- New Section for Custom ICE/TURN -->
+            <hr style="border:0; border-top:1px solid var(--glass-border); margin: 15px 0;">
+            <label style="font-size:12px; color:var(--text-dim);">Custom ICE Servers (JSON) - Optional</label>
+            <textarea id="conf-ice" placeholder='[{"urls":"turn:your-turn-server.com","username":"user","credential":"pass"}]' style="width:100%; height:60px; padding:10px; border-radius:12px; background:var(--input-bg); border:1px solid var(--glass-border); color:var(--text-main); font-size:11px; margin-top:5px; font-family:monospace; resize:none;"></textarea>
+            <p style="font-size:10px; color:var(--warning); margin-top:5px;">* Use this to add TURN servers for Symmetric NAT.</p>
+
             <div class="preview-actions" style="margin-top:20px;">
                 <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" onclick="closeSettingsModal()">Cancel</button>
                 <button class="action-btn" style="margin-top:0; flex:2;" onclick="savePeerConfig()">Save & Reload</button>
@@ -433,6 +306,7 @@
         </div>
     </div>
 
+    <!-- Import Modal -->
     <div id="url-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin-bottom: 15px;">Cloud Import</h3>
@@ -448,6 +322,7 @@
         </div>
     </div>
 
+    <!-- Connection Request Modal -->
     <div id="connection-modal" class="modal-overlay">
         <div class="modal-content" style="text-align:center;">
             <i data-lucide="shield-check" class="icon-lg" style="color:var(--primary); margin-bottom:15px; width:48px; height:48px;"></i>
@@ -460,6 +335,7 @@
         </div>
     </div>
 
+    <!-- Batcher Modal -->
     <div id="batcher-modal" class="modal-overlay">
         <div class="modal-content modal-large">
             <div style="padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1);">
@@ -544,6 +420,13 @@
         secure: true
     };
 
+    // Default High-Compatibility STUN List (Port 80/443 mixed)
+    const DEFAULT_ICE = [
+        { urls: 'stun:stun.nextcloud.com:443' },
+        { urls: 'stun:stun.piratenpartei-niedersachsen.de:80' },
+        { urls: 'stun:stun.l.google.com:19302' }
+    ];
+
     function getPeerConfig() {
         const saved = localStorage.getItem('peerConfig');
         return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
@@ -554,11 +437,25 @@
         const port = document.getElementById('conf-port').value.trim();
         const path = document.getElementById('conf-path').value.trim();
         const secure = document.getElementById('conf-secure').checked;
+        const iceStr = document.getElementById('conf-ice').value.trim();
+
+        let ice = null;
+        if(iceStr) {
+            try { ice = JSON.parse(iceStr); } catch(e) { alert("Invalid JSON for ICE Servers"); return; }
+        }
+
+        const configToSave = { 
+            host, 
+            port: port ? parseInt(port) : undefined, 
+            path: path || '/', 
+            secure,
+            iceServers: ice 
+        };
 
         if (!host) {
             localStorage.removeItem('peerConfig');
         } else {
-            localStorage.setItem('peerConfig', JSON.stringify({ host, port: port ? parseInt(port) : undefined, path: path || '/', secure }));
+            localStorage.setItem('peerConfig', JSON.stringify(configToSave));
         }
         location.reload();
     }
@@ -570,10 +467,11 @@
     }
 
     function setInputValues(conf) {
-        document.getElementById('conf-host').value = conf.host;
-        document.getElementById('conf-port').value = conf.port;
-        document.getElementById('conf-path').value = conf.path;
+        document.getElementById('conf-host').value = conf.host || '';
+        document.getElementById('conf-port').value = conf.port || '';
+        document.getElementById('conf-path').value = conf.path || '';
         document.getElementById('conf-secure').checked = conf.secure;
+        // Don't overwrite ICE field automatically unless it's a hard reset
     }
 
     function openSettingsModal() {
@@ -581,32 +479,30 @@
         const config = getPeerConfig();
         setInputValues(config);
         
+        // Populate ICE field if custom ones exist
+        if(config.iceServers) {
+            document.getElementById('conf-ice').value = JSON.stringify(config.iceServers);
+        }
+
         const presetSelect = document.getElementById('conf-preset');
-        if (config.host === DEFAULT_CONFIG.host && config.path === DEFAULT_CONFIG.path) presetSelect.value = 'render';
-        else if (config.host === PUBLIC_CONFIG.host && config.path === PUBLIC_CONFIG.path) presetSelect.value = 'public';
+        if (config.host === DEFAULT_CONFIG.host) presetSelect.value = 'render';
+        else if (config.host === PUBLIC_CONFIG.host) presetSelect.value = 'public';
         else presetSelect.value = 'custom';
     }
     
     function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
 
-    // Initialize Peer with Config + STUN Injection
+    // Initialize Peer
     const userConfig = getPeerConfig();
-    let peerOptions = userConfig || {};
-    
-    // Default STUN servers for robust NAT traversal
-    const ICE_SERVERS = [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' },
-        { urls: 'stun:stun4.l.google.com:19302' },
-        { urls: 'stun:global.stun.twilio.com:3478' }
-    ];
-
-    if (!peerOptions.config) {
-        peerOptions.config = {};
-    }
-    peerOptions.config.iceServers = ICE_SERVERS;
+    let peerOptions = {
+        host: userConfig.host,
+        port: userConfig.port,
+        path: userConfig.path,
+        secure: userConfig.secure,
+        config: {
+            iceServers: userConfig.iceServers || DEFAULT_ICE
+        }
+    };
 
     const peer = new Peer(customId, peerOptions);
     
@@ -615,6 +511,9 @@
     let filesQueue = [];
     let historyData = []; 
     let transferStartTime = 0;
+    
+    // Connection monitoring timer
+    let connTimeout = null;
 
     peer.on('open', id => {
         const tag = document.getElementById('status-tag');
@@ -639,10 +538,11 @@
         const tag = document.getElementById('status-tag');
         tag.classList.remove('status-online');
         tag.classList.add('status-error');
-        document.getElementById('status-text').innerText = "Connection Error";
+        document.getElementById('status-text').innerText = "System Offline";
+        // Critical error alerts
         if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' || err.type === 'unavailable-id') {
-             // Only alert if serious
-             console.warn("PeerJS Critical Error:", err.type);
+             // Only alert if we aren't currently trying to connect (avoid spam)
+             if(!activeConn) alert("Network Error (" + err.type + "): Check firewall or PeerServer settings.");
         }
     });
 
@@ -654,6 +554,7 @@
         const btnAccept = document.getElementById('btn-accept-conn');
         const btnReject = document.getElementById('btn-reject-conn');
         
+        // Clone to remove old listeners
         const newAccept = btnAccept.cloneNode(true);
         const newReject = btnReject.cloneNode(true);
         btnAccept.parentNode.replaceChild(newAccept, btnAccept);
@@ -662,21 +563,21 @@
         newAccept.onclick = () => { 
             modal.style.display = 'none'; 
             setupConnection(conn); 
-            // Aggressively try to send ACK
-            if(conn.open) conn.send({ type: 'handshake-ack' }); 
-            // Also try sending slightly later to ensure connectivity
-            setTimeout(() => { if(conn.open) conn.send({ type: 'handshake-ack' }); }, 1000);
         };
         newReject.onclick = () => { modal.style.display = 'none'; conn.close(); };
     });
 
     document.getElementById('connect-btn').onclick = () => {
-        if (activeConn) { activeConn.close(); } 
+        if (activeConn) { 
+            activeConn.close(); 
+            // Also refresh page on manual disconnect to clear peer state
+            setTimeout(() => location.reload(), 500);
+        } 
         else {
             const tid = document.getElementById('peer-id-input').value.trim();
             if (tid) {
                 if (peer.disconnected) {
-                    alert("Cannot connect: Peer system is disconnected. Check network or server settings.");
+                    alert("System Offline: Cannot connect. Check network.");
                     return;
                 }
                 const btn = document.getElementById('connect-btn');
@@ -686,22 +587,13 @@
                 const conn = peer.connect(tid, { reliable: true });
                 setupConnection(conn);
                 
-                // Monitor ICE State for debugging
-                conn.peerConnection.oniceconnectionstatechange = () => {
-                    const state = conn.peerConnection.iceConnectionState;
-                    console.log("ICE State:", state);
-                    if (state === 'failed' || state === 'disconnected') {
-                        document.getElementById('transfer-info').innerText = `Connection Failed (${state}). NAT/Firewall block likely.`;
-                        updateConnectionUI(false);
-                    }
-                };
-
-                setTimeout(() => {
+                // Set safety timeout for the UI
+                connTimeout = setTimeout(() => {
                     if (!activeConn || !activeConn.open) {
-                        // Don't auto-disconnect here, let ICE try, but warn user
-                        document.getElementById('transfer-info').innerText = "Connecting is taking longer than usual... (NAT Traversal)";
+                        btn.innerHTML = "Connect Device";
+                        alert("Connection Timed Out.\n\nThis is likely a firewall/NAT issue. Try adding a custom TURN server in settings.");
                     }
-                }, 8000);
+                }, 15000);
             }
         }
     };
@@ -710,30 +602,44 @@
         if (activeConn) return; 
         activeConn = conn;
         
+        // Clear timeout if connection opens successfully
+        conn.on('open', () => {
+            clearTimeout(connTimeout);
+            updateConnectionUI(true);
+            conn.send({ type: 'handshake-ack' }); 
+        });
+        
+        // Handle immediate open state
         if (conn.open) {
+            clearTimeout(connTimeout);
             updateConnectionUI(true);
             conn.send({ type: 'handshake-ack' }); 
         }
 
-        conn.on('open', () => {
-            updateConnectionUI(true);
-            conn.send({ type: 'handshake-ack' }); 
-            // Keep-alive pinger
-            setInterval(() => { if(conn.open) conn.send({type:'ping'}); }, 5000);
-        });
+        // Monitor ICE state specifically for Symmetric NAT issues
+        conn.peerConnection.oniceconnectionstatechange = () => {
+            const state = conn.peerConnection.iceConnectionState;
+            console.log("ICE State:", state);
+            if (state === 'failed' || state === 'disconnected') {
+                document.getElementById('transfer-info').innerText = `NAT Traversal Failed (${state}). TURN required.`;
+            }
+        };
         
         conn.on('data', data => { 
             if (data.type === 'handshake-ack') {
+                clearTimeout(connTimeout);
                 updateConnectionUI(true); 
-            } else if (data.type === 'ping') {
-                // Heartbeat received, do nothing
             } else {
                 handleData(data);
             }
         });
         
         conn.on('close', () => { updateConnectionUI(false); activeConn = null; });
-        conn.on('error', () => { updateConnectionUI(false); activeConn = null; alert("Connection lost"); });
+        conn.on('error', (err) => { 
+            console.error("Conn Error", err); 
+            updateConnectionUI(false); 
+            activeConn = null; 
+        });
     }
 
     function updateConnectionUI(isConnected) {
