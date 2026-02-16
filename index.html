@@ -555,9 +555,27 @@
     
     function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
 
-    // Initialize Peer with Config
-    const config = getPeerConfig();
-    const peer = config ? new Peer(customId, config) : new Peer(customId);
+    // Initialize Peer with Config + STUN Injection
+    const userConfig = getPeerConfig();
+    
+    // Create base config object
+    let peerOptions = userConfig || {};
+    
+    // Force inject STUN servers even for custom hosts
+    if (!peerOptions.config) {
+        peerOptions.config = {};
+    }
+    if (!peerOptions.config.iceServers) {
+        peerOptions.config.iceServers = [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' },
+            { urls: 'stun:stun4.l.google.com:19302' }
+        ];
+    }
+
+    const peer = new Peer(customId, peerOptions);
     
     let activeConn = null;
     let zip = null;
@@ -589,7 +607,6 @@
         tag.classList.remove('status-online');
         tag.classList.add('status-error');
         document.getElementById('status-text').innerText = "Connection Error";
-        // Only alert on critical connection failures
         if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' || err.type === 'unavailable-id') {
              alert("Connection Error (" + err.type + ")\n\nTry configuring a custom PeerServer via Settings if firewall is blocking public servers.");
         }
@@ -612,8 +629,20 @@
                     alert("Cannot connect: Peer system is disconnected. Check network or server settings.");
                     return;
                 }
+                const btn = document.getElementById('connect-btn');
+                btn.innerHTML = `<i data-lucide="loader-2" class="icon-sm animate-spin"></i> Connecting...`;
+                lucide.createIcons();
+                
                 const conn = peer.connect(tid, { reliable: true });
                 setupConnection(conn);
+                
+                // Connection Timeout Fallback
+                setTimeout(() => {
+                    if (!activeConn || !activeConn.open) {
+                        btn.innerHTML = "Connect Device";
+                        alert("Connection Timed Out.\n\nPossible causes:\n1. Different networks (NAT) without TURN server.\n2. Firewall blocking WebRTC.\n3. Incorrect UUID.");
+                    }
+                }, 10000);
             }
         }
     };
@@ -659,6 +688,7 @@
             fileInput.disabled = true;
             btn.innerHTML = "Connect Device";
             btn.classList.remove('btn-disconnect');
+            btn.style.background = ""; 
             input.disabled = false;
             document.getElementById('transfer-info').innerText = "Waiting for connection...";
         }
