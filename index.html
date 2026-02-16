@@ -398,7 +398,7 @@
         <div class="modal-content">
             <h3 style="margin-bottom: 15px;">Network Settings</h3>
             <p style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">
-                Configure a self-hosted PeerServer to bypass corporate firewalls.
+                Configure PeerServer. Default is Render (custom proxy).
             </p>
             
             <label style="font-size:12px; color:var(--text-dim);">Server Preset</label>
@@ -408,7 +408,7 @@
                 <option value="custom">Custom / Localhost</option>
             </select>
 
-            <label style="font-size:12px; color:var(--text-dim);">Host (IP or Domain)</label>
+            <label style="font-size:12px; color:var(--text-dim);">Host</label>
             <input type="text" id="conf-host" placeholder="my-p2p-server.onrender.com">
             
             <div style="display:flex; gap:10px;">
@@ -593,19 +593,20 @@
     const userConfig = getPeerConfig();
     let peerOptions = userConfig || {};
     
-    // Force inject STUN servers even for custom hosts
+    // Default STUN servers for robust NAT traversal
+    const ICE_SERVERS = [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+        { urls: 'stun:global.stun.twilio.com:3478' }
+    ];
+
     if (!peerOptions.config) {
         peerOptions.config = {};
     }
-    if (!peerOptions.config.iceServers) {
-        peerOptions.config.iceServers = [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' },
-            { urls: 'stun:stun3.l.google.com:19302' },
-            { urls: 'stun:stun4.l.google.com:19302' }
-        ];
-    }
+    peerOptions.config.iceServers = ICE_SERVERS;
 
     const peer = new Peer(customId, peerOptions);
     
@@ -640,7 +641,8 @@
         tag.classList.add('status-error');
         document.getElementById('status-text').innerText = "Connection Error";
         if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' || err.type === 'unavailable-id') {
-             alert("Connection Error (" + err.type + ")\n\nTry configuring a custom PeerServer via Settings if firewall is blocking public servers.");
+             // Only alert if serious
+             console.warn("PeerJS Critical Error:", err.type);
         }
     });
 
@@ -660,7 +662,10 @@
         newAccept.onclick = () => { 
             modal.style.display = 'none'; 
             setupConnection(conn); 
+            // Aggressively try to send ACK
             if(conn.open) conn.send({ type: 'handshake-ack' }); 
+            // Also try sending slightly later to ensure connectivity
+            setTimeout(() => { if(conn.open) conn.send({ type: 'handshake-ack' }); }, 1000);
         };
         newReject.onclick = () => { modal.style.display = 'none'; conn.close(); };
     });
@@ -681,12 +686,22 @@
                 const conn = peer.connect(tid, { reliable: true });
                 setupConnection(conn);
                 
+                // Monitor ICE State for debugging
+                conn.peerConnection.oniceconnectionstatechange = () => {
+                    const state = conn.peerConnection.iceConnectionState;
+                    console.log("ICE State:", state);
+                    if (state === 'failed' || state === 'disconnected') {
+                        document.getElementById('transfer-info').innerText = `Connection Failed (${state}). NAT/Firewall block likely.`;
+                        updateConnectionUI(false);
+                    }
+                };
+
                 setTimeout(() => {
                     if (!activeConn || !activeConn.open) {
-                        btn.innerHTML = "Connect Device";
-                        alert("Connection Timed Out.\n\nPossible causes:\n1. Different networks (NAT) without TURN server.\n2. Firewall blocking WebRTC.\n3. Incorrect UUID.");
+                        // Don't auto-disconnect here, let ICE try, but warn user
+                        document.getElementById('transfer-info').innerText = "Connecting is taking longer than usual... (NAT Traversal)";
                     }
-                }, 10000);
+                }, 8000);
             }
         }
     };
@@ -703,9 +718,20 @@
         conn.on('open', () => {
             updateConnectionUI(true);
             conn.send({ type: 'handshake-ack' }); 
+            // Keep-alive pinger
+            setInterval(() => { if(conn.open) conn.send({type:'ping'}); }, 5000);
         });
         
-        conn.on('data', data => { if (data.type === 'handshake-ack') updateConnectionUI(true); else handleData(data); });
+        conn.on('data', data => { 
+            if (data.type === 'handshake-ack') {
+                updateConnectionUI(true); 
+            } else if (data.type === 'ping') {
+                // Heartbeat received, do nothing
+            } else {
+                handleData(data);
+            }
+        });
+        
         conn.on('close', () => { updateConnectionUI(false); activeConn = null; });
         conn.on('error', () => { updateConnectionUI(false); activeConn = null; alert("Connection lost"); });
     }
