@@ -28,7 +28,7 @@
             --input-bg: rgba(15, 23, 42, 0.6);
             --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
             --history-item-bg: rgba(255, 255, 255, 0.05);
-            --modal-bg: #1e293b; /* Solid background for modal to prevent artifacts */
+            --modal-bg: #1e293b;
             --card-bg: rgba(255, 255, 255, 0.03);
         }
 
@@ -74,53 +74,41 @@
 
         .header { width: 100%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; flex-shrink: 0; }
         .header-left, .header-right { display: flex; align-items: center; gap: 15px; }
-
         .app-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         #system-time { font-size: 0.9rem; font-family: monospace; color: var(--text-dim); background: rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
-
         .icon-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
         .notification-dot { position: absolute; top: 0; right: 0; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid var(--input-bg); display: none; }
-
         .footer { width: 100%; max-width: 1400px; margin-top: 40px; padding: 20px 10px; font-size: 0.75rem; color: var(--text-dim); opacity: 0.7; text-align: left; line-height: 1.5; border-top: 1px solid var(--glass-border); flex-shrink: 0; position: relative; z-index: 10; }
-
         .icon { width: 20px; height: 20px; } .icon-lg { width: 24px; height: 24px; } .icon-sm { width: 16px; height: 16px; }
-
         h2 { margin: 0; font-weight: 700; letter-spacing: 1px; word-break: break-all; font-size: 1.1rem; line-height: 1.4; font-family: monospace; color: var(--primary); }
         h3 { margin: 0; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; }
-
         .id-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 5px 0; width: 100%; flex-shrink: 0; }
         .copy-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
         .copy-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
-        
         #qrcode { margin: 15px auto; padding: 12px; background: white; border-radius: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex-shrink: 0; }
         #qrcode img { display: block; }
-
         input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 14px; margin: 5px 0; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none; font-family: inherit; }
-
         button.action-btn { width: 100%; padding: 16px; margin-top: 5px; border-radius: 16px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s, filter 0.2s; flex-shrink: 0; }
         button.action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
         button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; opacity: 0.7; transform: none; }
         .btn-disconnect { background: var(--danger) !important; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important; }
-
         .file-upload-wrapper { position: relative; margin-top: 10px; border-radius: 16px; overflow: hidden; width: 100%; flex-shrink: 0; min-height: 120px; }
         .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
         .file-upload-btn { background: var(--input-bg); border: 1px dashed var(--text-dim); color: var(--text-dim); padding: 30px 20px; border-radius: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; justify-content: center; transition: all 0.2s; }
         .file-upload-wrapper:hover .file-upload-btn { border-color: var(--primary); background: rgba(255,255,255,0.05); }
-
         .text-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--primary); cursor: pointer; font-size: 13px; padding: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border-radius: 12px; margin-top: 10px; flex-shrink: 0; }
         .text-btn:hover { background: rgba(59, 130, 246, 0.1); color: var(--text-main); }
-
+        
+        /* Updated Progress Bar: Removed inner radius to fill gap */
         .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 10px 0 5px 0; overflow: hidden; display: none; flex-shrink: 0; }
-        #progress-bar { width: 0%; height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.1s linear; }
+        #progress-bar { width: 0%; height: 100%; background: var(--primary); border-radius: 0; transition: width 0.1s linear; }
 
         .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; flex-shrink: 0; }
         .metrics-item { display: flex; align-items: center; gap: 4px; }
-
         #status-tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 25px; font-size: 13px; font-weight: 700; margin: 5px auto 0 auto; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(59, 130, 246, 0.15); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2); flex-shrink: 0; }
         #status-tag.status-online { background: rgba(16, 185, 129, 0.2); color: var(--success); border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
         #status-tag.status-error { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
-
         .history-list { margin-top: 10px; overflow-y: auto; text-align: left; flex-grow: 1; min-height: 200px; }
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: var(--history-item-bg); border-radius: 12px; font-size: 13px; animation: fadeIn 0.3s ease-out; }
         .history-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; }
@@ -128,7 +116,6 @@
         .history-actions { display: flex; align-items: center; gap: 10px; }
         .action-icon { color: var(--text-dim); cursor: pointer; transition: all 0.2s; display: flex; }
         .action-icon:hover { color: var(--primary); transform: scale(1.1); }
-
         .preview-area { margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 15px; border: 1px solid var(--glass-border); display: none; flex-shrink: 0; animation: fadeIn 0.3s; }
         .preview-list { max-height: 160px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
         .preview-item { display: flex; flex-direction: row; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary); gap: 10px; }
@@ -136,53 +123,29 @@
         .preview-remove-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; }
         .preview-remove-btn:hover { color: var(--danger); }
         .preview-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
-        
-        /* --- RE-ENGINEERED BATCHER LAYOUT --- */
         .modal-large { width: 95%; max-width: 900px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
-        
         .batcher-header { padding: 15px 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        
-        /* Flex 1 and min-height 0 are crucial for nested scrolling */
         .batcher-layout { display: flex; flex: 1; min-height: 0; width: 100%; overflow: hidden; }
-        
-        .batcher-sidebar { 
-            width: 300px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); 
-            padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; 
-        }
-        
+        .batcher-sidebar { width: 300px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; }
         .batcher-main { flex: 1; padding: 20px; overflow-y: auto; background: var(--input-bg); position: relative; }
-        
         .batcher-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px; position: relative; transition: border 0.2s; }
+        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px; position: relative; transition: border 0.2s; }
         .batcher-card:hover { border-color: var(--primary); }
-        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: #000; }
+        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #000; }
         .batcher-remove { position: absolute; top: -6px; right: -6px; background: var(--danger); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); font-size: 14px; }
-
-        @media (max-width: 768px) {
-            .batcher-layout { flex-direction: column; }
-            /* Fixed height for sidebar on mobile to prevent crush */
-            .batcher-sidebar { width: 100%; height: auto; max-height: 40%; border-right: none; border-bottom: 1px solid var(--glass-border); padding: 15px; flex-shrink: 0; }
-            .batcher-main { height: auto; flex: 1; padding: 15px; }
-        }
-
+        @media (max-width: 768px) { .batcher-layout { flex-direction: column; } .batcher-sidebar { width: 100%; height: 220px; border-right: none; border-bottom: 1px solid var(--glass-border); padding: 15px; flex-shrink: 0; } .batcher-main { flex: 1; min-height: 0; padding: 15px; } .modal-large { height: 90vh; width: 95%; border-radius: 20px; } .modal-content { width: 95%; padding: 20px; } #batcher-log { display: none; } }
         .switch-label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim); cursor: pointer; margin: 5px 0; flex-shrink: 0; }
-        
-        /* Range slider container */
         .range-container { display: flex; align-items: center; gap: 10px; }
         .range-slider { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; -webkit-appearance: none; outline: none; margin: 0; }
         .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid #fff; }
-        
-        /* Small number input for sliders */
         .num-input { width: 60px !important; padding: 8px !important; text-align: center; margin: 0 !important; }
-
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px; z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .label-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; }
+        .warning-text { color: var(--warning); font-size: 11px; margin-top: 10px; text-align: left; padding-left: 5px; line-height: 1.5; background: rgba(245, 158, 11, 0.1); padding: 8px; border-radius: 8px; border-left: 3px solid var(--warning); }
     </style>
 </head>
 <body>
@@ -289,7 +252,6 @@
         </div>
     </div>
 
-    <!-- Batcher Modal -->
     <div id="batcher-modal" class="modal-overlay">
         <div class="modal-content modal-large">
             <div class="batcher-header">
@@ -298,7 +260,6 @@
             </div>
             
             <div class="batcher-layout">
-                <!-- Sidebar -->
                 <div class="batcher-sidebar">
                     <div>
                         <div class="label-row">RESIZE MODE</div>
@@ -339,7 +300,6 @@
                     <div id="batcher-log" style="font-size:11px; text-align:center;"></div>
                 </div>
 
-                <!-- Main Dropzone -->
                 <div class="batcher-main" id="batcher-dropzone" onclick="document.getElementById('batcher-input').click()">
                     <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files)">
                     <div id="batcher-empty" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; opacity:0.4;"><i data-lucide="image-plus" style="width:48px;height:48px;"></i><p>Add Images</p></div>
@@ -399,9 +359,9 @@
             document.getElementById('conn-req-text').innerText = `Remote device (${conn.peer.substring(0,8)}...) wants to connect. Do you accept?`;
             modal.style.display = 'flex';
             
-            // Clean listeners
             const btnAccept = document.getElementById('btn-accept-conn');
             const btnReject = document.getElementById('btn-reject-conn');
+            
             const newAccept = btnAccept.cloneNode(true);
             const newReject = btnReject.cloneNode(true);
             btnAccept.parentNode.replaceChild(newAccept, btnAccept);
@@ -472,13 +432,16 @@
         lucide.createIcons();
     }
 
-    // --- File Handlers ---
     let receivedChunks = {};
     let transferStartTime = 0;
     let historyData = [];
 
     async function handleData(data) {
         if (data.type === 'file-start') {
+            // ZIP FIX: Use persisted check state or user intent
+            const zipMode = document.getElementById('zip-mode').checked;
+            if (zipMode && !window.zipSession) window.zipSession = new JSZip();
+            
             receivedChunks[data.name] = [];
             transferStartTime = Date.now();
             document.getElementById('progress-container').style.display = 'block';
@@ -489,7 +452,15 @@
             updateMetrics(receivedChunks[data.name].length * CHUNK_SIZE, data.total * CHUNK_SIZE);
         } else if (data.type === 'file-end') {
             const blob = new Blob(receivedChunks[data.name]);
-            saveFile(blob, data.name);
+            
+            // ZIP LOGIC FIX: Check if active zip session exists
+            if (window.zipSession) {
+                window.zipSession.file(data.name, blob);
+                document.getElementById('transfer-info').innerText = `${data.name} added to ZIP`;
+            } else {
+                saveFile(blob, data.name);
+            }
+            
             historyData.push({ name: data.name, blob });
             addHistory('IN', data.name, blob.size, historyData.length - 1);
             if (data.name.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
@@ -497,6 +468,28 @@
                 document.getElementById('smart-toast').style.display = 'flex';
             }
             delete receivedChunks[data.name];
+        } else if (data.type === 'batch-end') {
+            // FORCE 100% VISUAL
+            document.getElementById('progress-bar').style.width = '100%';
+            
+            if (window.zipSession) {
+                document.getElementById('transfer-info').innerText = "Packing ZIP...";
+                const content = await window.zipSession.generateAsync({type:"blob"});
+                saveFile(content, "Transfer_Pack_" + Date.now() + ".zip");
+                window.zipSession = null;
+            }
+            
+            const info = document.getElementById('transfer-info');
+            info.innerText = "All files transferred successfully. ✅";
+            info.style.color = "var(--success)";
+            
+            setTimeout(() => { 
+                document.getElementById('progress-container').style.display = 'none';
+                document.getElementById('metrics-display').style.display = 'none';
+                info.style.color = "var(--text-dim)";
+                info.innerText = "Ready to transfer files";
+                document.getElementById('progress-bar').style.width = '0%';
+            }, 5000);
         }
     }
 
@@ -509,7 +502,6 @@
         document.getElementById('eta-text').innerText = (eta > 60 ? Math.floor(eta/60) + "m" : eta + "s") + " left";
     }
 
-    // --- Helpers ---
     function formatBytes(b) { if(b===0) return '0 B'; const k=1024, s=['B','KB','MB','GB','TB'], i=Math.floor(Math.log(b)/Math.log(k)); return parseFloat((b/Math.pow(k,i)).toFixed(2))+' '+s[i]; }
     function saveFile(b, n) { const u=URL.createObjectURL(b), a=document.createElement('a'); a.href=u; a.download=n; a.click(); }
     function updateProgress(p, m) { document.getElementById('progress-bar').style.width = p+"%"; document.getElementById('transfer-info').innerText = m; }
@@ -525,7 +517,6 @@
     
     function reDownload(idx) { const item = historyData[idx]; if (item && item.blob) saveFile(item.blob, item.name); }
 
-    // --- Modals & Presets ---
     function openSettingsModal() { 
         document.getElementById('settings-modal').style.display = 'flex'; 
         document.getElementById('metered-key').value = localStorage.getItem('meteredKey') || ''; 
@@ -575,7 +566,6 @@
     function clearHistory() { document.getElementById('history-list').innerHTML = ''; historyData = []; }
     function cancelTransfer() { document.getElementById('preview-area').style.display = 'none'; document.getElementById('upload-wrapper').style.display = 'block'; document.querySelector('.text-btn').style.display = 'flex'; filesQueue = []; }
 
-    // Send files logic
     document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) { filesQueue = Array.from(e.target.files); renderPreview(); } };
     function handleAddMoreFiles(input) { if(input.files.length > 0) { filesQueue = [...filesQueue, ...Array.from(input.files)]; renderPreview(); input.value = ""; } }
     
@@ -615,9 +605,9 @@
             activeConn.send({ type: 'file-end', name: file.name });
             addHistory('OUT', file.name, file.size, -1);
         }
+        activeConn.send({ type: 'batch-end' });
     }
 
-    // Batcher Logic
     let batcherFiles = [];
     document.getElementById('batcher-toggle').onclick = () => toggleBatcher(true);
     function toggleBatcher(s) { document.getElementById('batcher-modal').style.display = s?'flex':'none'; if(s) renderBatcher(); }
@@ -660,7 +650,6 @@
         log.innerText = "Done!";
         btn.disabled = false; btn.innerHTML = '<i data-lucide="zap"></i> Process & Zip'; lucide.createIcons();
     }
-    
     function processImg(f, s) { return new Promise(res => { const img = new Image(); img.src = URL.createObjectURL(f); img.onload = () => { const can = document.createElement('canvas'); let w = img.width, h = img.height; if(s.mode === 'scale') { w *= s.scale; h *= s.scale; } else { const r = h/w; w = s.width; h = w*r; } can.width = w; can.height = h; can.getContext('2d').drawImage(img, 0,0, w, h); can.toBlob(res, s.format, s.quality); } }); }
 
     setInterval(() => { document.getElementById('system-time').innerText = new Date().toLocaleTimeString([], {hour12:false}); }, 1000);
