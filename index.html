@@ -211,7 +211,6 @@
         .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; }
         .metrics-item { display: flex; align-items: center; gap: 4px; }
 
-        /* Modified Status Tag Centering */
         #status-tag {
             display: inline-flex;
             align-items: center;
@@ -220,17 +219,22 @@
             border-radius: 25px;
             font-size: 13px;
             font-weight: 700;
-            margin: 5px auto 0 auto; /* CENTERED HERE */
+            margin: 5px auto 0 auto;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(59, 130, 246, 0.15); /* Default standby blue */
+            background: rgba(59, 130, 246, 0.15); 
             color: var(--primary);
             border: 1px solid rgba(59, 130, 246, 0.2);
         }
         #status-tag.status-online {
-            background: rgba(16, 185, 129, 0.2); /* Connected green */
+            background: rgba(16, 185, 129, 0.2);
             color: var(--success);
             border-color: rgba(16, 185, 129, 0.3);
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+        #status-tag.status-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
         }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
 
@@ -285,7 +289,6 @@
         .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #000; }
         .batcher-remove { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
-        /* Mobile Batcher Layout Fix */
         @media (max-width: 768px) {
             .batcher-layout { flex-direction: column; }
             .batcher-sidebar { width: 100%; height: auto; max-height: 40%; border-right: none; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
@@ -315,6 +318,7 @@
         <div class="header-right">
             <span id="system-time">--:--</span>
             <button class="icon-btn" id="batcher-toggle" title="Image Batcher"><i data-lucide="images" class="icon"></i><div class="notification-dot" id="batcher-dot"></div></button>
+            <button class="icon-btn" id="settings-btn" title="Network Settings" onclick="openSettingsModal()"><i data-lucide="settings" class="icon"></i></button>
             <button class="icon-btn" id="theme-btn" title="Toggle Mode"><i data-lucide="sun" class="icon" id="icon-sun" style="display:none"></i><i data-lucide="moon" class="icon" id="icon-moon"></i></button>
         </div>
     </div>
@@ -389,17 +393,47 @@
     </div>
 
     <!-- Modals -->
+    <!-- Network Settings Modal -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px;">Network Settings</h3>
+            <p style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">
+                Configure a self-hosted PeerServer to bypass corporate firewalls. Leave empty to use default public server.
+            </p>
+            
+            <label style="font-size:12px; color:var(--text-dim);">Host (IP or Domain)</label>
+            <input type="text" id="conf-host" placeholder="0.peerjs.com">
+            
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label style="font-size:12px; color:var(--text-dim);">Port</label>
+                    <input type="number" id="conf-port" placeholder="443">
+                </div>
+                <div style="flex:2;">
+                    <label style="font-size:12px; color:var(--text-dim);">Path</label>
+                    <input type="text" id="conf-path" placeholder="/">
+                </div>
+            </div>
+            
+            <label class="switch-label" style="margin-top:10px;">
+                <input type="checkbox" id="conf-secure" checked> <span>Secure (HTTPS/WSS)</span>
+            </label>
+
+            <div class="preview-actions" style="margin-top:20px;">
+                <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" onclick="closeSettingsModal()">Cancel</button>
+                <button class="action-btn" style="margin-top:0; flex:2;" onclick="savePeerConfig()">Save & Reload</button>
+            </div>
+        </div>
+    </div>
+
     <div id="url-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin-bottom: 15px;">Cloud Import</h3>
             <input type="text" id="url-input" placeholder="Google Drive sharing link or URL">
             <label class="switch-label"><input type="checkbox" id="cors-proxy-check"> <span>Use CORS Proxy (for GDrive)</span></label>
-            
-            <!-- Restored Point 4: Warning sentence -->
             <p class="warning-text">
                 ⚠️ Warning: Using a proxy sends traffic through a third-party server. Do not use for sensitive data.
             </p>
-            
             <div class="preview-actions" style="margin-top:20px;">
                 <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" onclick="closeUrlModal()">Cancel</button>
                 <button class="action-btn" style="margin-top:0; flex:2;" onclick="processUrlImport()">Fetch File</button>
@@ -474,22 +508,91 @@
 <script>
     lucide.createIcons();
     const CHUNK_SIZE = 16384 * 4; 
-    const customId = crypto.randomUUID();
-    const peer = new Peer(customId);
+    
+    function generateUUID() {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    const customId = generateUUID();
+    document.getElementById('my-id').innerText = customId;
+    
+    // --- Config Logic ---
+    function getPeerConfig() {
+        const saved = localStorage.getItem('peerConfig');
+        return saved ? JSON.parse(saved) : null;
+    }
+
+    function savePeerConfig() {
+        const host = document.getElementById('conf-host').value.trim();
+        const port = document.getElementById('conf-port').value.trim();
+        const path = document.getElementById('conf-path').value.trim();
+        const secure = document.getElementById('conf-secure').checked;
+
+        if (!host) {
+            localStorage.removeItem('peerConfig');
+        } else {
+            localStorage.setItem('peerConfig', JSON.stringify({ host, port: port ? parseInt(port) : undefined, path: path || '/', secure }));
+        }
+        location.reload();
+    }
+
+    function openSettingsModal() {
+        document.getElementById('settings-modal').style.display = 'flex';
+        const config = getPeerConfig();
+        if (config) {
+            document.getElementById('conf-host').value = config.host;
+            document.getElementById('conf-port').value = config.port || '';
+            document.getElementById('conf-path').value = config.path;
+            document.getElementById('conf-secure').checked = config.secure;
+        }
+    }
+    
+    function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+
+    // Initialize Peer with Config
+    const config = getPeerConfig();
+    const peer = config ? new Peer(customId, config) : new Peer(customId);
+    
     let activeConn = null;
     let zip = null;
     let filesQueue = [];
     let historyData = []; 
-
     let transferStartTime = 0;
 
     peer.on('open', id => {
-        document.getElementById('my-id').innerText = id;
-        document.getElementById('status-tag').classList.remove('status-online');
+        const tag = document.getElementById('status-tag');
+        tag.classList.add('status-online');
+        tag.classList.remove('status-error');
         document.getElementById('status-text').innerText = "System Online";
-        new QRCode(document.getElementById("qrcode"), { text: window.location.href.split('?')[0] + "?join=" + id, width: 140, height: 140 });
+        
+        new QRCode(document.getElementById("qrcode"), { 
+            text: window.location.href.split('?')[0] + "?join=" + id, 
+            width: 140, 
+            height: 140,
+            colorDark : "#000000",
+            colorLight : "#ffffff"
+        });
+        
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');
+    });
+
+    peer.on('error', err => {
+        console.error(err);
+        const tag = document.getElementById('status-tag');
+        tag.classList.remove('status-online');
+        tag.classList.add('status-error');
+        document.getElementById('status-text').innerText = "Connection Error";
+        // Only alert on critical connection failures
+        if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' || err.type === 'unavailable-id') {
+             alert("Connection Error (" + err.type + ")\n\nTry configuring a custom PeerServer via Settings if firewall is blocking public servers.");
+        }
     });
 
     peer.on('connection', conn => {
@@ -504,17 +607,26 @@
         if (activeConn) { activeConn.close(); } 
         else {
             const tid = document.getElementById('peer-id-input').value.trim();
-            if (tid) setupConnection(peer.connect(tid, { reliable: true }));
+            if (tid) {
+                if (peer.disconnected) {
+                    alert("Cannot connect: Peer system is disconnected. Check network or server settings.");
+                    return;
+                }
+                const conn = peer.connect(tid, { reliable: true });
+                setupConnection(conn);
+            }
         }
     };
 
     function setupConnection(conn) {
         if (activeConn) return; 
         activeConn = conn;
+        
         if (conn.open) updateConnectionUI(true);
         conn.on('open', () => updateConnectionUI(true));
         conn.on('data', data => { if (data.type === 'handshake-ack') updateConnectionUI(true); else handleData(data); });
         conn.on('close', () => { updateConnectionUI(false); activeConn = null; });
+        conn.on('error', () => { updateConnectionUI(false); activeConn = null; alert("Connection lost"); });
     }
 
     function updateConnectionUI(isConnected) {
@@ -523,17 +635,27 @@
         const statusText = document.getElementById('status-text');
         const statusTag = document.getElementById('status-tag');
         const fileInput = document.getElementById('file-input');
+        
         if (isConnected) {
             statusText.innerText = "Connected";
             statusTag.classList.add('status-online');
+            statusTag.classList.remove('status-error');
             fileInput.disabled = false;
             btn.innerHTML = `<i data-lucide="x-circle" class="icon-sm" style="margin-right:5px"></i> Disconnect Device`;
             btn.classList.add('btn-disconnect');
             input.disabled = true;
             document.getElementById('transfer-info').innerText = "Connection Secure. Ready to Transfer.";
         } else {
-            statusText.innerText = "System Online";
-            statusTag.classList.remove('status-online');
+            if(peer.disconnected) {
+                 statusText.innerText = "Offline";
+                 statusTag.classList.remove('status-online');
+                 statusTag.classList.add('status-error');
+            } else {
+                 statusText.innerText = "System Online";
+                 statusTag.classList.remove('status-online');
+                 statusTag.classList.remove('status-error');
+            }
+            
             fileInput.disabled = true;
             btn.innerHTML = "Connect Device";
             btn.classList.remove('btn-disconnect');
