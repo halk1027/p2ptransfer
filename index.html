@@ -47,992 +47,434 @@
         }
 
         * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-gradient);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            color: var(--text-main);
-            min-height: 100vh;
-            margin: 0;
-            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-gradient); background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+            display: flex; flex-direction: column; align-items: center; padding: 20px; color: var(--text-main);
+            min-height: 100vh; margin: 0; overflow-x: hidden;
         }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .main-layout { display: flex; flex-direction: row; gap: 24px; width: 100%; max-width: 1400px; align-items: stretch; flex: 1; margin-top: 20px; }
+        .main-layout { display: flex; flex-direction: row; gap: 24px; width: 100%; max-width: 1400px; align-items: stretch; flex: 1; margin-top: 20px; min-height: 0; /* Fix flex overflow */ }
         @media (max-width: 1024px) {
-            .main-layout { flex-direction: column; align-items: center; }
+            .main-layout { flex-direction: column; align-items: center; height: auto; }
             .glass-panel { max-width: 500px !important; width: 100% !important; min-height: auto !important; }
         }
 
         .glass-panel {
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: var(--shadow);
-            padding: 28px; flex: 1; min-width: 300px; position: relative; display: flex; flex-direction: column; gap: 12px;
+            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
+            border-radius: 24px; box-shadow: var(--shadow); padding: 28px; flex: 1; min-width: 300px;
+            position: relative; display: flex; flex-direction: column; gap: 15px; /* Increased gap */
+            overflow-y: auto; /* Allow scrolling if content is too tall */
         }
         .panel-center { flex: 1.3; }
 
-        .header { width: 100%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
+        .header { width: 100%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; flex-shrink: 0; }
         .header-left, .header-right { display: flex; align-items: center; gap: 15px; }
+
         .app-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         #system-time { font-size: 0.9rem; font-family: monospace; color: var(--text-dim); background: rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
 
-        .icon-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); position: relative; }
-        .icon-btn:hover { background: rgba(255,255,255,0.1); }
+        .icon-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
         .notification-dot { position: absolute; top: 0; right: 0; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid var(--input-bg); display: none; }
 
-        .footer { width: 100%; max-width: 1400px; margin-top: 40px; padding: 20px 10px; font-size: 0.75rem; color: var(--text-dim); opacity: 0.7; text-align: left; line-height: 1.5; border-top: 1px solid var(--glass-border); }
+        .footer { width: 100%; max-width: 1400px; margin-top: 40px; padding: 20px 10px; font-size: 0.75rem; color: var(--text-dim); opacity: 0.7; text-align: left; line-height: 1.5; border-top: 1px solid var(--glass-border); flex-shrink: 0; }
 
         .icon { width: 20px; height: 20px; } .icon-lg { width: 24px; height: 24px; } .icon-sm { width: 16px; height: 16px; }
 
         h2 { margin: 0; font-weight: 700; letter-spacing: 1px; word-break: break-all; font-size: 1.1rem; line-height: 1.4; font-family: monospace; color: var(--primary); }
         h3 { margin: 0; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; }
 
-        .id-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 5px 0; width: 100%; }
-        .copy-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
-        .copy-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
+        .id-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 5px 0; width: 100%; flex-shrink: 0; }
+        .copy-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .copy-btn:hover { background: var(--primary); color: white; }
         
-        #qrcode { margin: 15px auto; padding: 12px; background: white; border-radius: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        #qrcode img { display: block; }
+        #qrcode { margin: 15px auto; padding: 12px; background: white; border-radius: 16px; display: inline-block; flex-shrink: 0; }
 
         input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 14px; margin: 5px 0; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none; font-family: inherit; }
-        button.action-btn { width: 100%; padding: 16px; margin-top: 5px; border-radius: 16px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s, filter 0.2s; }
-        button.action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; opacity: 0.7; transform: none; }
-        .btn-disconnect { background: var(--danger) !important; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important; }
+        
+        button.action-btn { width: 100%; padding: 16px; margin-top: 5px; border-radius: 16px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; flex-shrink: 0; }
+        button.action-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        button.action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-disconnect { background: var(--danger) !important; }
 
-        .file-upload-wrapper { position: relative; margin-top: 10px; border-radius: 16px; overflow: hidden; width: 100%; }
+        /* FIXED: Prevent overlap by disallowing shrink and setting min height */
+        .file-upload-wrapper { 
+            position: relative; margin-top: 10px; border-radius: 16px; overflow: hidden; width: 100%; 
+            flex-shrink: 0; min-height: 120px;
+        }
         .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
-        .file-upload-btn { background: var(--input-bg); border: 1px dashed var(--text-dim); color: var(--text-dim); padding: 30px 20px; border-radius: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: all 0.2s; }
+        .file-upload-btn { 
+            background: var(--input-bg); border: 1px dashed var(--text-dim); color: var(--text-dim); padding: 30px 20px; 
+            border-radius: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; justify-content: center;
+        }
         .file-upload-wrapper:hover .file-upload-btn { border-color: var(--primary); background: rgba(255,255,255,0.05); }
 
-        .text-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--primary); cursor: pointer; font-size: 13px; padding: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border-radius: 12px; margin-top: 10px; }
+        /* FIXED: Text btn spacing */
+        .text-btn { 
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--primary); cursor: pointer; 
+            font-size: 13px; padding: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; 
+            width: 100%; border-radius: 12px; margin-top: 10px; flex-shrink: 0;
+        }
         .text-btn:hover { background: rgba(59, 130, 246, 0.1); color: var(--text-main); }
 
-        .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 10px 0 5px 0; overflow: hidden; display: none; }
+        #status-tag {
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 25px;
+            font-size: 13px; font-weight: 700; margin: 5px auto 0 auto;
+            background: rgba(59, 130, 246, 0.15); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2); flex-shrink: 0;
+        }
+        #status-tag.status-online { background: rgba(16, 185, 129, 0.2); color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
+        #status-tag.status-error { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+        .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 10px 0 5px 0; overflow: hidden; display: none; flex-shrink: 0; }
         #progress-bar { width: 0%; height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.1s linear; }
 
-        .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; }
-        .metrics-item { display: flex; align-items: center; gap: 4px; }
-
-        #status-tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 25px; font-size: 13px; font-weight: 700; margin: 5px auto 0 auto; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(59, 130, 246, 0.15); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2); }
-        #status-tag.status-online { background: rgba(16, 185, 129, 0.2); color: var(--success); border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
-        #status-tag.status-error { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
-
-        .history-list { margin-top: 10px; overflow-y: auto; text-align: left; flex-grow: 1; min-height: 250px; }
+        .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; flex-shrink: 0; }
+        .history-list { margin-top: 10px; overflow-y: auto; text-align: left; flex-grow: 1; min-height: 200px; }
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: var(--history-item-bg); border-radius: 12px; font-size: 13px; animation: fadeIn 0.3s ease-out; }
-        .history-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; }
-        .history-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
-        .history-actions { display: flex; align-items: center; gap: 10px; }
-        .action-icon { color: var(--text-dim); cursor: pointer; transition: all 0.2s; display: flex; }
-        .action-icon:hover { color: var(--primary); transform: scale(1.1); }
 
-        .preview-area { margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 15px; border: 1px solid var(--glass-border); display: none; animation: fadeIn 0.3s; }
-        .preview-list { max-height: 160px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
-        .preview-item { display: flex; flex-direction: row; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary); gap: 10px; }
-        .preview-content { flex: 1; overflow: hidden; line-height: 1.4; }
-        .preview-remove-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; }
-        .preview-remove-btn:hover { color: var(--danger); }
-        .preview-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .preview-area { margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 15px; border: 1px solid var(--glass-border); display: none; flex-shrink: 0; }
+        .preview-list { max-height: 160px; overflow-y: auto; margin-bottom: 15px; }
+        .preview-item { display: flex; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary); gap: 10px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
-        .modal-large { max-width: 960px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
-
-        .warning-text { color: var(--warning); font-size: 11px; margin-top: 10px; text-align: left; padding-left: 5px; line-height: 1.5; background: rgba(245, 158, 11, 0.1); padding: 8px; border-radius: 8px; border-left: 3px solid var(--warning); }
-
+        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+        
         .batcher-layout { display: flex; height: 100%; overflow: hidden; }
-        .batcher-sidebar { width: 280px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .batcher-sidebar { width: 280px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; }
         .batcher-main { flex: 1; padding: 25px; overflow-y: auto; background: var(--input-bg); }
         .batcher-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px; position: relative; transition: border 0.2s; }
-        .batcher-card:hover { border-color: var(--primary); }
-        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #000; }
-        .batcher-remove { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-
+        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px; position: relative; }
+        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; }
+        
         @media (max-width: 768px) {
             .batcher-layout { flex-direction: column; }
-            .batcher-sidebar { width: 100%; height: auto; max-height: 40%; border-right: none; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
-            .batcher-main { height: auto; flex: 1; }
+            .batcher-sidebar { width: 100%; height: auto; max-height: 45%; border-right: none; border-bottom: 1px solid var(--glass-border); }
         }
 
-        .switch-label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim); cursor: pointer; margin: 5px 0; }
-        .range-slider { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; -webkit-appearance: none; outline: none; margin: 10px 0; }
-        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid #fff; }
-
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px; z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-        @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px; z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        
+        .switch-label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim); cursor: pointer; margin: 5px 0; flex-shrink: 0; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="header-left">
-            <div class="app-title"><i data-lucide="zap" class="icon-lg" style="color: var(--primary);"></i> P2P Air Channel</div>
-        </div>
+        <div class="header-left"><div class="app-title"><i data-lucide="zap" class="icon-lg" style="color: var(--primary);"></i> P2P Air Channel</div></div>
         <div class="header-right">
             <span id="system-time">--:--</span>
             <button class="icon-btn" id="batcher-toggle" title="Image Batcher"><i data-lucide="images" class="icon"></i><div class="notification-dot" id="batcher-dot"></div></button>
-            <button class="icon-btn" id="settings-btn" title="Network Settings" onclick="openSettingsModal()"><i data-lucide="settings" class="icon"></i></button>
+            <button class="icon-btn" id="settings-btn" title="Settings" onclick="openSettingsModal()"><i data-lucide="settings" class="icon"></i></button>
             <button class="icon-btn" id="theme-btn" title="Toggle Mode"><i data-lucide="sun" class="icon" id="icon-sun" style="display:none"></i><i data-lucide="moon" class="icon" id="icon-moon"></i></button>
         </div>
     </div>
 
     <div class="main-layout">
-        <!-- LEFT PANEL -->
+        <!-- IDENTITY -->
         <div class="glass-panel" style="text-align: center;">
-            <div style="margin-bottom: 5px;"><h3>My Identity</h3></div>
+            <h3>My Identity</h3>
             <div class="id-wrapper">
                 <h2 id="my-id">...</h2>
                 <button id="copy-id-btn" class="copy-btn" title="Copy ID"><i data-lucide="copy" class="icon"></i></button>
             </div>
             <div id="qrcode"></div>
             <div id="status-tag"><div class="status-dot"></div><span id="status-text">Initializing...</span></div>
-            <div style="margin-top: 15px; font-size: 12px; color: var(--text-dim); text-align: center; line-height: 1.5;">
-                Scan QR or share UUID to establish link.
-            </div>
+            <p style="font-size:11px; opacity:0.6; margin-top:10px;">Share UUID to establish link.</p>
         </div>
 
-        <!-- CENTER PANEL -->
+        <!-- CONTROL -->
         <div class="glass-panel panel-center">
-            <div style="display: flex; align-items: center; gap: 8px;"><i data-lucide="link" class="icon-sm"></i><h3>Connection</h3></div>
+            <div style="display:flex; align-items:center; gap:8px;"><i data-lucide="link" class="icon-sm"></i><h3>Connection</h3></div>
             <input type="text" id="peer-id-input" placeholder="Enter remote UUID">
             <button id="connect-btn" class="action-btn">Connect Device</button>
             
-            <div style="margin-top: 20px; display: flex; align-items: center; gap: 8px;"><i data-lucide="file-up" class="icon-sm"></i><h3>File Transfer</h3></div>
-            <label class="switch-label"><input type="checkbox" id="zip-mode" style="accent-color: var(--primary); transform: scale(1.1);"> <span>Auto-pack received files into ZIP</span></label>
+            <div style="margin-top:20px; display:flex; align-items:center; gap:8px;"><i data-lucide="file-up" class="icon-sm"></i><h3>File Transfer</h3></div>
+            <label class="switch-label"><input type="checkbox" id="zip-mode" style="accent-color:var(--primary); transform:scale(1.1);"> Auto-pack into ZIP</label>
 
             <div class="file-upload-wrapper" id="upload-wrapper">
-                <div class="file-upload-btn" id="drop-zone">
-                    <i data-lucide="upload-cloud" class="icon-lg" style="width:40px; height:40px; color: var(--primary);"></i>
-                    <span style="font-weight: 500;">Tap or Drop files here</span>
-                </div>
+                <div class="file-upload-btn" id="drop-zone"><i data-lucide="upload-cloud" class="icon-lg" style="color:var(--primary);"></i><span style="font-weight:500;">Tap or Drop files here</span></div>
                 <input type="file" id="file-input" multiple disabled>
             </div>
-            <button class="text-btn" onclick="openUrlModal()"><i data-lucide="cloud-download" class="icon-sm"></i><span>Import from Google Drive / URL</span></button>
+            <button class="text-btn" onclick="openUrlModal()"><i data-lucide="cloud-download" class="icon-sm"></i><span>Import from Drive / URL</span></button>
 
             <div id="preview-area" class="preview-area">
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items: center;">
-                    <b style="font-size: 14px;">Queue Management</b>
-                    <span id="queue-count" style="font-size:11px; padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 10px;">0 files</span>
-                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><b>Queue</b><span id="queue-count" style="font-size:11px;">0 files</span></div>
                 <div id="preview-list" class="preview-list"></div>
-                <div class="preview-actions">
-                    <button class="btn-cancel" style="padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: none; color: var(--text-main); cursor: pointer;" onclick="cancelTransfer()">Clear All</button>
-                    <input type="file" id="add-more-input" multiple style="display:none" onchange="handleAddMoreFiles(this)">
-                    <button class="action-btn" style="margin-top:0; flex:1; background: var(--input-bg); border: 1px solid var(--glass-border);" onclick="document.getElementById('add-more-input').click()">+ Add Files</button>
-                    <button class="action-btn" style="margin-top:0; flex:1.5; background:var(--success);" onclick="confirmSend()">Send Now</button>
+                <div style="display:flex; gap:10px;">
+                    <button class="action-btn" style="background:transparent; border:1px solid var(--glass-border); flex:1;" onclick="cancelTransfer()">Clear</button>
+                    <button class="action-btn" style="background:var(--success); flex:2;" onclick="confirmSend()">Send Now</button>
                 </div>
             </div>
             
             <div class="progress-container" id="progress-container"><div id="progress-bar"></div></div>
-            
             <div class="metrics-grid" id="metrics-display" style="display:none">
-                <div class="metrics-item"><i data-lucide="gauge" class="icon-sm"></i><span id="speed-text">0 KB/s</span></div>
-                <div class="metrics-item"><i data-lucide="timer" class="icon-sm"></i><span id="eta-text">--s</span></div>
+                <div style="display:flex; align-items:center; gap:4px;"><i data-lucide="gauge" class="icon-sm"></i><span id="speed-text">0 KB/s</span></div>
+                <div style="display:flex; align-items:center; gap:4px;"><i data-lucide="timer" class="icon-sm"></i><span id="eta-text">--s left</span></div>
             </div>
-
-            <div id="transfer-info" style="font-size: 12px; color: var(--text-dim); text-align: center; min-height: 18px;">Waiting for connection...</div>
+            <div id="transfer-info" style="font-size: 12px; color: var(--text-dim); text-align: center;">Waiting...</div>
         </div>
 
-        <!-- RIGHT PANEL -->
+        <!-- HISTORY -->
         <div class="glass-panel">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 8px;"><i data-lucide="history" class="icon-sm"></i><h3>Activity History</h3></div>
-                <span style="font-size: 11px; opacity: 0.6; cursor: pointer; text-decoration: underline;" onclick="clearHistory()">Clear</span>
-            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between;"><div style="display:flex; align-items:center; gap:8px;"><i data-lucide="history" class="icon-sm"></i><h3>Activity</h3></div><span style="font-size:11px; cursor:pointer; opacity:0.6;" onclick="clearHistory()">Clear</span></div>
             <div id="history-list" class="history-list">
-                <div style="text-align: center; color: var(--text-dim); padding: 40px 20px; font-size: 12px; font-style: italic;">No recent transfers</div>
+                <div style="text-align: center; color: var(--text-dim); padding: 40px 20px; font-size: 12px; font-style: italic;">No history</div>
             </div>
         </div>
     </div>
 
     <!-- Modals -->
-    <!-- Network Settings Modal -->
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin-bottom: 15px;">Network Settings</h3>
-            <p style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">
-                Configure self-hosted PeerServer and STUN/TURN for firewall bypass.
-            </p>
-            
-            <label style="font-size:12px; color:var(--text-dim);">Server Preset</label>
-            <select id="conf-preset" onchange="applyPreset()" style="margin-bottom: 10px;">
+            <h3>Network Settings</h3>
+            <label style="font-size:11px;">Server Preset</label>
+            <select id="conf-preset" onchange="applyPreset()">
                 <option value="render">Default (Render Proxy)</option>
                 <option value="public">Public (0.peerjs.com)</option>
-                <option value="custom">Custom / Localhost</option>
+                <option value="custom">Custom Server</option>
             </select>
-
-            <label style="font-size:12px; color:var(--text-dim);">Host (IP or Domain)</label>
-            <input type="text" id="conf-host" placeholder="my-p2p-server.onrender.com">
-            
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1;">
-                    <label style="font-size:12px; color:var(--text-dim);">Port</label>
-                    <input type="number" id="conf-port" placeholder="443">
-                </div>
-                <div style="flex:2;">
-                    <label style="font-size:12px; color:var(--text-dim);">Path</label>
-                    <input type="text" id="conf-path" placeholder="/myapp">
-                </div>
+            <div style="background:rgba(59,130,246,0.1); padding:12px; border-radius:12px; border:1px solid rgba(59,130,246,0.2); margin-top:10px;">
+                <label style="font-size:11px; font-weight:700;">Metered.ca API Key</label>
+                <input type="text" id="metered-key" placeholder="Paste Metered Key here">
+                <p style="font-size:10px; color:var(--text-dim);">Enable 100% traversal via Port 443 Relay.</p>
             </div>
-            
-            <label class="switch-label" style="margin-top:10px;">
-                <input type="checkbox" id="conf-secure" checked> <span>Secure (HTTPS/WSS)</span>
-            </label>
-
-            <!-- New Section for Custom ICE/TURN -->
-            <hr style="border:0; border-top:1px solid var(--glass-border); margin: 15px 0;">
-            <label style="font-size:12px; color:var(--text-dim);">Custom ICE Servers (JSON) - Optional</label>
-            <textarea id="conf-ice" placeholder='[{"urls":"turn:your-turn-server.com","username":"user","credential":"pass"}]' style="width:100%; height:60px; padding:10px; border-radius:12px; background:var(--input-bg); border:1px solid var(--glass-border); color:var(--text-main); font-size:11px; margin-top:5px; font-family:monospace; resize:none;"></textarea>
-            <p style="font-size:10px; color:var(--warning); margin-top:5px;">* Use this to add TURN servers for Symmetric NAT.</p>
-
-            <div class="preview-actions" style="margin-top:20px;">
-                <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" onclick="closeSettingsModal()">Cancel</button>
-                <button class="action-btn" style="margin-top:0; flex:2;" onclick="savePeerConfig()">Save & Reload</button>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="action-btn" style="background:transparent; border:1px solid var(--glass-border); flex:1;" onclick="closeSettingsModal()">Cancel</button>
+                <button class="action-btn" style="flex:2;" onclick="savePeerConfig()">Save & Reload</button>
             </div>
         </div>
     </div>
 
-    <!-- Import Modal -->
     <div id="url-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin-bottom: 15px;">Cloud Import</h3>
-            <input type="text" id="url-input" placeholder="Google Drive sharing link or URL">
-            <label class="switch-label"><input type="checkbox" id="cors-proxy-check"> <span>Use CORS Proxy (for GDrive)</span></label>
-            <p class="warning-text">
-                ⚠️ Warning: Using a proxy sends traffic through a third-party server. Do not use for sensitive data.
-            </p>
-            <div class="preview-actions" style="margin-top:20px;">
-                <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" onclick="closeUrlModal()">Cancel</button>
-                <button class="action-btn" style="margin-top:0; flex:2;" onclick="processUrlImport()">Fetch File</button>
-            </div>
+            <h3>Cloud Import</h3>
+            <input type="text" id="url-input" placeholder="GDrive Link or Direct URL">
+            <label class="switch-label" style="font-size:13px;"><input type="checkbox" id="cors-proxy-check" checked> Use Proxy</label>
+            <div class="warning-text">⚠️ Warning: Using a proxy sends traffic through a third-party server. Do not use for sensitive data.</div>
+            <div style="display:flex; gap:10px; margin-top:20px;"><button class="action-btn" style="background:transparent; border:1px solid var(--glass-border); flex:1;" onclick="closeUrlModal()">Cancel</button><button class="action-btn" style="flex:2;" onclick="processUrlImport()">Fetch</button></div>
         </div>
     </div>
 
-    <!-- Connection Request Modal -->
-    <div id="connection-modal" class="modal-overlay">
-        <div class="modal-content" style="text-align:center;">
-            <i data-lucide="shield-check" class="icon-lg" style="color:var(--primary); margin-bottom:15px; width:48px; height:48px;"></i>
-            <h3 style="margin-bottom: 10px;">Security Request</h3>
-            <p id="conn-req-text" style="font-size:13px; color:var(--text-dim); margin-bottom:25px; line-height:1.5;"></p>
-            <div class="preview-actions">
-                <button class="btn-cancel" style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); flex:1; cursor:pointer;" id="btn-reject-conn">Reject</button>
-                <button class="action-btn" style="margin-top:0; background:var(--success); flex:2;" id="btn-accept-conn">Accept Link</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Batcher Modal -->
     <div id="batcher-modal" class="modal-overlay">
-        <div class="modal-content modal-large">
-            <div style="padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1);">
-                <div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="layers" style="color: var(--primary);"></i><h3 style="margin: 0; font-size: 1rem;">Image Batcher Pro</h3></div>
-                <i data-lucide="x" style="cursor: pointer; opacity:0.7;" onclick="toggleBatcher(false)"></i>
+        <div class="modal-content" style="width: 95%; max-width: 900px; height: 85vh; padding: 0; display: flex; flex-direction: column;">
+            <div style="padding:18px 24px; border-bottom:1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;"><i data-lucide="layers" style="color:var(--primary);"></i><h3 style="margin:0;">Image Batcher Pro</h3></div>
+                <i data-lucide="x" style="cursor:pointer;" onclick="toggleBatcher(false)"></i>
             </div>
             <div class="batcher-layout">
                 <div class="batcher-sidebar">
-                    <div>
-                        <div style="font-size:11px; margin-bottom:5px; color:var(--text-dim);">RESIZE MODE</div>
-                        <select id="batcher-resize-mode" onchange="updateBatcherSettingsUI()"><option value="scale">Scale Percentage</option><option value="width">Fixed Width (px)</option></select>
-                    </div>
-                    <div>
-                        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim);"><span>SCALE / WIDTH</span><span id="scale-val" style="color:var(--primary);">80%</span></div>
-                        <input type="range" class="range-slider" id="batcher-scale" min="10" max="100" value="80" step="5" oninput="document.getElementById('scale-val').innerText=this.value+'%'">
-                        <input type="number" id="batcher-width" style="display:none" value="1920">
-                    </div>
-                    <div>
-                        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim);"><span>QUALITY</span><span id="quality-val" style="color:var(--primary);">80%</span></div>
-                        <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80" step="5" oninput="document.getElementById('quality-val').innerText=this.value+'%'">
-                    </div>
-                    <div>
-                        <div style="font-size:11px; margin-bottom:5px; color:var(--text-dim);">OUTPUT FORMAT</div>
-                        <select id="batcher-format">
-                            <option value="image/jpeg">JPG (Best for Photos)</option>
-                            <option value="image/png">PNG (Lossless)</option>
-                            <option value="image/webp">WebP (Efficient)</option>
-                        </select>
-                    </div>
-                    <button class="action-btn" style="margin-top:auto;" onclick="runBatcher()" id="batcher-run-btn"><i data-lucide="zap" class="icon-sm"></i> Run Processor</button>
-                    <div id="batcher-log" style="font-size: 11px; color: var(--text-dim); text-align:center;"></div>
+                    <select id="batcher-resize-mode"><option value="scale">Scale %</option><option value="width">Fixed Width</option></select>
+                    <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80">
+                    <select id="batcher-format"><option value="image/jpeg">JPG (Photos)</option><option value="image/png">PNG (Lossless)</option><option value="image/webp">WebP (Efficient)</option></select>
+                    <button class="action-btn" style="margin-top:auto;" onclick="runBatcher()" id="batcher-run-btn"><i data-lucide="zap"></i> Process & Zip</button>
+                    <div id="batcher-log" style="font-size:11px; text-align:center;"></div>
                 </div>
                 <div class="batcher-main" id="batcher-dropzone" onclick="document.getElementById('batcher-input').click()">
-                    <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files); this.value=''">
-                    <div id="batcher-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.4;">
-                        <i data-lucide="plus-circle" style="width:56px; height:56px; margin-bottom:15px;"></i>
-                        <p style="font-size:1.1rem; font-weight:600;">Click or Drop Images Here</p>
-                        <p style="font-size:0.9rem; margin-top:5px;">Received images will also appear here</p>
-                    </div>
+                    <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files)">
+                    <div id="batcher-empty" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; opacity:0.4;"><i data-lucide="image-plus" style="width:48px;height:48px;"></i><p>Add Images</p></div>
                     <div class="batcher-grid" id="batcher-grid"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="smart-toast" class="toast" onclick="toggleBatcher(true); this.style.display='none';"><i data-lucide="sparkles"></i><span>Images Received! Open Batcher?</span></div>
-
-    <div class="footer">
-        Disclaimer: This tool facilitates direct P2P transfer; files are not stored on any server. Reloading the page will result in the loss of transfer history.<br>
-        &copy; 2026 Haley Kwok. All rights reserved.
-    </div>
+    <div id="smart-toast" class="toast" onclick="toggleBatcher(true); this.style.display='none';"><i data-lucide="sparkles"></i><span>Images Detected! Open Batcher?</span></div>
 
 <script>
     lucide.createIcons();
-    const CHUNK_SIZE = 16384 * 4; 
+    const CHUNK_SIZE = 65536; 
     
     function generateUUID() {
-        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-            return crypto.randomUUID();
-        }
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (Math.random()*16|0).toString(16));
+    }
+
+    const PRESETS = {
+        render: { host: 'my-p2p-server.onrender.com', port: 443, path: '/myapp', secure: true },
+        public: { host: '0.peerjs.com', port: 443, path: '/', secure: true }
+    };
+
+    async function fetchTurn(apiKey) {
+        try { const res = await fetch(`https://metered.ca/api/v1/turn/credentials?apiKey=${apiKey}`); return await res.json(); } catch(e) { return null; }
+    }
+
+    async function init() {
+        const config = JSON.parse(localStorage.getItem('peerConfig')) || PRESETS.render;
+        const meteredKey = localStorage.getItem('meteredKey');
+        let ice = [ { urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun.nextcloud.com:443' } ];
+        
+        if (meteredKey) { const mi = await fetchTurn(meteredKey); if (mi) ice = [...ice, ...mi]; }
+
+        const peer = new Peer(generateUUID(), {
+            host: config.host, port: config.port, path: config.path, secure: config.secure,
+            config: { iceServers: ice, iceTransportPolicy: 'all' }
+        });
+
+        window.peer = peer;
+        peer.on('open', id => {
+            document.getElementById('my-id').innerText = id;
+            const tag = document.getElementById('status-tag');
+            tag.classList.add('status-online');
+            document.getElementById('status-text').innerText = "System Online";
+            new QRCode(document.getElementById("qrcode"), { text: window.location.href.split('?')[0] + "?join=" + id, width: 140, height: 140 });
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');
+        });
+
+        peer.on('connection', conn => {
+            if(confirm(`Incoming connection from ${conn.peer.substring(0,8)}... Accept?`)) setupConn(conn);
+            else conn.close();
+        });
+
+        peer.on('error', () => { 
+            document.getElementById('status-tag').classList.add('status-error'); 
+            document.getElementById('status-text').innerText = "Network Error";
         });
     }
 
-    const customId = generateUUID();
-    document.getElementById('my-id').innerText = customId;
-    
-    // --- Config Logic ---
-    const DEFAULT_CONFIG = {
-        host: 'my-p2p-server.onrender.com',
-        port: 443,
-        path: '/myapp',
-        secure: true
-    };
-
-    const PUBLIC_CONFIG = {
-        host: '0.peerjs.com',
-        port: 443,
-        path: '/',
-        secure: true
-    };
-
-    // Default High-Compatibility STUN List (Port 80/443 mixed)
-    const DEFAULT_ICE = [
-        { urls: 'stun:stun.nextcloud.com:443' },
-        { urls: 'stun:stun.piratenpartei-niedersachsen.de:80' },
-        { urls: 'stun:stun.l.google.com:19302' }
-    ];
-
-    function getPeerConfig() {
-        const saved = localStorage.getItem('peerConfig');
-        return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
-    }
-
-    function savePeerConfig() {
-        const host = document.getElementById('conf-host').value.trim();
-        const port = document.getElementById('conf-port').value.trim();
-        const path = document.getElementById('conf-path').value.trim();
-        const secure = document.getElementById('conf-secure').checked;
-        const iceStr = document.getElementById('conf-ice').value.trim();
-
-        let ice = null;
-        if(iceStr) {
-            try { ice = JSON.parse(iceStr); } catch(e) { alert("Invalid JSON for ICE Servers"); return; }
-        }
-
-        const configToSave = { 
-            host, 
-            port: port ? parseInt(port) : undefined, 
-            path: path || '/', 
-            secure,
-            iceServers: ice 
-        };
-
-        if (!host) {
-            localStorage.removeItem('peerConfig');
-        } else {
-            localStorage.setItem('peerConfig', JSON.stringify(configToSave));
-        }
-        location.reload();
-    }
-
-    function applyPreset() {
-        const preset = document.getElementById('conf-preset').value;
-        if (preset === 'render') setInputValues(DEFAULT_CONFIG);
-        else if (preset === 'public') setInputValues(PUBLIC_CONFIG);
-    }
-
-    function setInputValues(conf) {
-        document.getElementById('conf-host').value = conf.host || '';
-        document.getElementById('conf-port').value = conf.port || '';
-        document.getElementById('conf-path').value = conf.path || '';
-        document.getElementById('conf-secure').checked = conf.secure;
-        // Don't overwrite ICE field automatically unless it's a hard reset
-    }
-
-    function openSettingsModal() {
-        document.getElementById('settings-modal').style.display = 'flex';
-        const config = getPeerConfig();
-        setInputValues(config);
-        
-        // Populate ICE field if custom ones exist
-        if(config.iceServers) {
-            document.getElementById('conf-ice').value = JSON.stringify(config.iceServers);
-        }
-
-        const presetSelect = document.getElementById('conf-preset');
-        if (config.host === DEFAULT_CONFIG.host) presetSelect.value = 'render';
-        else if (config.host === PUBLIC_CONFIG.host) presetSelect.value = 'public';
-        else presetSelect.value = 'custom';
-    }
-    
-    function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
-
-    // Initialize Peer
-    const userConfig = getPeerConfig();
-    let peerOptions = {
-        host: userConfig.host,
-        port: userConfig.port,
-        path: userConfig.path,
-        secure: userConfig.secure,
-        config: {
-            iceServers: userConfig.iceServers || DEFAULT_ICE
-        }
-    };
-
-    const peer = new Peer(customId, peerOptions);
-    
-    let activeConn = null;
-    let zip = null;
-    let filesQueue = [];
-    let historyData = []; 
-    let transferStartTime = 0;
-    
-    // Connection monitoring timer
-    let connTimeout = null;
-
-    peer.on('open', id => {
-        const tag = document.getElementById('status-tag');
-        tag.classList.add('status-online');
-        tag.classList.remove('status-error');
-        document.getElementById('status-text').innerText = "System Online";
-        
-        new QRCode(document.getElementById("qrcode"), { 
-            text: window.location.href.split('?')[0] + "?join=" + id, 
-            width: 140, 
-            height: 140,
-            colorDark : "#000000",
-            colorLight : "#ffffff"
-        });
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');
-    });
-
-    peer.on('error', err => {
-        console.error(err);
-        const tag = document.getElementById('status-tag');
-        tag.classList.remove('status-online');
-        tag.classList.add('status-error');
-        document.getElementById('status-text').innerText = "System Offline";
-        // Critical error alerts
-        if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' || err.type === 'unavailable-id') {
-             // Only alert if we aren't currently trying to connect (avoid spam)
-             if(!activeConn) alert("Network Error (" + err.type + "): Check firewall or PeerServer settings.");
-        }
-    });
-
-    peer.on('connection', conn => {
-        const modal = document.getElementById('connection-modal');
-        document.getElementById('conn-req-text').innerText = `Remote device (${conn.peer.substring(0,8)}...) wants to connect. Do you accept?`;
-        modal.style.display = 'flex';
-        
-        const btnAccept = document.getElementById('btn-accept-conn');
-        const btnReject = document.getElementById('btn-reject-conn');
-        
-        // Clone to remove old listeners
-        const newAccept = btnAccept.cloneNode(true);
-        const newReject = btnReject.cloneNode(true);
-        btnAccept.parentNode.replaceChild(newAccept, btnAccept);
-        btnReject.parentNode.replaceChild(newReject, btnReject);
-
-        newAccept.onclick = () => { 
-            modal.style.display = 'none'; 
-            setupConnection(conn); 
-        };
-        newReject.onclick = () => { modal.style.display = 'none'; conn.close(); };
-    });
-
-    document.getElementById('connect-btn').onclick = () => {
-        if (activeConn) { 
-            activeConn.close(); 
-            // Also refresh page on manual disconnect to clear peer state
-            setTimeout(() => location.reload(), 500);
-        } 
-        else {
-            const tid = document.getElementById('peer-id-input').value.trim();
-            if (tid) {
-                if (peer.disconnected) {
-                    alert("System Offline: Cannot connect. Check network.");
-                    return;
-                }
-                const btn = document.getElementById('connect-btn');
-                btn.innerHTML = `<i data-lucide="loader-2" class="icon-sm animate-spin"></i> Connecting...`;
-                lucide.createIcons();
-                
-                const conn = peer.connect(tid, { reliable: true });
-                setupConnection(conn);
-                
-                // Set safety timeout for the UI
-                connTimeout = setTimeout(() => {
-                    if (!activeConn || !activeConn.open) {
-                        btn.innerHTML = "Connect Device";
-                        alert("Connection Timed Out.\n\nThis is likely a firewall/NAT issue. Try adding a custom TURN server in settings.");
-                    }
-                }, 15000);
-            }
-        }
-    };
-
-    function setupConnection(conn) {
-        if (activeConn) return; 
-        activeConn = conn;
-        
-        // Clear timeout if connection opens successfully
+    function setupConn(conn) {
+        window.activeConn = conn;
         conn.on('open', () => {
-            clearTimeout(connTimeout);
-            updateConnectionUI(true);
-            conn.send({ type: 'handshake-ack' }); 
+            updateUI(true);
+            conn.send({ type: 'handshake-ack' });
+            setInterval(() => { if(conn.open) conn.send({type:'ping'}); }, 5000);
         });
-        
-        // Handle immediate open state
-        if (conn.open) {
-            clearTimeout(connTimeout);
-            updateConnectionUI(true);
-            conn.send({ type: 'handshake-ack' }); 
-        }
-
-        // Monitor ICE state specifically for Symmetric NAT issues
-        conn.peerConnection.oniceconnectionstatechange = () => {
-            const state = conn.peerConnection.iceConnectionState;
-            console.log("ICE State:", state);
-            if (state === 'failed' || state === 'disconnected') {
-                document.getElementById('transfer-info').innerText = `NAT Traversal Failed (${state}). TURN required.`;
-            }
-        };
-        
-        conn.on('data', data => { 
-            if (data.type === 'handshake-ack') {
-                clearTimeout(connTimeout);
-                updateConnectionUI(true); 
-            } else {
-                handleData(data);
-            }
+        conn.on('data', data => {
+            if(data.type === 'handshake-ack') updateUI(true);
+            else handleData(data);
         });
-        
-        conn.on('close', () => { updateConnectionUI(false); activeConn = null; });
-        conn.on('error', (err) => { 
-            console.error("Conn Error", err); 
-            updateConnectionUI(false); 
-            activeConn = null; 
-        });
+        conn.on('close', () => updateUI(false));
     }
 
-    function updateConnectionUI(isConnected) {
+    function updateUI(c) {
         const btn = document.getElementById('connect-btn');
-        const input = document.getElementById('peer-id-input');
-        const statusText = document.getElementById('status-text');
-        const statusTag = document.getElementById('status-tag');
-        const fileInput = document.getElementById('file-input');
-        
-        if (isConnected) {
-            statusText.innerText = "Connected";
-            statusTag.classList.add('status-online');
-            statusTag.classList.remove('status-error');
-            fileInput.disabled = false;
-            btn.innerHTML = `<i data-lucide="x-circle" class="icon-sm" style="margin-right:5px"></i> Disconnect Device`;
+        const tag = document.getElementById('status-tag');
+        if(c) {
+            btn.innerText = "Disconnect Channel";
             btn.classList.add('btn-disconnect');
-            input.disabled = true;
-            document.getElementById('transfer-info').innerText = "Connection Secure. Ready to Transfer.";
+            tag.classList.add('status-online');
+            document.getElementById('status-text').innerText = "Connected";
+            document.getElementById('file-input').disabled = false;
         } else {
-            if(peer.disconnected) {
-                 statusText.innerText = "Offline";
-                 statusTag.classList.remove('status-online');
-                 statusTag.classList.add('status-error');
-            } else {
-                 statusText.innerText = "System Online";
-                 statusTag.classList.remove('status-online');
-                 statusTag.classList.remove('status-error');
-            }
-            
-            fileInput.disabled = true;
-            btn.innerHTML = "Connect Device";
+            btn.innerText = "Connect Device";
             btn.classList.remove('btn-disconnect');
-            btn.style.background = ""; 
-            input.disabled = false;
-            document.getElementById('transfer-info').innerText = "Waiting for connection...";
         }
         lucide.createIcons();
     }
 
+    // --- File Handlers ---
     let receivedChunks = {};
-    let expectedHashes = {};
-    
+    let transferStartTime = 0;
+    let historyData = [];
+
     async function handleData(data) {
         if (data.type === 'file-start') {
-            if (document.getElementById('zip-mode').checked && !zip) zip = new JSZip();
             receivedChunks[data.name] = [];
-            expectedHashes[data.name] = data.hash;
+            transferStartTime = Date.now();
             document.getElementById('progress-container').style.display = 'block';
             document.getElementById('metrics-display').style.display = 'flex';
-            transferStartTime = Date.now();
-        } 
-        else if (data.type === 'file-chunk') {
+        } else if (data.type === 'file-chunk') {
             receivedChunks[data.name].push(data.chunk);
-            updateMetrics(data.current * CHUNK_SIZE, data.total * CHUNK_SIZE);
-            updateProgress((data.current / data.total) * 100, `Receiving: ${data.name}`);
-        } 
-        else if (data.type === 'file-end') {
+            updateProgress((receivedChunks[data.name].length / data.total) * 100, `Receiving: ${data.name}`);
+            updateMetrics(receivedChunks[data.name].length * CHUNK_SIZE, data.total * CHUNK_SIZE);
+        } else if (data.type === 'file-end') {
             const blob = new Blob(receivedChunks[data.name]);
-            const arrayBuffer = await blob.arrayBuffer();
-            const calculatedHash = await calculateHash(arrayBuffer);
-            const isVerified = (calculatedHash === expectedHashes[data.name]);
-            
-            historyData.push({ name: data.name, blob: blob, size: blob.size, verified: isVerified });
-            addToHistory('received', data.name, blob.size, isVerified, historyData.length - 1);
-
+            saveFile(blob, data.name);
+            historyData.push({ name: data.name, blob });
+            addHistory('IN', data.name, blob.size, historyData.length - 1);
             if (data.name.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
                 addFileToBatcher(new File([blob], data.name, { type: blob.type }));
                 document.getElementById('smart-toast').style.display = 'flex';
-                document.getElementById('batcher-dot').style.display = 'block';
             }
-
-            if (document.getElementById('zip-mode').checked) zip.file(data.name, blob);
-            else saveFile(blob, data.name);
-            
             delete receivedChunks[data.name];
-        } 
-        else if (data.type === 'batch-end') {
-            if (zip) {
-                const content = await zip.generateAsync({type:"blob"});
-                saveFile(content, "Transfer_Pack_" + Date.now() + ".zip");
-                zip = null;
-            }
-            document.getElementById('transfer-info').innerText = "Transfer Completed.";
-            setTimeout(() => { 
-                document.getElementById('progress-container').style.display = 'none';
-                document.getElementById('metrics-display').style.display = 'none';
-            }, 4000);
         }
     }
 
+    function updateMetrics(done, total) {
+        const now = Date.now(), sec = (now - transferStartTime) / 1000;
+        if(sec <= 0) return;
+        const speed = done / sec;
+        document.getElementById('speed-text').innerText = formatBytes(speed) + "/s";
+        const eta = speed > 0 ? Math.ceil((total - done) / speed) : 0;
+        document.getElementById('eta-text').innerText = (eta > 60 ? Math.floor(eta/60) + "m" : eta + "s") + " left";
+    }
+
+    // --- Helpers ---
+    function formatBytes(b) { if(b===0) return '0 B'; const k=1024, s=['B','KB','MB','GB','TB'], i=Math.floor(Math.log(b)/Math.log(k)); return parseFloat((b/Math.pow(k,i)).toFixed(2))+' '+s[i]; }
+    function saveFile(b, n) { const u=URL.createObjectURL(b), a=document.createElement('a'); a.href=u; a.download=n; a.click(); }
+    function updateProgress(p, m) { document.getElementById('progress-bar').style.width = p+"%"; document.getElementById('transfer-info').innerText = m; }
+    
+    function addHistory(t, n, s, idx) {
+        const list = document.getElementById('history-list'); if(list.innerHTML.includes('No history')) list.innerHTML = '';
+        const item = document.createElement('div'); item.className = 'history-item';
+        item.innerHTML = `<div style="display:flex; flex-direction:column; overflow:hidden;"><span style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${n}</span><span style="font-size:10px; opacity:0.6;">${formatBytes(s)} • ${t}</span></div>`;
+        list.prepend(item);
+    }
+
+    // --- Modals & Presets ---
+    function openSettingsModal() { document.getElementById('settings-modal').style.display = 'flex'; document.getElementById('metered-key').value = localStorage.getItem('meteredKey') || ''; }
+    function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+    function savePeerConfig() { const k = document.getElementById('metered-key').value.trim(); localStorage.setItem('meteredKey', k); const p = document.getElementById('conf-preset').value; if(p!=='custom') localStorage.setItem('peerConfig', JSON.stringify(PRESETS[p])); location.reload(); }
+    function applyPreset() {}
+    function openUrlModal() { document.getElementById('url-modal').style.display = 'flex'; }
+    function closeUrlModal() { document.getElementById('url-modal').style.display = 'none'; }
+    function clearHistory() { document.getElementById('history-list').innerHTML = ''; historyData = []; }
+
+    // Send files logic
+    document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) sendFiles(Array.from(e.target.files)); };
     async function sendFiles(files) {
         if (!activeConn) return;
         document.getElementById('progress-container').style.display = 'block';
         document.getElementById('metrics-display').style.display = 'flex';
-        
         for (let file of files) {
-            const fileBuffer = await file.arrayBuffer();
-            const fileHash = await calculateHash(fileBuffer);
-            activeConn.send({ type: 'file-start', name: file.name, size: file.size, hash: fileHash });
-            
+            activeConn.send({ type: 'file-start', name: file.name, size: file.size });
             transferStartTime = Date.now();
-            const totalChunks = Math.ceil(fileBuffer.byteLength / CHUNK_SIZE);
-
-            for (let i = 0; i < totalChunks; i++) {
-                const chunk = fileBuffer.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-                activeConn.send({ type: 'file-chunk', name: file.name, chunk: chunk, current: i + 1, total: totalChunks });
+            const total = Math.ceil(file.size / CHUNK_SIZE);
+            for (let i = 0; i < total; i++) {
+                const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                activeConn.send({ type: 'file-chunk', name: file.name, chunk, current: i + 1, total });
                 updateMetrics((i + 1) * CHUNK_SIZE, file.size);
-                updateProgress(((i + 1) / totalChunks) * 100, `Sending: ${file.name}`);
-                if (i % 10 === 0) await new Promise(r => setTimeout(r, 1)); 
+                updateProgress(((i + 1) / total) * 100, `Sending: ${file.name}`);
+                if (i % 10 === 0) await new Promise(r => setTimeout(r, 1));
             }
             activeConn.send({ type: 'file-end', name: file.name });
-            addToHistory('sent', file.name, file.size, true);
-        }
-        activeConn.send({ type: 'batch-end' });
-        filesQueue = [];
-    }
-
-    function updateMetrics(bytesDone, totalBytes) {
-        const now = Date.now();
-        const duration = (now - transferStartTime) / 1000;
-        if (duration <= 0) return;
-
-        const speedBps = bytesDone / duration;
-        document.getElementById('speed-text').innerText = formatBytes(speedBps) + "/s";
-        
-        const remainingBytes = Math.max(0, totalBytes - bytesDone);
-        const etaSeconds = speedBps > 0 ? Math.ceil(remainingBytes / speedBps) : 0;
-        document.getElementById('eta-text').innerText = etaSeconds > 60 ? `${Math.floor(etaSeconds/60)}m ${etaSeconds%60}s left` : `${etaSeconds}s left`;
-    }
-
-    function addToHistory(type, fileName, fileSize, verified, dataIndex = -1) {
-        const list = document.getElementById('history-list');
-        if (list.innerHTML.includes('No recent transfers')) list.innerHTML = '';
-
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const item = document.createElement('div');
-        item.className = 'history-item';
-        
-        const actionHtml = dataIndex >= 0 ? 
-            `<div class="action-icon" title="Save file" onclick="reDownload(${dataIndex})"><i data-lucide="download-cloud" style="width:18px;"></i></div>` : '';
-
-        item.innerHTML = `
-            <div class="history-item-left">
-                <div style="display:flex; flex-direction:column; overflow:hidden;">
-                    <span class="history-name" title="${fileName}">${fileName}</span>
-                    <span style="font-size:10px; opacity:0.6;">${formatBytes(fileSize)} • ${time} • ${verified?'Verified ✅':'Error ❌'}</span>
-                </div>
-            </div>
-            <div class="history-actions">${actionHtml}</div>
-        `;
-        list.prepend(item);
-        lucide.createIcons();
-    }
-
-    function reDownload(idx) {
-        const item = historyData[idx];
-        if (item && item.blob) saveFile(item.blob, item.name);
-    }
-
-    function clearHistory() { 
-        document.getElementById('history-list').innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 40px 20px; font-size: 12px; font-style: italic;">No recent transfers</div>';
-        historyData = [];
-    }
-
-    async function calculateHash(buffer) {
-        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    function formatBytes(bytes) {
-        if (bytes === 0) return '0 B';
-        const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-
-    function updateProgress(pct, msg) {
-        document.getElementById('progress-bar').style.width = pct + "%";
-        document.getElementById('transfer-info').innerText = msg;
-    }
-
-    function saveFile(blob, name) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = name; a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-    }
-
-    // --- Clock Logic ---
-    function updateSystemTime() {
-        const now = new Date();
-        document.getElementById('system-time').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
-    }
-    setInterval(updateSystemTime, 1000);
-    updateSystemTime();
-
-    // --- Queue Management ---
-    document.getElementById('file-input').onchange = (e) => {
-        if (e.target.files.length > 0) {
-            filesQueue = [...filesQueue, ...Array.from(e.target.files)];
-            renderPreview();
-        }
-    };
-    function handleAddMoreFiles(input) {
-        if(input.files.length > 0) {
-            filesQueue = [...filesQueue, ...Array.from(input.files)];
-            renderPreview();
-            input.value = "";
+            addHistory('OUT', file.name, file.size, -1);
         }
     }
-    function renderPreview() {
-        const list = document.getElementById('preview-list');
-        const queueCount = document.getElementById('queue-count');
-        queueCount.innerText = `${filesQueue.length} files`;
-        list.innerHTML = '';
-        filesQueue.forEach((f, i) => {
-            const item = document.createElement('div');
-            item.className = 'preview-item';
-            item.innerHTML = `<div class="preview-content"><b title="${f.name}">${f.name}</b><br><small>${formatBytes(f.size)}</small></div><i data-lucide="trash-2" class="preview-remove-btn" onclick="filesQueue.splice(${i},1);renderPreview()"></i>`;
-            list.appendChild(item);
-        });
-        document.getElementById('upload-wrapper').style.display = 'none';
-        document.querySelector('.text-btn').style.display = 'none';
-        document.getElementById('preview-area').style.display = 'block';
-        lucide.createIcons();
-    }
-    function cancelTransfer() { 
-        filesQueue = []; 
-        document.getElementById('preview-area').style.display = 'none'; 
-        document.getElementById('upload-wrapper').style.display = 'block'; 
-        document.querySelector('.text-btn').style.display = 'flex';
-    }
-    function confirmSend() { if(filesQueue.length) { sendFiles(filesQueue); cancelTransfer(); } }
 
-    // --- Image Batcher ---
+    // Batcher simplified
     let batcherFiles = [];
-    function toggleBatcher(s) { 
-        document.getElementById('batcher-modal').style.display = s?'flex':'none'; 
-        if(s) {
-            document.getElementById('batcher-dot').style.display = 'none';
-            renderBatcherGrid(); 
-        }
-    }
-    document.getElementById('batcher-toggle').onclick = () => toggleBatcher(true);
-    
-    function addFileToBatcher(file) { 
-        const id = Math.random();
-        batcherFiles.push({ file, id, preview: URL.createObjectURL(file) }); 
-    }
-    
-    function handleBatcherFiles(fl) { 
-        Array.from(fl).filter(f=>f.type.startsWith('image/')).forEach(addFileToBatcher); 
-        renderBatcherGrid(); 
-    }
-    
-    function renderBatcherGrid() {
-        const g = document.getElementById('batcher-grid');
-        document.getElementById('batcher-empty').style.display = batcherFiles.length?'none':'flex';
-        g.innerHTML = '';
-        batcherFiles.forEach(item => {
-            const c = document.createElement('div');
-            c.className = 'batcher-card';
-            c.onclick = (e) => e.stopPropagation();
-            c.innerHTML = `<img src="${item.preview}" class="batcher-img"><div class="batcher-remove" onclick="batcherFiles=batcherFiles.filter(f=>f.id!=${item.id});renderBatcherGrid();event.stopPropagation()">×</div>`;
+    function toggleBatcher(s) { document.getElementById('batcher-modal').style.display = s?'flex':'none'; if(s) renderBatcher(); }
+    function addFileToBatcher(f) { batcherFiles.push({ f, id: Math.random(), preview: URL.createObjectURL(f) }); }
+    function handleBatcherFiles(fl) { Array.from(fl).filter(f=>f.type.startsWith('image/')).forEach(addFileToBatcher); renderBatcher(); }
+    function renderBatcher() {
+        const g = document.getElementById('batcher-grid'); document.getElementById('batcher-empty').style.display = batcherFiles.length?'none':'flex';
+        g.innerHTML = ''; batcherFiles.forEach(item => {
+            const c = document.createElement('div'); c.className = 'batcher-card';
+            c.innerHTML = `<img src="${item.preview}" class="batcher-img"><div style="position:absolute; top:-5px; right:-5px; background:red; color:white; border-radius:50%; width:20px; height:20px; text-align:center; cursor:pointer;" onclick="batcherFiles=batcherFiles.filter(i=>i.id!=${item.id});renderBatcher();event.stopPropagation()">×</div>`;
             g.appendChild(c);
         });
     }
 
-    function updateBatcherSettingsUI() {
-        const mode = document.getElementById('batcher-resize-mode').value;
-        document.getElementById('batcher-scale').style.display = mode==='scale'?'block':'none';
-        document.getElementById('batcher-width').style.display = mode==='width'?'block':'none';
-    }
-
-    async function runBatcher() {
-        if(!batcherFiles.length) return;
-        const btn = document.getElementById('batcher-run-btn');
-        const log = document.getElementById('batcher-log');
-        btn.disabled = true;
-        btn.innerText = "Processing...";
-        
-        const zip = new JSZip();
-        const settings = {
-            mode: document.getElementById('batcher-resize-mode').value,
-            scale: document.getElementById('batcher-scale').value / 100,
-            width: parseInt(document.getElementById('batcher-width').value),
-            quality: document.getElementById('batcher-quality').value / 100,
-            format: document.getElementById('batcher-format').value
-        };
-
-        try {
-            for (let item of batcherFiles) {
-                log.innerText = `Processing ${item.file.name.substring(0,10)}...`;
-                const blob = await processImg(item.file, settings);
-                const ext = settings.format.split('/')[1];
-                zip.file(item.file.name.split('.')[0] + "_processed." + ext, blob);
-            }
-            const content = await zip.generateAsync({type:"blob"});
-            saveFile(content, "Batch_Export_" + Date.now() + ".zip");
-            log.innerText = "Processing Complete!";
-        } catch(e) { log.innerText = "Error encountered."; }
-        
-        btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="zap" class="icon-sm"></i> Run Processor';
-        lucide.createIcons();
-    }
-
-    function processImg(file, s) {
-        return new Promise(res => {
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
-            img.onload = () => {
-                const can = document.createElement('canvas');
-                let w = img.width, h = img.height;
-                if(s.mode === 'scale') { w *= s.scale; h *= s.scale; }
-                else { const r = h/w; w = s.width; h = w*r; }
-                can.width = w; can.height = h;
-                can.getContext('2d').drawImage(img, 0,0, w, h);
-                can.toBlob(res, s.format, s.quality);
-            }
-        });
-    }
-
-    // URL Import Logic
-    function openUrlModal() { document.getElementById('url-modal').style.display = 'flex'; }
-    function closeUrlModal() { document.getElementById('url-modal').style.display = 'none'; document.getElementById('url-input').value=''; }
-    
-    async function processUrlImport() {
-        let url = document.getElementById('url-input').value.trim();
-        const info = document.getElementById('transfer-info');
-        if (!url) return;
-        
-        const gdriveRegex = /\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/;
-        const match = url.match(gdriveRegex);
-        
-        let isGDrive = false;
-        if (match) {
-            isGDrive = true;
-            const fileId = match[1] || match[2];
-            url = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        }
-
-        closeUrlModal();
-        info.innerText = "Fetching Cloud File...";
-        try {
-            const useProxy = document.getElementById('cors-proxy-check').checked;
-            let res;
-            
-            if (useProxy || isGDrive) {
-                try {
-                    res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
-                    if (!res.ok) throw new Error();
-                } catch (e) {
-                    res = await fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url));
-                }
-            } else {
-                res = await fetch(url);
-            }
-
-            const blob = await res.blob();
-            
-            if (isGDrive && blob.type.includes('text/html') && blob.size < 100000) {
-                 throw new Error("Virus Scan Warning: File too large for direct fetch.");
-            }
-
-            const f = new File([blob], "cloud_import_" + Date.now(), {type: blob.type});
-            filesQueue = [f];
-            renderPreview();
-            info.innerText = "Cloud File Ready.";
-        } catch(e) { 
-            alert(e.message || "Fetch failed. Try proxy or check file sharing settings."); 
-            info.innerText = "Fetch failed."; 
-        }
-    }
-
-    // Theme Toggle
+    setInterval(() => { document.getElementById('system-time').innerText = new Date().toLocaleTimeString([], {hour12:false}); }, 1000);
     document.getElementById('theme-btn').onclick = () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
+        const cur = document.documentElement.getAttribute('data-theme');
+        const next = cur === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
         document.getElementById('icon-sun').style.display = next==='light'?'block':'none';
         document.getElementById('icon-moon').style.display = next==='dark'?'block':'none';
     };
 
-    // Copy ID
-    document.getElementById('copy-id-btn').onclick = () => {
-        navigator.clipboard.writeText(document.getElementById('my-id').innerText);
-        const btn = document.getElementById('copy-id-btn');
-        btn.innerHTML = '<i data-lucide="check" class="icon" style="color:var(--success)"></i>';
-        lucide.createIcons();
-        setTimeout(() => { btn.innerHTML = '<i data-lucide="copy" class="icon"></i>'; lucide.createIcons(); }, 2000);
+    document.getElementById('connect-btn').onclick = () => {
+        if(window.activeConn) { location.reload(); return; }
+        const tid = document.getElementById('peer-id-input').value.trim();
+        if(tid) { document.getElementById('connect-btn').innerText = "Traversing NAT..."; setupConn(window.peer.connect(tid, { reliable: true })); }
     };
+
+    init();
 </script>
 </body>
 </html>
