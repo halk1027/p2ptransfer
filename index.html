@@ -398,11 +398,18 @@
         <div class="modal-content">
             <h3 style="margin-bottom: 15px;">Network Settings</h3>
             <p style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">
-                Configure a self-hosted PeerServer to bypass corporate firewalls. Leave empty to use default public server.
+                Configure a self-hosted PeerServer to bypass corporate firewalls.
             </p>
             
+            <label style="font-size:12px; color:var(--text-dim);">Server Preset</label>
+            <select id="conf-preset" onchange="applyPreset()" style="margin-bottom: 10px;">
+                <option value="render">Default (Render Proxy)</option>
+                <option value="public">Public (0.peerjs.com)</option>
+                <option value="custom">Custom / Localhost</option>
+            </select>
+
             <label style="font-size:12px; color:var(--text-dim);">Host (IP or Domain)</label>
-            <input type="text" id="conf-host" placeholder="0.peerjs.com">
+            <input type="text" id="conf-host" placeholder="my-p2p-server.onrender.com">
             
             <div style="display:flex; gap:10px;">
                 <div style="flex:1;">
@@ -411,7 +418,7 @@
                 </div>
                 <div style="flex:2;">
                     <label style="font-size:12px; color:var(--text-dim);">Path</label>
-                    <input type="text" id="conf-path" placeholder="/">
+                    <input type="text" id="conf-path" placeholder="/myapp">
                 </div>
             </div>
             
@@ -523,9 +530,23 @@
     document.getElementById('my-id').innerText = customId;
     
     // --- Config Logic ---
+    const DEFAULT_CONFIG = {
+        host: 'my-p2p-server.onrender.com',
+        port: 443,
+        path: '/myapp',
+        secure: true
+    };
+
+    const PUBLIC_CONFIG = {
+        host: '0.peerjs.com',
+        port: 443,
+        path: '/',
+        secure: true
+    };
+
     function getPeerConfig() {
         const saved = localStorage.getItem('peerConfig');
-        return saved ? JSON.parse(saved) : null;
+        return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
     }
 
     function savePeerConfig() {
@@ -542,23 +563,34 @@
         location.reload();
     }
 
+    function applyPreset() {
+        const preset = document.getElementById('conf-preset').value;
+        if (preset === 'render') setInputValues(DEFAULT_CONFIG);
+        else if (preset === 'public') setInputValues(PUBLIC_CONFIG);
+    }
+
+    function setInputValues(conf) {
+        document.getElementById('conf-host').value = conf.host;
+        document.getElementById('conf-port').value = conf.port;
+        document.getElementById('conf-path').value = conf.path;
+        document.getElementById('conf-secure').checked = conf.secure;
+    }
+
     function openSettingsModal() {
         document.getElementById('settings-modal').style.display = 'flex';
         const config = getPeerConfig();
-        if (config) {
-            document.getElementById('conf-host').value = config.host;
-            document.getElementById('conf-port').value = config.port || '';
-            document.getElementById('conf-path').value = config.path;
-            document.getElementById('conf-secure').checked = config.secure;
-        }
+        setInputValues(config);
+        
+        const presetSelect = document.getElementById('conf-preset');
+        if (config.host === DEFAULT_CONFIG.host && config.path === DEFAULT_CONFIG.path) presetSelect.value = 'render';
+        else if (config.host === PUBLIC_CONFIG.host && config.path === PUBLIC_CONFIG.path) presetSelect.value = 'public';
+        else presetSelect.value = 'custom';
     }
     
     function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
 
     // Initialize Peer with Config + STUN Injection
     const userConfig = getPeerConfig();
-    
-    // Create base config object
     let peerOptions = userConfig || {};
     
     // Force inject STUN servers even for custom hosts
@@ -616,8 +648,21 @@
         const modal = document.getElementById('connection-modal');
         document.getElementById('conn-req-text').innerText = `Remote device (${conn.peer.substring(0,8)}...) wants to connect. Do you accept?`;
         modal.style.display = 'flex';
-        document.getElementById('btn-accept-conn').onclick = () => { modal.style.display = 'none'; setupConnection(conn); setTimeout(() => { if(conn.open) conn.send({ type: 'handshake-ack' }); }, 500); };
-        document.getElementById('btn-reject-conn').onclick = () => { modal.style.display = 'none'; conn.close(); };
+        
+        const btnAccept = document.getElementById('btn-accept-conn');
+        const btnReject = document.getElementById('btn-reject-conn');
+        
+        const newAccept = btnAccept.cloneNode(true);
+        const newReject = btnReject.cloneNode(true);
+        btnAccept.parentNode.replaceChild(newAccept, btnAccept);
+        btnReject.parentNode.replaceChild(newReject, btnReject);
+
+        newAccept.onclick = () => { 
+            modal.style.display = 'none'; 
+            setupConnection(conn); 
+            if(conn.open) conn.send({ type: 'handshake-ack' }); 
+        };
+        newReject.onclick = () => { modal.style.display = 'none'; conn.close(); };
     });
 
     document.getElementById('connect-btn').onclick = () => {
@@ -636,7 +681,6 @@
                 const conn = peer.connect(tid, { reliable: true });
                 setupConnection(conn);
                 
-                // Connection Timeout Fallback
                 setTimeout(() => {
                     if (!activeConn || !activeConn.open) {
                         btn.innerHTML = "Connect Device";
@@ -651,8 +695,16 @@
         if (activeConn) return; 
         activeConn = conn;
         
-        if (conn.open) updateConnectionUI(true);
-        conn.on('open', () => updateConnectionUI(true));
+        if (conn.open) {
+            updateConnectionUI(true);
+            conn.send({ type: 'handshake-ack' }); 
+        }
+
+        conn.on('open', () => {
+            updateConnectionUI(true);
+            conn.send({ type: 'handshake-ack' }); 
+        });
+        
         conn.on('data', data => { if (data.type === 'handshake-ack') updateConnectionUI(true); else handleData(data); });
         conn.on('close', () => { updateConnectionUI(false); activeConn = null; });
         conn.on('error', () => { updateConnectionUI(false); activeConn = null; alert("Connection lost"); });
