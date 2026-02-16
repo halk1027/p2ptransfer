@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>P2P Air Channel</title>
+    <!-- PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
@@ -24,7 +28,7 @@
             --input-bg: rgba(15, 23, 42, 0.6);
             --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
             --history-item-bg: rgba(255, 255, 255, 0.05);
-            --modal-bg: rgba(15, 23, 42, 0.95);
+            --modal-bg: #1e293b; /* Solid background for modal to prevent artifacts */
             --card-bg: rgba(255, 255, 255, 0.03);
         }
 
@@ -42,7 +46,7 @@
             --input-bg: rgba(241, 245, 249, 0.7);
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             --history-item-bg: rgba(0, 0, 0, 0.03);
-            --modal-bg: rgba(255, 255, 255, 0.95);
+            --modal-bg: #ffffff;
             --card-bg: rgba(255, 255, 255, 0.4);
         }
 
@@ -135,43 +139,50 @@
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
-        .modal-large { max-width: 960px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
-
-        .warning-text { color: var(--warning); font-size: 11px; margin-top: 10px; text-align: left; padding-left: 5px; line-height: 1.5; background: rgba(245, 158, 11, 0.1); padding: 8px; border-radius: 8px; border-left: 3px solid var(--warning); }
-
-        /* BATCHER LAYOUT RE-ENGINEERED FOR MOBILE */
-        .batcher-layout { display: flex; flex: 1; min-height: 0; width: 100%; }
-        .batcher-sidebar { width: 280px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; }
-        .batcher-main { flex: 1; padding: 25px; overflow-y: auto; background: var(--input-bg); }
         
-        .batcher-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px; position: relative; transition: border 0.2s; }
+        /* --- RE-ENGINEERED BATCHER LAYOUT --- */
+        .modal-large { width: 95%; max-width: 900px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+        
+        .batcher-header { padding: 15px 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        
+        /* Flex 1 and min-height 0 are crucial for nested scrolling */
+        .batcher-layout { display: flex; flex: 1; min-height: 0; width: 100%; overflow: hidden; }
+        
+        .batcher-sidebar { 
+            width: 300px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); 
+            padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; 
+        }
+        
+        .batcher-main { flex: 1; padding: 20px; overflow-y: auto; background: var(--input-bg); position: relative; }
+        
+        .batcher-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px; position: relative; transition: border 0.2s; }
         .batcher-card:hover { border-color: var(--primary); }
-        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #000; }
-        .batcher-remove { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: #000; }
+        .batcher-remove { position: absolute; top: -6px; right: -6px; background: var(--danger); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); font-size: 14px; }
 
-        /* Critical Fix for Mobile Batcher Layout */
         @media (max-width: 768px) {
             .batcher-layout { flex-direction: column; }
-            /* Sidebar takes fixed height at top, scrollable */
-            .batcher-sidebar { width: 100%; height: 220px; border-right: none; border-bottom: 1px solid var(--glass-border); padding: 15px; flex-shrink: 0; }
-            /* Main area takes remaining space */
-            .batcher-main { flex: 1; min-height: 0; padding: 15px; }
-            
-            .modal-large { height: 90vh; width: 95%; border-radius: 20px; }
-            .modal-content { width: 95%; padding: 20px; }
-            
-            /* Hide non-essential logs on mobile to save space */
-            #batcher-log { display: none; }
+            /* Fixed height for sidebar on mobile to prevent crush */
+            .batcher-sidebar { width: 100%; height: auto; max-height: 40%; border-right: none; border-bottom: 1px solid var(--glass-border); padding: 15px; flex-shrink: 0; }
+            .batcher-main { height: auto; flex: 1; padding: 15px; }
         }
 
         .switch-label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim); cursor: pointer; margin: 5px 0; flex-shrink: 0; }
-        .range-slider { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; -webkit-appearance: none; outline: none; margin: 10px 0; }
+        
+        /* Range slider container */
+        .range-container { display: flex; align-items: center; gap: 10px; }
+        .range-slider { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; -webkit-appearance: none; outline: none; margin: 0; }
         .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid #fff; }
+        
+        /* Small number input for sliders */
+        .num-input { width: 60px !important; padding: 8px !important; text-align: center; margin: 0 !important; }
 
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px; z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .label-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -281,18 +292,54 @@
     <!-- Batcher Modal -->
     <div id="batcher-modal" class="modal-overlay">
         <div class="modal-content modal-large">
-            <div style="padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+            <div class="batcher-header">
                 <div style="display:flex; align-items:center; gap:10px;"><i data-lucide="layers" style="color:var(--primary);"></i><h3 style="margin:0;">Image Batcher Pro</h3></div>
                 <i data-lucide="x" style="cursor:pointer;" onclick="toggleBatcher(false)"></i>
             </div>
+            
             <div class="batcher-layout">
+                <!-- Sidebar -->
                 <div class="batcher-sidebar">
-                    <select id="batcher-resize-mode"><option value="scale">Scale %</option><option value="width">Fixed Width</option></select>
-                    <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80">
-                    <select id="batcher-format"><option value="image/jpeg">JPG (Photos)</option><option value="image/png">PNG (Lossless)</option><option value="image/webp">WebP (Efficient)</option></select>
+                    <div>
+                        <div class="label-row">RESIZE MODE</div>
+                        <select id="batcher-resize-mode" onchange="updateBatcherSettingsUI()"><option value="scale">Scale Percentage</option><option value="width">Fixed Width</option></select>
+                    </div>
+                    
+                    <div id="setting-scale-ui">
+                        <div class="label-row"><span>SCALE (%)</span></div>
+                        <div class="range-container">
+                            <input type="range" class="range-slider" id="batcher-scale" min="10" max="100" value="80" step="5" oninput="syncInputs('batcher-scale', 'batcher-scale-num')">
+                            <input type="number" id="batcher-scale-num" class="num-input" value="80" min="10" max="100" oninput="syncInputs('batcher-scale-num', 'batcher-scale')">
+                        </div>
+                    </div>
+
+                    <div id="setting-width-ui" style="display:none;">
+                        <div class="label-row"><span>MAX WIDTH (PX)</span></div>
+                        <input type="number" id="batcher-width" placeholder="1920" value="1920">
+                    </div>
+
+                    <div>
+                        <div class="label-row"><span>QUALITY (%)</span></div>
+                        <div class="range-container">
+                            <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80" step="5" oninput="syncInputs('batcher-quality', 'batcher-quality-num')">
+                            <input type="number" id="batcher-quality-num" class="num-input" value="80" min="10" max="100" oninput="syncInputs('batcher-quality-num', 'batcher-quality')">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="label-row">OUTPUT FORMAT</div>
+                        <select id="batcher-format">
+                            <option value="image/jpeg">JPG (Best for Photos)</option>
+                            <option value="image/png">PNG (Lossless)</option>
+                            <option value="image/webp">WebP (Efficient)</option>
+                        </select>
+                    </div>
+
                     <button class="action-btn" style="margin-top:auto;" onclick="runBatcher()" id="batcher-run-btn"><i data-lucide="zap"></i> Process & Zip</button>
                     <div id="batcher-log" style="font-size:11px; text-align:center;"></div>
                 </div>
+
+                <!-- Main Dropzone -->
                 <div class="batcher-main" id="batcher-dropzone" onclick="document.getElementById('batcher-input').click()">
                     <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files)">
                     <div id="batcher-empty" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; opacity:0.4;"><i data-lucide="image-plus" style="width:48px;height:48px;"></i><p>Add Images</p></div>
@@ -352,20 +399,15 @@
             document.getElementById('conn-req-text').innerText = `Remote device (${conn.peer.substring(0,8)}...) wants to connect. Do you accept?`;
             modal.style.display = 'flex';
             
+            // Clean listeners
             const btnAccept = document.getElementById('btn-accept-conn');
             const btnReject = document.getElementById('btn-reject-conn');
-            
-            // Clean up old listeners
             const newAccept = btnAccept.cloneNode(true);
             const newReject = btnReject.cloneNode(true);
             btnAccept.parentNode.replaceChild(newAccept, btnAccept);
             btnReject.parentNode.replaceChild(newReject, btnReject);
 
-            newAccept.onclick = () => { 
-                modal.style.display = 'none'; 
-                setupConn(conn); 
-                if(conn.open) conn.send({ type: 'handshake-ack' }); 
-            };
+            newAccept.onclick = () => { modal.style.display = 'none'; setupConn(conn); };
             newReject.onclick = () => { modal.style.display = 'none'; conn.close(); };
         });
         
@@ -455,26 +497,6 @@
                 document.getElementById('smart-toast').style.display = 'flex';
             }
             delete receivedChunks[data.name];
-        }
-    }
-
-    async function sendFiles(files) {
-        if (!window.activeConn) return;
-        document.getElementById('progress-container').style.display = 'block';
-        document.getElementById('metrics-display').style.display = 'flex';
-        for (let file of files) {
-            window.activeConn.send({ type: 'file-start', name: file.name, size: file.size });
-            transferStartTime = Date.now();
-            const total = Math.ceil(file.size / CHUNK_SIZE);
-            for (let i = 0; i < total; i++) {
-                const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-                window.activeConn.send({ type: 'file-chunk', name: file.name, chunk, current: i + 1, total });
-                updateMetrics((i + 1) * CHUNK_SIZE, file.size);
-                updateProgress(((i + 1) / total) * 100, `Sending: ${file.name}`);
-                if (i % 10 === 0) await new Promise(r => setTimeout(r, 10)); 
-            }
-            window.activeConn.send({ type: 'file-end', name: file.name });
-            addHistory('OUT', file.name, file.size, -1);
         }
     }
 
@@ -575,12 +597,33 @@
     
     function confirmSend() { if(filesQueue.length) { sendFiles(filesQueue); cancelTransfer(); } }
 
-    // Batcher simplified
+    async function sendFiles(files) {
+        if (!activeConn) return;
+        document.getElementById('progress-container').style.display = 'block';
+        document.getElementById('metrics-display').style.display = 'flex';
+        for (let file of files) {
+            activeConn.send({ type: 'file-start', name: file.name, size: file.size });
+            transferStartTime = Date.now();
+            const total = Math.ceil(file.size / CHUNK_SIZE);
+            for (let i = 0; i < total; i++) {
+                const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                activeConn.send({ type: 'file-chunk', name: file.name, chunk, current: i + 1, total });
+                updateMetrics((i + 1) * CHUNK_SIZE, file.size);
+                updateProgress(((i + 1) / total) * 100, `Sending: ${file.name}`);
+                if (i % 10 === 0) await new Promise(r => setTimeout(r, 10));
+            }
+            activeConn.send({ type: 'file-end', name: file.name });
+            addHistory('OUT', file.name, file.size, -1);
+        }
+    }
+
+    // Batcher Logic
     let batcherFiles = [];
     document.getElementById('batcher-toggle').onclick = () => toggleBatcher(true);
     function toggleBatcher(s) { document.getElementById('batcher-modal').style.display = s?'flex':'none'; if(s) renderBatcher(); }
     function addFileToBatcher(f) { batcherFiles.push({ f, id: Math.random(), preview: URL.createObjectURL(f) }); }
     function handleBatcherFiles(fl) { Array.from(fl).filter(f=>f.type.startsWith('image/')).forEach(addFileToBatcher); renderBatcher(); }
+    
     function renderBatcher() {
         const g = document.getElementById('batcher-grid'); document.getElementById('batcher-empty').style.display = batcherFiles.length?'none':'flex';
         g.innerHTML = ''; batcherFiles.forEach(item => {
@@ -591,7 +634,16 @@
         });
     }
 
-    function updateBatcherSettingsUI() { const mode = document.getElementById('batcher-resize-mode').value; document.getElementById('batcher-scale').style.display = mode==='scale'?'block':'none'; document.getElementById('batcher-width').style.display = mode==='width'?'block':'none'; }
+    function syncInputs(src, dest) {
+        document.getElementById(dest).value = document.getElementById(src).value;
+    }
+
+    function updateBatcherSettingsUI() { 
+        const mode = document.getElementById('batcher-resize-mode').value; 
+        document.getElementById('setting-scale-ui').style.display = mode==='scale'?'block':'none'; 
+        document.getElementById('setting-width-ui').style.display = mode==='width'?'block':'none'; 
+    }
+    
     async function runBatcher() {
         const btn = document.getElementById('batcher-run-btn');
         const log = document.getElementById('batcher-log');
@@ -608,6 +660,7 @@
         log.innerText = "Done!";
         btn.disabled = false; btn.innerHTML = '<i data-lucide="zap"></i> Process & Zip'; lucide.createIcons();
     }
+    
     function processImg(f, s) { return new Promise(res => { const img = new Image(); img.src = URL.createObjectURL(f); img.onload = () => { const can = document.createElement('canvas'); let w = img.width, h = img.height; if(s.mode === 'scale') { w *= s.scale; h *= s.scale; } else { const r = h/w; w = s.width; h = w*r; } can.width = w; can.height = h; can.getContext('2d').drawImage(img, 0,0, w, h); can.toBlob(res, s.format, s.quality); } }); }
 
     setInterval(() => { document.getElementById('system-time').innerText = new Date().toLocaleTimeString([], {hour12:false}); }, 1000);
