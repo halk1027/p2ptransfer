@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>P2P Air Channel</title>
+    <!-- PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
@@ -47,123 +51,269 @@
         }
 
         * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-gradient); background-size: 400% 400%; animation: gradientBG 15s ease infinite;
-            display: flex; flex-direction: column; align-items: center; padding: 20px; color: var(--text-main);
-            min-height: 100vh; margin: 0; overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
         }
+
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .main-layout { display: flex; flex-direction: row; gap: 24px; width: 100%; max-width: 1400px; align-items: stretch; flex: 1; margin-top: 20px; min-height: 0; /* Fix flex overflow */ }
+        .main-layout {
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            width: 100%;
+            max-width: 1400px;
+            align-items: stretch;
+            flex: 1;
+            margin-top: 20px;
+            min-height: 0; 
+        }
+
         @media (max-width: 1024px) {
             .main-layout { flex-direction: column; align-items: center; height: auto; }
             .glass-panel { max-width: 500px !important; width: 100% !important; min-height: auto !important; }
         }
 
         .glass-panel {
-            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
-            border-radius: 24px; box-shadow: var(--shadow); padding: 28px; flex: 1; min-width: 300px;
-            position: relative; display: flex; flex-direction: column; gap: 15px; /* Increased gap */
-            overflow-y: auto; /* Allow scrolling if content is too tall */
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 28px;
+            flex: 1; 
+            min-width: 300px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto; 
         }
+        
         .panel-center { flex: 1.3; }
 
-        .header { width: 100%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; flex-shrink: 0; }
+        .header {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            flex-shrink: 0;
+        }
+
         .header-left, .header-right { display: flex; align-items: center; gap: 15px; }
 
         .app-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        #system-time { font-size: 0.9rem; font-family: monospace; color: var(--text-dim); background: rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
+        
+        #system-time {
+            font-size: 0.9rem; font-family: monospace; color: var(--text-dim);
+            background: rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--glass-border);
+        }
 
-        .icon-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
-        .notification-dot { position: absolute; top: 0; right: 0; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid var(--input-bg); display: none; }
+        .icon-btn {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main);
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; backdrop-filter: blur(10px); position: relative;
+        }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); }
 
-        .footer { width: 100%; max-width: 1400px; margin-top: 40px; padding: 20px 10px; font-size: 0.75rem; color: var(--text-dim); opacity: 0.7; text-align: left; line-height: 1.5; border-top: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notification-dot {
+            position: absolute; top: 0; right: 0; width: 12px; height: 12px;
+            background: var(--primary); border-radius: 50%; border: 2px solid var(--input-bg); display: none;
+        }
 
-        .icon { width: 20px; height: 20px; } .icon-lg { width: 24px; height: 24px; } .icon-sm { width: 16px; height: 16px; }
+        .footer {
+            width: 100%; max-width: 1400px; margin-top: 40px; padding: 20px 10px;
+            font-size: 0.75rem; color: var(--text-dim); opacity: 0.7; text-align: left; line-height: 1.5;
+            border-top: 1px solid var(--glass-border); flex-shrink: 0; position: relative; z-index: 10;
+        }
 
-        h2 { margin: 0; font-weight: 700; letter-spacing: 1px; word-break: break-all; font-size: 1.1rem; line-height: 1.4; font-family: monospace; color: var(--primary); }
-        h3 { margin: 0; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; }
+        .icon { width: 20px; height: 20px; }
+        .icon-lg { width: 24px; height: 24px; }
+        .icon-sm { width: 16px; height: 16px; }
+
+        h2 { 
+            margin: 0; font-weight: 700; letter-spacing: 1px; word-break: break-all;
+            font-size: 1.1rem; line-height: 1.4; font-family: monospace; color: var(--primary);
+        }
+        
+        h3 { 
+            margin: 0; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; 
+            text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; 
+        }
 
         .id-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 5px 0; width: 100%; flex-shrink: 0; }
-        .copy-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .copy-btn:hover { background: var(--primary); color: white; }
-        
-        #qrcode { margin: 15px auto; padding: 12px; background: white; border-radius: 16px; display: inline-block; flex-shrink: 0; }
 
-        input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 14px; margin: 5px 0; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none; font-family: inherit; }
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: var(--text-dim);
+            width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: all 0.2s; flex-shrink: 0; 
+        }
+        .copy-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
         
-        button.action-btn { width: 100%; padding: 16px; margin-top: 5px; border-radius: 16px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; flex-shrink: 0; }
-        button.action-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        button.action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-disconnect { background: var(--danger) !important; }
+        #qrcode {
+            margin: 15px auto; padding: 12px; background: white; border-radius: 16px;
+            display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex-shrink: 0;
+        }
+        #qrcode img { display: block; }
 
-        /* FIXED: Prevent overlap by disallowing shrink and setting min height */
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%; padding: 14px; margin: 5px 0; border-radius: 12px; border: 1px solid var(--glass-border);
+            background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none;
+            font-family: inherit;
+        }
+
+        button.action-btn {
+            width: 100%; padding: 16px; margin-top: 5px; border-radius: 16px;
+            background: var(--primary); color: white; border: none; cursor: pointer;
+            font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center;
+            gap: 8px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s, filter 0.2s;
+            flex-shrink: 0;
+        }
+        button.action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        button.action-btn:disabled { background: var(--text-dim); cursor: not-allowed; opacity: 0.7; transform: none; }
+
+        .btn-disconnect { background: var(--danger) !important; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important; }
+
         .file-upload-wrapper { 
             position: relative; margin-top: 10px; border-radius: 16px; overflow: hidden; width: 100%; 
             flex-shrink: 0; min-height: 120px;
         }
         .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
-        .file-upload-btn { 
-            background: var(--input-bg); border: 1px dashed var(--text-dim); color: var(--text-dim); padding: 30px 20px; 
-            border-radius: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; justify-content: center;
+        
+        .file-upload-btn {
+            background: var(--input-bg); border: 1px dashed var(--text-dim); color: var(--text-dim);
+            padding: 30px 20px; border-radius: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;
+            height: 100%; justify-content: center; transition: all 0.2s;
         }
         .file-upload-wrapper:hover .file-upload-btn { border-color: var(--primary); background: rgba(255,255,255,0.05); }
 
-        /* FIXED: Text btn spacing */
-        .text-btn { 
-            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--primary); cursor: pointer; 
-            font-size: 13px; padding: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; 
+        .text-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--primary); cursor: pointer;
+            font-size: 13px; padding: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;
             width: 100%; border-radius: 12px; margin-top: 10px; flex-shrink: 0;
         }
         .text-btn:hover { background: rgba(59, 130, 246, 0.1); color: var(--text-main); }
-
-        #status-tag {
-            display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 25px;
-            font-size: 13px; font-weight: 700; margin: 5px auto 0 auto;
-            background: rgba(59, 130, 246, 0.15); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2); flex-shrink: 0;
-        }
-        #status-tag.status-online { background: rgba(16, 185, 129, 0.2); color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
-        #status-tag.status-error { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 
         .progress-container { width: 100%; background: rgba(0,0,0,0.2); height: 8px; border-radius: 4px; margin: 10px 0 5px 0; overflow: hidden; display: none; flex-shrink: 0; }
         #progress-bar { width: 0%; height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.1s linear; }
 
         .metrics-grid { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin: 5px 0 10px 0; font-family: monospace; flex-shrink: 0; }
-        .history-list { margin-top: 10px; overflow-y: auto; text-align: left; flex-grow: 1; min-height: 200px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: var(--history-item-bg); border-radius: 12px; font-size: 13px; animation: fadeIn 0.3s ease-out; }
+        .metrics-item { display: flex; align-items: center; gap: 4px; }
 
-        .preview-area { margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 15px; border: 1px solid var(--glass-border); display: none; flex-shrink: 0; }
-        .preview-list { max-height: 160px; overflow-y: auto; margin-bottom: 15px; }
-        .preview-item { display: flex; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary); gap: 10px; }
+        #status-tag {
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 25px;
+            font-size: 13px; font-weight: 700; margin: 5px auto 0 auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(59, 130, 246, 0.15); 
+            color: var(--primary);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            flex-shrink: 0;
+        }
+        #status-tag.status-online {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+        #status-tag.status-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
-        
+        .history-list { margin-top: 10px; overflow-y: auto; text-align: left; flex-grow: 1; min-height: 250px; }
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px;
+            background: var(--history-item-bg); border-radius: 12px; font-size: 13px; animation: fadeIn 0.3s ease-out;
+        }
+        .history-item-left { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; }
+        .history-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+        .history-actions { display: flex; align-items: center; gap: 10px; }
+        .action-icon { color: var(--text-dim); cursor: pointer; transition: all 0.2s; display: flex; }
+        .action-icon:hover { color: var(--primary); transform: scale(1.1); }
+
+        .preview-area { margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 15px; border: 1px solid var(--glass-border); display: none; flex-shrink: 0; animation: fadeIn 0.3s; }
+        .preview-list { max-height: 160px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
+        .preview-item {
+            display: flex; flex-direction: row; align-items: center; padding: 10px; background: rgba(255,255,255,0.05);
+            border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary); gap: 10px;
+        }
+        .preview-content { flex: 1; overflow: hidden; line-height: 1.4; }
+        .preview-remove-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; }
+        .preview-remove-btn:hover { color: var(--danger); }
+        .preview-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center;
+        }
+        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); padding: 24px; border-radius: 24px; width: 90%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
+        .modal-large { max-width: 960px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+
+        .warning-text {
+            color: var(--warning);
+            font-size: 11px;
+            margin-top: 10px;
+            text-align: left;
+            padding-left: 5px;
+            line-height: 1.5;
+            background: rgba(245, 158, 11, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            border-left: 3px solid var(--warning);
+        }
+
         .batcher-layout { display: flex; height: 100%; overflow: hidden; }
         .batcher-sidebar { width: 280px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; }
         .batcher-main { flex: 1; padding: 25px; overflow-y: auto; background: var(--input-bg); }
         .batcher-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px; position: relative; }
-        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; }
-        
+        .batcher-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px; position: relative; transition: border 0.2s; }
+        .batcher-card:hover { border-color: var(--primary); }
+        .batcher-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #000; }
+        .batcher-remove { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+
         @media (max-width: 768px) {
             .batcher-layout { flex-direction: column; }
-            .batcher-sidebar { width: 100%; height: auto; max-height: 45%; border-right: none; border-bottom: 1px solid var(--glass-border); }
+            .batcher-sidebar { width: 100%; height: auto; max-height: 40%; border-right: none; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+            .batcher-main { height: auto; flex: 1; }
         }
 
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px; z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
-        
         .switch-label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim); cursor: pointer; margin: 5px 0; flex-shrink: 0; }
+        .range-slider { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; -webkit-appearance: none; outline: none; margin: 10px 0; }
+        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid #fff; }
+
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: white; padding: 14px 28px; border-radius: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; align-items: center; gap: 12px;
+            z-index: 3000; font-weight: 600; cursor: pointer; animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        @keyframes slideUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="header-left"><div class="app-title"><i data-lucide="zap" class="icon-lg" style="color: var(--primary);"></i> P2P Air Channel</div></div>
+        <div class="header-left">
+            <div class="app-title"><i data-lucide="zap" class="icon-lg" style="color: var(--primary);"></i> P2P Air Channel</div>
+        </div>
         <div class="header-right">
             <span id="system-time">--:--</span>
             <button class="icon-btn" id="batcher-toggle" title="Image Batcher"><i data-lucide="images" class="icon"></i><div class="notification-dot" id="batcher-dot"></div></button>
@@ -201,7 +351,7 @@
             <button class="text-btn" onclick="openUrlModal()"><i data-lucide="cloud-download" class="icon-sm"></i><span>Import from Drive / URL</span></button>
 
             <div id="preview-area" class="preview-area">
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><b>Queue</b><span id="queue-count" style="font-size:11px;">0 files</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items: center;"><b>Queue</b><span id="queue-count" style="font-size:11px;">0 files</span></div>
                 <div id="preview-list" class="preview-list"></div>
                 <div style="display:flex; gap:10px;">
                     <button class="action-btn" style="background:transparent; border:1px solid var(--glass-border); flex:1;" onclick="cancelTransfer()">Clear</button>
@@ -227,21 +377,36 @@
     </div>
 
     <!-- Modals -->
+    <!-- Network Settings Modal -->
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-content">
             <h3>Network Settings</h3>
-            <label style="font-size:11px;">Server Preset</label>
-            <select id="conf-preset" onchange="applyPreset()">
+            <p style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">Configure self-hosted PeerServer to bypass corporate firewalls.</p>
+            
+            <label style="font-size:12px; color:var(--text-dim);">Server Preset</label>
+            <select id="conf-preset" onchange="applyPreset()" style="margin-bottom: 10px;">
                 <option value="render">Default (Render Proxy)</option>
                 <option value="public">Public (0.peerjs.com)</option>
-                <option value="custom">Custom Server</option>
+                <option value="custom">Custom / Localhost</option>
             </select>
+
+            <div id="custom-server-settings" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid var(--glass-border);">
+                <label style="font-size:11px; color:var(--text-dim);">Host</label>
+                <input type="text" id="conf-host" placeholder="0.peerjs.com">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;"><label style="font-size:11px; color:var(--text-dim);">Port</label><input type="number" id="conf-port" placeholder="443"></div>
+                    <div style="flex:2;"><label style="font-size:11px; color:var(--text-dim);">Path</label><input type="text" id="conf-path" placeholder="/"></div>
+                </div>
+                <label class="switch-label" style="font-size:13px; margin-top:5px;"><input type="checkbox" id="conf-secure"> Secure (HTTPS)</label>
+            </div>
+
             <div style="background:rgba(59,130,246,0.1); padding:12px; border-radius:12px; border:1px solid rgba(59,130,246,0.2); margin-top:10px;">
                 <label style="font-size:11px; font-weight:700;">Metered.ca API Key</label>
                 <input type="text" id="metered-key" placeholder="Paste Metered Key here">
                 <p style="font-size:10px; color:var(--text-dim);">Enable 100% traversal via Port 443 Relay.</p>
             </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
+
+            <div class="preview-actions" style="margin-top:20px;">
                 <button class="action-btn" style="background:transparent; border:1px solid var(--glass-border); flex:1;" onclick="closeSettingsModal()">Cancel</button>
                 <button class="action-btn" style="flex:2;" onclick="savePeerConfig()">Save & Reload</button>
             </div>
@@ -251,30 +416,68 @@
     <div id="url-modal" class="modal-overlay">
         <div class="modal-content">
             <h3>Cloud Import</h3>
-            <input type="text" id="url-input" placeholder="GDrive Link or Direct URL">
-            <label class="switch-label" style="font-size:13px;"><input type="checkbox" id="cors-proxy-check" checked> Use Proxy</label>
-            <div class="warning-text">⚠️ Warning: Using a proxy sends traffic through a third-party server. Do not use for sensitive data.</div>
-            <div style="display:flex; gap:10px; margin-top:20px;"><button class="action-btn" style="background:transparent; border:1px solid var(--glass-border); flex:1;" onclick="closeUrlModal()">Cancel</button><button class="action-btn" style="flex:2;" onclick="processUrlImport()">Fetch</button></div>
+            <input type="text" id="url-input" placeholder="Google Drive sharing link or URL">
+            <label class="switch-label"><input type="checkbox" id="cors-proxy-check" checked> <span>Use CORS Proxy</span></label>
+            <p class="warning-text">⚠️ Warning: Using a proxy sends traffic through a third-party server. Do not use for sensitive data.</p>
+            <div class="preview-actions" style="margin-top:20px;">
+                <button class="action-btn" style="background:transparent; border:1px solid var(--glass-border); flex:1;" onclick="closeUrlModal()">Cancel</button>
+                <button class="action-btn" style="flex:2;" onclick="processUrlImport()">Fetch File</button>
+            </div>
         </div>
     </div>
 
+    <div id="connection-modal" class="modal-overlay">
+        <div class="modal-content" style="text-align:center;">
+            <i data-lucide="shield-check" class="icon-lg" style="color:var(--primary); margin-bottom:15px; width:48px; height:48px;"></i>
+            <h3 style="margin-bottom: 10px;">Security Request</h3>
+            <p id="conn-req-text" style="font-size:13px; color:var(--text-dim); margin-bottom:25px; line-height:1.5;"></p>
+            <div class="preview-actions">
+                <button class="action-btn" style="background:transparent; border:1px solid var(--glass-border); flex:1;" id="btn-reject-conn">Reject</button>
+                <button class="action-btn" style="margin-top:0; background:var(--success); flex:2;" id="btn-accept-conn">Accept Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batcher Modal -->
     <div id="batcher-modal" class="modal-overlay">
-        <div class="modal-content" style="width: 95%; max-width: 900px; height: 85vh; padding: 0; display: flex; flex-direction: column;">
-            <div style="padding:18px 24px; border-bottom:1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:10px;"><i data-lucide="layers" style="color:var(--primary);"></i><h3 style="margin:0;">Image Batcher Pro</h3></div>
-                <i data-lucide="x" style="cursor:pointer;" onclick="toggleBatcher(false)"></i>
+        <div class="modal-content modal-large">
+            <div style="padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1);">
+                <div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="layers" style="color: var(--primary);"></i><h3 style="margin: 0; font-size: 1rem;">Image Batcher Pro</h3></div>
+                <i data-lucide="x" style="cursor: pointer; opacity:0.7;" onclick="toggleBatcher(false)"></i>
             </div>
             <div class="batcher-layout">
                 <div class="batcher-sidebar">
-                    <select id="batcher-resize-mode"><option value="scale">Scale %</option><option value="width">Fixed Width</option></select>
-                    <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80">
-                    <select id="batcher-format"><option value="image/jpeg">JPG (Photos)</option><option value="image/png">PNG (Lossless)</option><option value="image/webp">WebP (Efficient)</option></select>
-                    <button class="action-btn" style="margin-top:auto;" onclick="runBatcher()" id="batcher-run-btn"><i data-lucide="zap"></i> Process & Zip</button>
-                    <div id="batcher-log" style="font-size:11px; text-align:center;"></div>
+                    <div>
+                        <div style="font-size:11px; margin-bottom:5px; color:var(--text-dim);">RESIZE MODE</div>
+                        <select id="batcher-resize-mode" onchange="updateBatcherSettingsUI()"><option value="scale">Scale Percentage</option><option value="width">Fixed Width (px)</option></select>
+                    </div>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim);"><span>SCALE / WIDTH</span><span id="scale-val" style="color:var(--primary);">80%</span></div>
+                        <input type="range" class="range-slider" id="batcher-scale" min="10" max="100" value="80" step="5" oninput="document.getElementById('scale-val').innerText=this.value+'%'">
+                        <input type="number" id="batcher-width" style="display:none" value="1920">
+                    </div>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim);"><span>QUALITY</span><span id="quality-val" style="color:var(--primary);">80%</span></div>
+                        <input type="range" class="range-slider" id="batcher-quality" min="10" max="100" value="80" step="5" oninput="document.getElementById('quality-val').innerText=this.value+'%'">
+                    </div>
+                    <div>
+                        <div style="font-size:11px; margin-bottom:5px; color:var(--text-dim);">OUTPUT FORMAT</div>
+                        <select id="batcher-format">
+                            <option value="image/jpeg">JPG (Best for Photos)</option>
+                            <option value="image/png">PNG (Lossless)</option>
+                            <option value="image/webp">WebP (Efficient)</option>
+                        </select>
+                    </div>
+                    <button class="action-btn" style="margin-top:auto;" onclick="runBatcher()" id="batcher-run-btn"><i data-lucide="zap" class="icon-sm"></i> Run Processor</button>
+                    <div id="batcher-log" style="font-size: 11px; color: var(--text-dim); text-align:center;"></div>
                 </div>
                 <div class="batcher-main" id="batcher-dropzone" onclick="document.getElementById('batcher-input').click()">
-                    <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files)">
-                    <div id="batcher-empty" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; opacity:0.4;"><i data-lucide="image-plus" style="width:48px;height:48px;"></i><p>Add Images</p></div>
+                    <input type="file" id="batcher-input" multiple accept="image/*" style="display:none" onchange="handleBatcherFiles(this.files); this.value=''">
+                    <div id="batcher-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.4;">
+                        <i data-lucide="plus-circle" style="width:56px; height:56px; margin-bottom:15px;"></i>
+                        <p style="font-size:1.1rem; font-weight:600;">Click or Drop Images Here</p>
+                        <p style="font-size:0.9rem; margin-top:5px;">Received images will also appear here</p>
+                    </div>
                     <div class="batcher-grid" id="batcher-grid"></div>
                 </div>
             </div>
@@ -283,20 +486,96 @@
 
     <div id="smart-toast" class="toast" onclick="toggleBatcher(true); this.style.display='none';"><i data-lucide="sparkles"></i><span>Images Detected! Open Batcher?</span></div>
 
+    <div class="footer">
+        Disclaimer: This tool facilitates direct P2P transfer; files are not stored on any server. Reloading the page will result in the loss of transfer history.<br>
+        &copy; 2026 Haley Kwok. All rights reserved.
+    </div>
+
 <script>
     lucide.createIcons();
-    const CHUNK_SIZE = 65536; 
+    const CHUNK_SIZE = 16384 * 4; 
     
     function generateUUID() {
-        if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (Math.random()*16|0).toString(16));
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
     }
 
+    const customId = generateUUID();
+    document.getElementById('my-id').innerText = customId;
+    
+    // --- Config Logic ---
     const PRESETS = {
         render: { host: 'my-p2p-server.onrender.com', port: 443, path: '/myapp', secure: true },
         public: { host: '0.peerjs.com', port: 443, path: '/', secure: true }
     };
 
+    const DEFAULT_ICE = [
+        { urls: 'stun:stun.nextcloud.com:443' },
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun.voip.blackberry.com:3478' }
+    ];
+
+    function getPeerConfig() {
+        const saved = localStorage.getItem('peerConfig');
+        return saved ? JSON.parse(saved) : PRESETS.render;
+    }
+
+    function savePeerConfig() {
+        const meteredKey = document.getElementById('metered-key').value.trim();
+        if(meteredKey) localStorage.setItem('meteredKey', meteredKey);
+
+        const preset = document.getElementById('conf-preset').value;
+        
+        if (preset === 'custom') {
+             const host = document.getElementById('conf-host').value.trim();
+             const port = document.getElementById('conf-port').value.trim();
+             const path = document.getElementById('conf-path').value.trim();
+             const secure = document.getElementById('conf-secure').checked;
+             if(host) localStorage.setItem('peerConfig', JSON.stringify({ host, port: port ? parseInt(port) : undefined, path: path || '/', secure }));
+        } else {
+             localStorage.setItem('peerConfig', JSON.stringify(PRESETS[preset]));
+        }
+        location.reload();
+    }
+
+    function applyPreset() {
+        const preset = document.getElementById('conf-preset').value;
+        const customDiv = document.getElementById('custom-server-settings');
+        
+        if (preset === 'custom') {
+            customDiv.style.display = 'block';
+        } else {
+            customDiv.style.display = 'none';
+        }
+    }
+
+    function openSettingsModal() {
+        document.getElementById('settings-modal').style.display = 'flex';
+        document.getElementById('metered-key').value = localStorage.getItem('meteredKey') || '';
+        
+        const config = getPeerConfig();
+        const presetSelect = document.getElementById('conf-preset');
+        
+        if (config.host === PRESETS.render.host) presetSelect.value = 'render';
+        else if (config.host === PRESETS.public.host) presetSelect.value = 'public';
+        else {
+            presetSelect.value = 'custom';
+            document.getElementById('conf-host').value = config.host;
+            document.getElementById('conf-port').value = config.port || '';
+            document.getElementById('conf-path').value = config.path;
+            document.getElementById('conf-secure').checked = config.secure;
+        }
+        applyPreset();
+    }
+    
+    function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+
+    // Initialize Peer
     async function fetchTurn(apiKey) {
         try { const res = await fetch(`https://metered.ca/api/v1/turn/credentials?apiKey=${apiKey}`); return await res.json(); } catch(e) { return null; }
     }
@@ -304,36 +583,67 @@
     async function init() {
         const config = JSON.parse(localStorage.getItem('peerConfig')) || PRESETS.render;
         const meteredKey = localStorage.getItem('meteredKey');
-        let ice = [ { urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun.nextcloud.com:443' } ];
+        let ice = DEFAULT_ICE;
         
         if (meteredKey) { const mi = await fetchTurn(meteredKey); if (mi) ice = [...ice, ...mi]; }
 
-        const peer = new Peer(generateUUID(), {
+        const peer = new Peer(customId, {
             host: config.host, port: config.port, path: config.path, secure: config.secure,
             config: { iceServers: ice, iceTransportPolicy: 'all' }
         });
 
         window.peer = peer;
         peer.on('open', id => {
-            document.getElementById('my-id').innerText = id;
             const tag = document.getElementById('status-tag');
             tag.classList.add('status-online');
+            tag.classList.remove('status-error');
             document.getElementById('status-text').innerText = "System Online";
             new QRCode(document.getElementById("qrcode"), { text: window.location.href.split('?')[0] + "?join=" + id, width: 140, height: 140 });
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('join')) document.getElementById('peer-id-input').value = urlParams.get('join');
         });
 
-        peer.on('connection', conn => {
-            if(confirm(`Incoming connection from ${conn.peer.substring(0,8)}... Accept?`)) setupConn(conn);
-            else conn.close();
-        });
-
-        peer.on('error', () => { 
-            document.getElementById('status-tag').classList.add('status-error'); 
+        peer.on('error', err => {
+            console.error(err);
+            const tag = document.getElementById('status-tag');
+            tag.classList.remove('status-online');
+            tag.classList.add('status-error');
             document.getElementById('status-text').innerText = "Network Error";
         });
+
+        peer.on('connection', conn => {
+            const modal = document.getElementById('connection-modal');
+            document.getElementById('conn-req-text').innerText = `Remote device (${conn.peer.substring(0,8)}...) wants to connect. Do you accept?`;
+            modal.style.display = 'flex';
+            
+            const btnAccept = document.getElementById('btn-accept-conn');
+            const btnReject = document.getElementById('btn-reject-conn');
+            const newAccept = btnAccept.cloneNode(true);
+            const newReject = btnReject.cloneNode(true);
+            btnAccept.parentNode.replaceChild(newAccept, btnAccept);
+            btnReject.parentNode.replaceChild(newReject, btnReject);
+
+            newAccept.onclick = () => { modal.style.display = 'none'; setupConn(conn); };
+            newReject.onclick = () => { modal.style.display = 'none'; conn.close(); };
+        });
     }
+
+    document.getElementById('connect-btn').onclick = () => {
+        if (window.activeConn) { location.reload(); return; }
+        const tid = document.getElementById('peer-id-input').value.trim();
+        if (tid) { 
+             const btn = document.getElementById('connect-btn');
+             btn.innerHTML = `<i data-lucide="loader-2" class="icon-sm animate-spin"></i> Connecting...`;
+             lucide.createIcons();
+             setupConn(window.peer.connect(tid, { reliable: true })); 
+             setTimeout(() => {
+                 if (!window.activeConn || !window.activeConn.open) {
+                     btn.innerHTML = "Connect Device";
+                     alert("Connection Timed Out. Please check firewall or TURN settings.");
+                 }
+             }, 10000);
+        }
+    };
 
     function setupConn(conn) {
         window.activeConn = conn;
@@ -352,15 +662,17 @@
     function updateUI(c) {
         const btn = document.getElementById('connect-btn');
         const tag = document.getElementById('status-tag');
-        if(c) {
-            btn.innerText = "Disconnect Channel";
+        const fileInput = document.getElementById('file-input');
+        if (c) {
+            btn.innerHTML = `<i data-lucide="x-circle" class="icon-sm"></i> Disconnect`;
             btn.classList.add('btn-disconnect');
             tag.classList.add('status-online');
             document.getElementById('status-text').innerText = "Connected";
-            document.getElementById('file-input').disabled = false;
+            fileInput.disabled = false;
         } else {
             btn.innerText = "Connect Device";
             btn.classList.remove('btn-disconnect');
+            fileInput.disabled = true;
         }
         lucide.createIcons();
     }
@@ -410,21 +722,43 @@
     function addHistory(t, n, s, idx) {
         const list = document.getElementById('history-list'); if(list.innerHTML.includes('No history')) list.innerHTML = '';
         const item = document.createElement('div'); item.className = 'history-item';
-        item.innerHTML = `<div style="display:flex; flex-direction:column; overflow:hidden;"><span style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${n}</span><span style="font-size:10px; opacity:0.6;">${formatBytes(s)} • ${t}</span></div>`;
+        // Download Icon
+        const actionHtml = idx >= 0 ? `<div class="action-icon" onclick="reDownload(${idx})"><i data-lucide="download-cloud"></i></div>` : '';
+        item.innerHTML = `<div style="display:flex; flex-direction:column; overflow:hidden;"><span style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${n}</span><span style="font-size:10px; opacity:0.6;">${formatBytes(s)} • ${t}</span></div><div class="history-actions">${actionHtml}</div>`;
         list.prepend(item);
+        lucide.createIcons();
     }
+    
+    function reDownload(idx) { const item = historyData[idx]; if (item && item.blob) saveFile(item.blob, item.name); }
 
     // --- Modals & Presets ---
-    function openSettingsModal() { document.getElementById('settings-modal').style.display = 'flex'; document.getElementById('metered-key').value = localStorage.getItem('meteredKey') || ''; }
-    function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
-    function savePeerConfig() { const k = document.getElementById('metered-key').value.trim(); localStorage.setItem('meteredKey', k); const p = document.getElementById('conf-preset').value; if(p!=='custom') localStorage.setItem('peerConfig', JSON.stringify(PRESETS[p])); location.reload(); }
-    function applyPreset() {}
     function openUrlModal() { document.getElementById('url-modal').style.display = 'flex'; }
     function closeUrlModal() { document.getElementById('url-modal').style.display = 'none'; }
-    function clearHistory() { document.getElementById('history-list').innerHTML = ''; historyData = []; }
+    function clearHistory() { document.getElementById('history-list').innerHTML = '<div style="text-align:center; color:var(--text-dim); padding:40px 20px; font-size:12px; font-style:italic;">No history</div>'; historyData = []; }
+    function cancelTransfer() { document.getElementById('preview-area').style.display = 'none'; document.getElementById('upload-wrapper').style.display = 'block'; document.querySelector('.text-btn').style.display = 'flex'; filesQueue = []; }
 
     // Send files logic
-    document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) sendFiles(Array.from(e.target.files)); };
+    document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) { filesQueue = Array.from(e.target.files); renderPreview(); } };
+    function handleAddMoreFiles(input) { if(input.files.length > 0) { filesQueue = [...filesQueue, ...Array.from(input.files)]; renderPreview(); input.value = ""; } }
+    
+    function renderPreview() {
+        const list = document.getElementById('preview-list');
+        document.getElementById('queue-count').innerText = `${filesQueue.length} files`;
+        list.innerHTML = '';
+        filesQueue.forEach((f, i) => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            item.innerHTML = `<div class="preview-content"><b>${f.name}</b><br><small>${formatBytes(f.size)}</small></div><i data-lucide="trash-2" class="preview-remove-btn" onclick="filesQueue.splice(${i},1);renderPreview()"></i>`;
+            list.appendChild(item);
+        });
+        document.getElementById('upload-wrapper').style.display = 'none';
+        document.querySelector('.text-btn').style.display = 'none';
+        document.getElementById('preview-area').style.display = 'block';
+        lucide.createIcons();
+    }
+    
+    function confirmSend() { if(filesQueue.length) { sendFiles(filesQueue); cancelTransfer(); } }
+
     async function sendFiles(files) {
         if (!activeConn) return;
         document.getElementById('progress-container').style.display = 'block';
@@ -447,6 +781,7 @@
 
     // Batcher simplified
     let batcherFiles = [];
+    document.getElementById('batcher-toggle').onclick = () => toggleBatcher(true);
     function toggleBatcher(s) { document.getElementById('batcher-modal').style.display = s?'flex':'none'; if(s) renderBatcher(); }
     function addFileToBatcher(f) { batcherFiles.push({ f, id: Math.random(), preview: URL.createObjectURL(f) }); }
     function handleBatcherFiles(fl) { Array.from(fl).filter(f=>f.type.startsWith('image/')).forEach(addFileToBatcher); renderBatcher(); }
@@ -454,10 +789,30 @@
         const g = document.getElementById('batcher-grid'); document.getElementById('batcher-empty').style.display = batcherFiles.length?'none':'flex';
         g.innerHTML = ''; batcherFiles.forEach(item => {
             const c = document.createElement('div'); c.className = 'batcher-card';
+            c.onclick = (e) => e.stopPropagation();
             c.innerHTML = `<img src="${item.preview}" class="batcher-img"><div style="position:absolute; top:-5px; right:-5px; background:red; color:white; border-radius:50%; width:20px; height:20px; text-align:center; cursor:pointer;" onclick="batcherFiles=batcherFiles.filter(i=>i.id!=${item.id});renderBatcher();event.stopPropagation()">×</div>`;
             g.appendChild(c);
         });
     }
+
+    function updateBatcherSettingsUI() { const mode = document.getElementById('batcher-resize-mode').value; document.getElementById('batcher-scale').style.display = mode==='scale'?'block':'none'; document.getElementById('batcher-width').style.display = mode==='width'?'block':'none'; }
+    async function runBatcher() {
+        const btn = document.getElementById('batcher-run-btn');
+        const log = document.getElementById('batcher-log');
+        btn.disabled = true; btn.innerText = "Processing...";
+        const zip = new JSZip();
+        const s = { mode: document.getElementById('batcher-resize-mode').value, scale: document.getElementById('batcher-scale').value / 100, width: parseInt(document.getElementById('batcher-width').value), quality: document.getElementById('batcher-quality').value / 100, format: document.getElementById('batcher-format').value };
+        for (let item of batcherFiles) {
+            log.innerText = `Processing ${item.f.name}...`;
+            const blob = await processImg(item.f, s);
+            zip.file(item.f.name.split('.')[0] + "_processed." + s.format.split('/')[1], blob);
+        }
+        const content = await zip.generateAsync({type:"blob"});
+        saveFile(content, "Batch_Export.zip");
+        log.innerText = "Done!";
+        btn.disabled = false; btn.innerHTML = '<i data-lucide="zap"></i> Process & Zip'; lucide.createIcons();
+    }
+    function processImg(f, s) { return new Promise(res => { const img = new Image(); img.src = URL.createObjectURL(f); img.onload = () => { const can = document.createElement('canvas'); let w = img.width, h = img.height; if(s.mode === 'scale') { w *= s.scale; h *= s.scale; } else { const r = h/w; w = s.width; h = w*r; } can.width = w; can.height = h; can.getContext('2d').drawImage(img, 0,0, w, h); can.toBlob(res, s.format, s.quality); } }); }
 
     setInterval(() => { document.getElementById('system-time').innerText = new Date().toLocaleTimeString([], {hour12:false}); }, 1000);
     document.getElementById('theme-btn').onclick = () => {
@@ -466,12 +821,6 @@
         document.documentElement.setAttribute('data-theme', next);
         document.getElementById('icon-sun').style.display = next==='light'?'block':'none';
         document.getElementById('icon-moon').style.display = next==='dark'?'block':'none';
-    };
-
-    document.getElementById('connect-btn').onclick = () => {
-        if(window.activeConn) { location.reload(); return; }
-        const tid = document.getElementById('peer-id-input').value.trim();
-        if(tid) { document.getElementById('connect-btn').innerText = "Traversing NAT..."; setupConn(window.peer.connect(tid, { reliable: true })); }
     };
 
     init();
